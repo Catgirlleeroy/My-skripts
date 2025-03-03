@@ -1,0 +1,130 @@
+on load:
+	delete {rainbowchat::*}
+local function setColor(p: player, colnumber: text, colname: text): #Sets the chatcolor!
+	if {_p} has permission "skript.chatcolor.%{_colname}%": #the permission
+		if {_colnumber} does not match "#[0-9a-fA-F]{6}": #so it matches the HEX code
+			send "&cInvalid hex color code. Please use a valid format (e.g; #FF5733)." to {_p} #<-- Invaid Hex code message
+			stop
+		set {chat_color::%uuid of {_p}%} to {_colnumber}   #set the variable to a name
+		send formatted "&aYour chat color has been set to <%{_colnumber}%>%{_colname}%&a." to {_p} #execute the name
+	else: #<-- Else
+		send formatted "&cYou dont have the permission to use the %{_colname}% chatcolor." to {_p} #No permission message
+local function ChatColorGUI(p: player):
+	set metadata tag "chatcolor" of {_p} to chest inventory with 5 rows named "<#696969>&lChatcolor Selector"
+	set {_gui} to metadata tag "chatcolor" of {_p}
+	set slots (integers from 0 to 44) of {_gui} to gray stained glass pane named " "
+	if {_p} has permission "skript.chatcolor.black":
+		set slot 10 of {_gui} to black concrete named "&0Black Chatcolor"
+	if {_p} has permission "skript.chatcolor.red":
+		set slot 11 of {_gui} to red concrete named "&cRed Chatcolor"
+	if {_p} has permission "skript.chatcolor.pastelred":
+		set slot 12 of {_gui} to red terracotta named "&dPastel Red Chatcolor"
+	if {_p} has permission "skript.chatcolor.orange":
+		set slot 13 of {_gui} to orange concrete named "&6Orange Chatcolor"
+	if {_p} has permission "skript.chatcolor.pastelorange":
+		set slot 14 of {_gui} to orange terracotta named "&6Pastel Orange Chatcolor"
+	if {_p} has permission "skript.chatcolor.pastelyellow":
+		set slot 15 of {_gui} to yellow terracotta named "&ePastel Yellow Chatcolor"
+	if {_p} has permission "skript.chatcolor.green":
+		set slot 16 of {_gui} to green concrete named "&aGreen Chatcolor"
+	if {_p} has permission "skript.chatcolor.pastelgreen":
+		set slot 19 of {_gui} to lime terracotta named "&aPastel Green Chatcolor"
+	if {_p} has permission "skript.chatcolor.blue":
+		set slot 20 of {_gui} to blue concrete named "&9Blue Chatcolor"
+	if {_p} has permission "skript.chatcolor.pastelblue":
+		set slot 21 of {_gui} to light blue terracotta named "&bPastel Blue Chatcolor"
+	if {_p} has permission "skript.chatcolor.pastelpurple":
+		set slot 22 of {_gui} to purple terracotta named "&5Pastel Purple Chatcolor"
+	if {_p} has permission "skript.chatcolor.pastelpink":
+		set slot 23 of {_gui} to pink terracotta named "&dPastel Pink Chatcolor"
+	if {_p} has permission "skript.chatcolor.white":
+		set slot 24 of {_gui} to white concrete named "&fWhite Chatcolor"
+	if {_p} has permission "skript.chatcolor.pink":
+		set slot 25 of {_gui} to pink concrete named "&dPink Chatcolor"
+	if {_p} has permission "skript.chatcolor.yellow":
+		set slot 28 of {_gui} to yellow concrete named "&eYellow Chatcolor"
+	if {_p} has permission "skript.chatcolor.purple":
+		set slot 29 of {_gui} to purple concrete named "&5Purple Chatcolor"
+	if {_p} has permission "skript.chatcolor.aqua":
+		set slot 30 of {_gui} to cyan concrete named "&bAqua Chatcolor"
+	if {_p} has permission "skript.chatcolor.gold":
+		set slot 31 of {_gui} to gold block named "&6Gold Chatcolor"
+	if {_p} has permission "skript.chatcolor.gray":
+		set slot 32 of {_gui} to gray concrete named "&7Gray Chatcolor"
+	if {_p} has permission "skript.chatcolor.rainbow":
+		set slot 33 of {_gui} to Oak log named "Rainbow Chatcolor"
+	open {_gui} to {_p}
+command /chatcolor [<text>]:
+	permission: chatcolor.set
+	trigger:
+		ChatColorGUI(player)
+on inventory click:
+	if event-inventory = (metadata tag "chatcolor" of player):
+		if event-inventory is not player's inventory:
+			cancel event
+			if event-slot is 10:
+				setColor(player, "#000000", "black")
+			if event-slot is 11:
+				setColor(player, "#FF0000", "red")
+			if event-slot is 12:
+				setColor(player, "#FF6961", "pastelred")
+			if event-slot is 13:
+				setColor(player, "#FFA500", "orange")
+			if event-slot is 14:
+				setColor(player, "#FAC898", "pastelorange")
+			if event-slot is 15:
+				setColor(player, "#FDFD96", "pastelyellow")
+			if event-slot is 16:
+				setColor(player, "#008000", "green")
+			if event-slot is 19:
+				setColor(player, "#77DD77", "pastelgreen")
+			if event-slot is 20:
+				setColor(player, "#0000FF", "blue")
+			if event-slot is 21:
+				setColor(player, "#A7C7E7", "pastelblue")
+			if event-slot is 22:
+				setColor(player, "#B1A2CA", "pastelpurple")
+			if event-slot is 23:
+				setColor(player, "#F8C8DC", "pastelpink")
+			if event-slot is 24:
+				setColor(player, "#FFFFFF", "white")
+			if event-slot is 25:
+				setColor(player, "#FFC0CB", "pink")
+			if event-slot is 28:
+				setColor(player, "#FFFF00", "yellow")
+			if event-slot is 29:
+				setColor(player, "#800080", "purple")
+			if event-slot is 30:
+				setColor(player, "#00FFFF", "aqua")
+			if event-slot is 31:
+				setColor(player, "#FFD700", "gold")
+			if event-slot is 32:
+				setColor(player, "#808080", "gray")
+
+on chat:
+    set {_msg} to formatted message
+    set {_prefix} to player's prefix
+    set {_chat_color} to {chat_color::%player's uuid%} ? "ffffff"
+    set {_colors::*} to {_prefix} split at "&#"
+    loop {_colors::*}:
+        set {_hex} to loop-value
+        set {_valid_hex} to first 6 characters of {_hex}
+        replace "&#%{_valid_hex}%" in {_prefix} with "<#%{_valid_hex}%>"
+        set {_last_color} to (raw last color of {_msg}) if (raw last color of {_msg} is not empty) else "<#%{_chat_color}%>"
+        loop all players:
+            replace "%loop-value-2%" in {_msg} with "&e%loop-player%%{_last_color}%"
+            set {_formattedChat} to formatted "&8[&6%{prestige::%player's uuid%} ? 0%&8] %{_prefix}%%player's displayname%&7 ⪼ <#%{_chat_color}%>%{_msg}%"
+            set chat format to "%{_formattedChat}%"
+########################################
+
+#blocks Default chatcolor for non-ranked
+
+########################################
+on chat:
+    if player does not have permission "chatcolor.admin":
+        if message matches ".*&[0-9a-fk-or].*":
+            cancel event
+            send "&cYou are not allowed to use chat colors!" to player
+        if message matches ".*#[0-9A-Fa-f]{6}.*":
+            cancel event
+            send "&cYou are not allowed to use hex colors!" to player
