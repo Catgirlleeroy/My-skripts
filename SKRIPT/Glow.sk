@@ -1,0 +1,221 @@
+on load:
+	delete {glowCompletion::*}
+	delete {blinkglowcompletion::*}
+	set {glowColor::*} to "red" and "orange" and "yellow" and "darkgreen" and "lime" and "darkblue" and "blue" and "aqua" and "white" and "black" and "purple" and "pink" and "halloween"
+	set {blinkColor::*} to "rainbow" and "halloween" and "christmas"
+command /glow <text> [<text>] [<text>]:
+	permission: glow.use
+	trigger:
+		if arg-1 is "off":
+			set glowing of player to false
+			set {blinkingGlow::%player's uuid%} to false
+			delete player's suffix
+			send "&aGlow is now &cDisabled&a!" to player
+		if arg-1 is "fixated":
+			if arg-2 is "red":
+				set glowing of player to true
+				setGlowHexColor(player, "#E03939", "red")
+			if arg-2 is "green":
+				set glowing of player to true
+				setGlowHexColor(player, "#00ff00", "green")
+			if arg-2 is "orange":
+				set glowing of player to true
+				setGlowHexColor(player, "#d48c20", "orange")
+			if arg-2 is "yellow":
+				set glowing of player to true
+				setGlowHexColor(player, "#E0DB39", "yellow")			
+			if arg-2 is "darkgreen":
+				set glowing of player to true
+				setGlowHexColor(player, "#347A30", "darkgreen")					
+			if arg-2 is "lime":
+				set glowing of player to true
+				setGlowHexColor(player, "#00FF00", "lime")						
+			if arg-2 is "darkblue":
+				set glowing of player to true
+				setGlowHexColor(player, "#19507C", "darkblue")					
+			if arg-2 is "white":
+				set glowing of player to true
+				setGlowHexColor(player, "#FFFFFF", "white")						
+			if arg-2 is "black":
+				set glowing of player to true
+				setGlowHexColor(player, "#000000", "black")					
+			if arg-2 is "purple":
+				set glowing of player to true
+				setGlowHexColor(player, "#4400fc", "purple")					
+			if arg-2 is "pink":
+				set glowing of player to true
+				setGlowMinecraftColor(player, "&d", "pink")						
+			if arg-2 is "blue":
+				set glowing of player to true
+				setGlowMinecraftColor(player, "&3", "blue")						
+			if arg-2 is "aqua":
+				set glowing of player to true
+				setGlowMinecraftColor(player, "&b", "aqua")				
+		if arg-1 is "blink":
+			set glowing of player to true
+			set {blinkingGlow::%player's uuid%} to true
+			if arg-2 is "halloween":
+				if arg-3 is not set:
+					send "Please select Fast or Slow!" to player
+					stop
+				if arg-3 is "fast":
+					while (isPlayerBlinking(player) = true):
+						if {blinkingGlow::%player's uuid%} is false:
+							stop
+						else:
+							wait 1 second
+							setGlowHexColor(player, "#E0DB39", "yellow")
+							if {blinkingGlow::%player's uuid%} is false:
+								stop
+							else:
+								wait 1 second
+								setGlowHexColor(player, "#d48c20", "orange")
+				if arg-3 is "slow":
+					while (isPlayerBlinking(player) = true):
+						wait 3 second
+						if {blinkingGlow::%player's uuid%} is false:
+							stop
+						else:
+							setGlowHexColor(player, "#E0DB39", "yellow")
+							if {blinkingGlow::%player's uuid%} is false:
+								stop
+							else:
+								wait 3 second
+								if {blinkingGlow::%player's uuid%} is false:
+									stop
+								else:
+									setGlowHexColor(player, "#d48c20", "orange")
+			if arg-2 is "rainbow":
+				if arg-3 is not set:
+					send "Please select Fast or Slow!" to player
+					stop	
+				if arg-3 is "slow":
+					while (isPlayerBlinking(player) = true):
+						if {blinkingGlow::%player's uuid%} is false:
+							stop
+						else:
+							wait 3 second
+							if {blinkingGlow::%player's uuid%} is false:
+								stop
+							else:
+								setGlowHexColor(player, "#4400fc", "purple")
+								wait 3 second
+								if {blinkingGlow::%player's uuid%} is false:
+									stop
+								else:
+									setGlowMinecraftColor(player, "&d", "pink")
+									wait 3 second
+									if {blinkingGlow::%player's uuid%} is false:
+										stop
+									else:
+										setGlowHexColor(player, "#E03939", "red")
+										wait 3 second
+										if {blinkingGlow::%player's uuid%} is false:
+											stop
+										else:
+											setGlowHexColor(player, "#E0DB39", "yellow")
+											wait 3 second
+											if {blinkingGlow::%player's uuid%} is false:
+												stop
+											else:
+												setGlowMinecraftColor(player, "&3", "blue")
+				if arg-3 is "fast":
+					while (isPlayerBlinking(player) = true):
+						wait 1 second
+						if {blinkingGlow::%player's uuid%} is false:
+							stop
+						else:
+							setGlowHexColor(player, "#4400fc", "purple")
+							wait 1 second
+							if {blinkingGlow::%player's uuid%} is false:
+								stop
+							else:
+								setGlowMinecraftColor(player, "&d", "pink")
+								wait 1 second
+								if {blinkingGlow::%player's uuid%} is false:
+									stop
+								else:
+									setGlowHexColor(player, "#E03939", "red")
+									wait 1 second
+									if {blinkingGlow::%player's uuid%} is false:
+										stop
+									else:
+										setGlowHexColor(player, "#E0DB39", "yellow")
+										wait 1 second
+										if {blinkingGlow::%player's uuid%} is false:
+											stop
+										else:
+											setGlowMinecraftColor(player, "&3", "blue")
+			if arg-2 is "christmas":
+				if arg-3 is not set:
+					send "Please select Fast or Slow!" to player
+					stop
+				if arg-3 is "slow":
+					while (isPlayerBlinking(player) = true):
+						wait 3 second
+						if {blinkingGlow::%player's uuid%} is false:
+							stop
+						else:
+							setGlowHexColor(player, "#00FF00", "green")
+							wait 3 second
+							if {blinkingGlow::%player's uuid%} is false:
+								stop
+							else:
+								setGlowHexColor(player, "#E03939", "red")
+				if arg-3 is "fast":
+					while (isPlayerBlinking(player) = true):
+						set glowing of player to true
+						wait 1 second
+						if {blinkingGlow::%player's uuid%} is false:
+							stop
+						else:
+							setGlowHexColor(player, "#00FF00", "green")
+							wait 1 second
+							if {blinkingGlow::%player's uuid%} is false:
+								stop
+							else:
+								setGlowHexColor(player, "#E03939", "red")
+local function isPlayerBlinking(p: player) :: boolean:
+	if {blinkingGlow::%{_p}'s uuid%} is true:
+		return true
+	return false
+
+local function setGlowHexColor(p: player, colr: text, colName: text):
+	if {_p} does not have permission "glow.color.%{_colName}%":
+		send "%{prefix}% &cYou do not have the permission &4glow.color.%{_colName}%&c." to {_p}
+		stop
+	if {blinkingGlow::%{_p}'s uuid%} is true:
+		set {_p}'s suffix to "<%{_colr}%>"
+		stop
+	send colored "%{prefix}%&aYour glow color has been set to: <%{_colr}%>%{_colName}%&a!" to {_p}		
+	set {_p}'s suffix to "<%{_colr}%>"
+	stop
+
+local function setGlowMinecraftColor(p: player, colr: text, colName: text):
+	if {_p} does not have permission "glow.color.%{_colName}%":
+		send "%{prefix}% &cYou do not have the permission &4glow.color.%{_colName}%&c." to {_p}
+		stop
+	set {_p}'s suffix to "%{_colr}%"
+	stop
+
+on tab complete of "/glow":
+	set tab completions for position 1 to "off" and "fixated" and "blink"
+	if tab arg-1 is "fixated":
+		loop {glowColor::*}:
+			if player has permission "glow.color.%loop-value%":
+				add loop-value to {glowCompletion::*}
+		set tab completions for position 2 to {glowCompletion::*}
+	if tab arg-1 is "blink":
+		loop {blinkcolor::*}:
+			if player has permission "glow.color.%loop-value%":
+				add loop-value to {blinkglowcompletion::*}
+		set tab completion for position 2 to {blinkglowcompletion::*}
+	set tab completion for position 3 to "fast" and "slow"
+
+command /setprefix <text>:
+	permission: skript.dev 
+	trigger:
+		set {_x} to formatted arg-1
+		replace all "&f&l|" with "" in {_x}
+		set {prefix} to "%{_x}% &8&l| "
+		send "%{prefix}% &aYou changed the prefix!" to player
