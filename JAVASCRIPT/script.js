@@ -17,6 +17,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Redirect after successful validation
-        window.location.href = "dashboard.html"; // Change this to your destination page
+        window.location.href = "HTMLtesting.html"; // Change this to your destination page
     });
 });
