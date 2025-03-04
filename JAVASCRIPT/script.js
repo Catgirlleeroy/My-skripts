@@ -13,7 +13,9 @@ document.addEventListener("DOMContentLoaded", function () {
             if (password.value.trim() === "") password.style.border = "2px solid red";
             return;
         }
-
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+        }
         window.location.href = "HTMLtesting.html";
     });
 });
