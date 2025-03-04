@@ -14,7 +14,18 @@
         <input type="checkbox" id="rememberMe" placeholder="Remember Me">
         <label for="rememberMe">Remember Me</label>
         <input type="checkbox" id="bgToggle">
-        <label for="bgToggle">Dark Mode</label>                   
+        <label for="bgToggle">Dark Mode</label>
+        <style>
+        .dark-mode {
+            background-color: black !important;
+            color: white !important;
+        }
+        </style>
+        <script>
+        document.getElementById("bgToggle").addEventListener("change", function() {
+            document.body.classList.toggle("dark-mode", this.checked);
+        });
+        </script>                    
         <button onclick="location.href='Newpage.html'">Login</button>
         <a href="forgot-password.html">Lost Password?</a>
         <a href="register.html">Register?</a>

@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", function () {
     loginBtn.addEventListener("click", function () {
         const email = document.getElementById("email");
         const password = document.getElementById("password");
-
         email.style.border = "1px solid #ccc";
         password.style.border = "1px solid #ccc";
 
@@ -16,8 +15,5 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         window.location.href = "HTMLtesting.html";
-        document.getElementById("bgToggle").addEventListener("change", function() {
-            document.body.classList.toggle("dark-mode", this.checked);
-        });
     });
 });
