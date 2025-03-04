@@ -10,10 +10,24 @@
     <div class="container">
         <h2>Login</h2>
         <input type="text" id="Email" placeholder="Email" required>
-        <input type="password" id="password" placeholder="Password" required>                 
+        <input type="password" id="password" placeholder="Password" required>
+        <input type="checkbox" id="rememberMe" placeholder="Remember Me">
+        <label for="rememberMe">Remember Me</label>
+        <input type="checkbox" id="bgToggle">
+        <label for="bgToggle">Dark Mode</label>
+        
+        <script>
+        document.getElementById("bgToggle").addEventListener("change", function() {
+            if (this.checked) {
+                document.body.style.backgroundColor = "black";  // Dark background
+                document.body.style.color = "white";  // Light text
+            } else {
+                document.body.style.backgroundColor = "white";  // Light background
+                document.body.style.color = "black";  // Dark text
+            }
+        });
+        </script>
         <button onclick="location.href='Newpage.html'">Login</button>
-        <input type="checkbox"onclick="toggleDarkMode()">Dark Mode
-        <input type="checkbox" id="rememberMe" placeholder="Remember Me">Remember Me
         <a href="forgot-password.html">Lost Password?</a>
         <a href="register.html">Register?</a>
     </div>
