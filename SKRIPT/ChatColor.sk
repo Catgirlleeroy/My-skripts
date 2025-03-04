@@ -1,5 +1,5 @@
 #Skript made by Catgirlleeroy and Developers!
-#ADDONS: Skript, and Skbee
+#ADDONS: Skript and Skbee
 on load:
 	delete {rainbowchat::*}
 local function setColor(p: player, colnumber: text, colname: text): #Sets the chatcolor!
