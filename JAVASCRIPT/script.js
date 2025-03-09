@@ -17,5 +17,15 @@ document.addEventListener("DOMContentLoaded", function () {
             document.body.classList.toggle("dark-mode");
         }
         window.location.href = "HTMLtesting.html";
+        const bgToggle = document.getElementById("bgToggle");
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+            localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "enabled" : "disabled");
+        }
+        if (localStorage.getItem("darkMode") === "enabled") {
+            document.body.classList.add("dark-mode");
+            bgToggle.checked = true;
+        }
+        bgToggle.addEventListener("change", toggleDarkMode);
     });
 });
