@@ -159,6 +159,13 @@ on mine:
 		giveBlocksCoinsAndXp(event-block, redstone,    {regular::redstone},    player,  1,   1.9)
 		giveBlocksCoinsAndXp(event-block, lapis ore,   {regular::lapis},       player,  1,   2.0)
 		giveBlocksCoinsAndXp(event-block, beacon,      {regular::beacon},      player, 500, 50)
+		giveBlocksCoinsAndXp(event-block, sculk,       {regular::sculk},       player,  1,   2.1)
+		giveBlocksCoinsAndXp(event-block, sculk catalyst, {regular::sculkcatalyst},   player,  1,   2.2)
+		giveBlocksCoinsAndXp(event-block, deepslate bricks, {regular::deepslatebricks}, player,  1,   2.3)
+		giveBlocksCoinsAndXp(event-block, deepslate tiles, {regular::deepslatetiles}, player,  1,   2.4)
+		giveBlocksCoinsAndXp(event-block, polished deepslate, {regular::polisheddeepslate}, player,  1,   2.5)
+		
+		
 		
 #	if (playerIsInWorld(player, "world_nether") = true):
 
