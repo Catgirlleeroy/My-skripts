@@ -50,9 +50,11 @@ local function checkAutoCompressor(p: player):
 			compressOre({regular::beacon}, {comp::beacon}, {_p})
 			compressOre({comp::beacon}, {supercomp::beacon}, {_p})
 		if {CaveCompressors::*} contains uncolored loop-value:
-			compressOre({regular::coal}, {comp::coal}, {_p})
-			compressOre({comp::coal}, {supercomp::coal}, {_p})
-			compressOre({regular::iron}, {comp::iron}, {_p})
-			compressOre({comp::iron}, {supercomp::iron}, {_p})
-			compressOre({regular::gold}, {comp::gold}, {_p})
-			
+			compressOre({regular::sculk}, {comp::sculk}, {_p})
+			compressOre({comp::sculk}, {supercomp::sculk}, {_p})
+			compressOre({regular::sculkcata}, {comp::sculkcata}, {_p})
+			compressOre({comp::sculkcata}, {supercomp::sculkcata}, {_p})
+			compressOre({regular::deepslatebricks}, {comp::deepslatebricks}, {_p})
+			compressOre({comp::deepslatebricks}, {supercomp::deepslatebricks}, {_p})
+			compressOre({regular::deepslatetiles}, {comp::deepslatetiles}, {_p})
+			compressOre({comp::deepslatetiles}, {supercomp::deepslatetiles}, {_p})
