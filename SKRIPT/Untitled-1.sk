@@ -1,0 +1,170 @@
+on load:
+	set {multiplier} to 1
+	
+function multiplier(p: player) :: integer:
+	set {_m} to 1
+	loop {_p}'s groups:
+		if loop-value is "owner":
+			{_m} < 100
+			set {_m} to 100
+		else if loop-value is "owner2":
+			{_m} < 25
+			set {_m} to 25
+		else if loop-value is "custom":
+			{_m} < 9
+			set {_m} to 9
+		else if loop-value is "godlly":
+			{_m} < 8
+			set {_m} to 8
+		else if loop-value is "immortal":
+			{_m} < 7
+			set {_m} to 7
+		else if loop-value is "legend":
+			{_m} < 6
+			set {_m} to 6
+		else if loop-value is "mvp+":
+			{_m} < 5
+			set {_m} to 5
+		else if loop-value is "mvp":
+			{_m} < 4
+			set {_m} to 4
+		else if loop-value is "vip+":
+			{_m} < 3
+			set {_m} to 3
+		else if loop-value is "vip":
+			{_m} < 2
+			set {_m} to 2
+	if {combatdisabled::%{_p}'s uuid%} is false:
+		add 1 to {_m}
+	if {globalboost} > now:
+		if {globalboostmult} > 0:
+			add {globalboostmult}-1 to {_m}
+		else:
+			add 1 to {_m}
+	if {prestige::%{_p}'s uuid%} > 0:
+		{prestige::%{_p}'s uuid%} > 10:
+			add 10 to {_m}
+		else:
+			add {prestige::%{_p}'s uuid%} to {_m}
+	return {_m}
+
+local function addCoins(p: player, amnt: integer):
+	add {_amnt} to {balance::%{_p}'s uuid%}
+
+local function checkNotZero(p: player, var: integer):: boolean:
+	if {_var} > 0:
+		return true
+	else if {_var} = 0:
+		return false
+
+local function calculateCoin(p: player, amnt: number):: number:
+	if (checkNotZero({_p}, {balanceMultiplier::%{_p}'s uuid%}) = true):
+		set {calculatingCoin} to ({_amnt} * {balanceMultiplier::%{_p}'s uuid%})
+		set {resultCoin} to {calculatingCoin}
+	else:
+		set {calculatingCoin} to {_amnt}
+		set {resultCoin} to {calculatingCoin}
+	return {resultCoin}
+
+local function calculateXp(p: player, amnt: number):: number:
+	if (checkNotZero({_p}, {xpMultiplier::%{_p}'s uuid%}) = true):
+		set {calculatingXp} to ({_amnt} * {xpMultiplier::%{_p}'s uuid%})
+		set {resultXp} to {calculatingXp}
+	else:
+		set {calculatingXp} to {_amnt}
+		set {resultXp} to {calculatingXp}
+	return {resultXp}
+
+local function giveDrops(evntBlock: item type, p: player):
+	set {_drops} to 1
+	set {_rankDrops} to {_drops} * multiplier({_p})
+	set {_finalDrops::%{_p}%} to ({_rankDrops} + level of fortune of {_p}'s tool)
+	give {_finalDrops::%{_p}%} of {_evntBlock} to {_p}
+
+
+local function giveBlocksCoinsAndXp(evntBlock: block, checkItem: item type, giveItem: item type, p: player, coinAmount: number, xpAmount: number):
+	if {_evntBlock} is {_checkItem}:
+		set {_finalCoin::%{_p}%} to calculateCoin({_p}, {_coinAmount})
+		set {_finalXp::%{_p}%} to calculateXp({_p}, {_xpAmount})
+		addCoins({_p}, {_finalCoin::%{_p}%})
+		addxp({_p}, {_finalXp::%{_p}%})
+		giveDrops({_giveItem}, {_p})
+		send action bar "&6⛃ &e+%{_finalCoin::%{_p}%}% Coins &8|| &2💰 &aTotal: %formatNumbers({balance::%{_p}'s uuid%})% &8|| &3❖ &b+%{_finalXp::%{_p}%}% Exp." to {_p}
+
+local function transferSecondBlock(p: player, blck: block):
+	if {_blck} is cobblestone:
+		give {_p} 8 of {regular::cobblestone}
+		addxp({_p}, (9 * 1.4))
+		addCoins({_p}, (9 * 1))	
+	if {_blck} is coal block:
+		give {_p} 8 of {regular::coal}
+		addxp({_p}, (9 * 1.4))
+		addCoins({_p}, (9 * 1))
+	if {_blck} is iron block:
+		give {_p} 8 of {regular::iron}
+		addxp({_p}, (9 * 1.6))
+		addCoins({_p}, (9 * 1))
+	if {_blck} is gold block:
+		give {_p} 8 of {regular::gold}
+		addxp({_p}, (9 * 1.8))
+		addCoins({_p}, (9 * 1))		
+	if {_blck} is copper block:
+		give {_p} 8 of {regular::copper}
+		addxp({_p}, (9 * 1.4))
+		addCoins({_p}, (9 * 1))		
+	if {_blck} is diamond block:
+		give {_p} 8 of {regular::diamond}
+		addxp({_p}, (9 * 2.0))
+		addCoins({_p}, (9 * 1))
+	if {_blck} is emerald block:
+		give {_p} 8 of {regular::emerald}
+		addxp({_p}, (9 * 2.2))
+		addCoins({_p}, (9 * 1))
+	if {_blck} is redstone ore:
+		give {_p} 8 of {regular::redstone}
+		addxp({_p}, (9 * 1.6))
+		addCoins({_p}, (9 * 1))		
+	if {_blck} is lapis block:
+		give {_p} 8 of {regular::lapis}
+		addxp({_p}, (9 * 1.6))
+		addCoins({_p}, (9 * 1))		
+	stop
+on mine:
+	chance of 0.1%:
+		execute console command "excellentcrates key give %player's name% mining 1"
+
+on mine:
+	chance of 0.005%:
+		execute console command "excellentcrates key give %player's name% godlly 1"
+		broadcast "&3&m                                                     &3&m"
+		broadcast "&a"
+		broadcast "&e&l%player% &6Has Dug Up A Rare Drop By Mining"
+		broadcast "&3"
+		broadcast "&3&m                                                     &3&m"		
+
+
+on mine:
+	cancel drops
+	transferSecondBlock(player, event-block)
+	if (playerIsInWorld(player, "s5") = true):
+#                            event-block  <checkItem>   <itemToGive>           player <coin> <xp>
+		giveBlocksCoinsAndXp(event-block, oak log,     {regular::wood},        player,  1,   1.0)
+		giveBlocksCoinsAndXp(event-block, stone,       {regular::cobblestone}, player,  1,   1.1)
+		giveBlocksCoinsAndXp(event-block, coal ore,    {regular::coal},        player,  1,   1.2)		
+		giveBlocksCoinsAndXp(event-block, iron ore,    {regular::iron},        player,  1,   1.3)
+		giveBlocksCoinsAndXp(event-block, gold ore,    {regular::gold},        player,  1,   1.5)
+		giveBlocksCoinsAndXp(event-block, copper ore,  {regular::copper},      player,  1,   1.6)		
+		giveBlocksCoinsAndXp(event-block, diamond ore, {regular::diamond},     player,  1,   1.7)
+		giveBlocksCoinsAndXp(event-block, emerald ore, {regular::emerald},     player,  1,   1.8)
+		giveBlocksCoinsAndXp(event-block, redstone,    {regular::redstone},    player,  1,   1.9)
+		giveBlocksCoinsAndXp(event-block, lapis ore,   {regular::lapis},       player,  1,   2.0)
+		giveBlocksCoinsAndXp(event-block, beacon,      {regular::beacon},      player, 500, 50)
+		
+#	if (playerIsInWorld(player, "world_nether") = true):
+
+	
+function playerIsInWorld(p: player, wrld: string):: boolean:
+	if {_p}'s world is {_wrld}:
+		return true
+	else:
+		return false
