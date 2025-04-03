@@ -1,6 +1,6 @@
 on load:
 	add "- Wood" and "- Stone" and "- Coal" and "- Iron" and "- Copper" and "- Gold" and "- Diamond" and "- Emerald" and "- Redstone" and "- Lapis" to {OverworldCompressors::*} 
-
+	add "-Cave" to {CaveCompressors::*}
 # Auto compresses ores while in offhand every second
 function compressOre(ore: item type, newOre: item type, p: player):
 	if name of {_ore} is not set:
@@ -49,4 +49,10 @@ local function checkAutoCompressor(p: player):
 			compressOre({comp::lapis}, {supercomp::lapis}, {_p})
 			compressOre({regular::beacon}, {comp::beacon}, {_p})
 			compressOre({comp::beacon}, {supercomp::beacon}, {_p})
+		if {CaveCompressors::*} contains uncolored loop-value:
+			compressOre({regular::coal}, {comp::coal}, {_p})
+			compressOre({comp::coal}, {supercomp::coal}, {_p})
+			compressOre({regular::iron}, {comp::iron}, {_p})
+			compressOre({comp::iron}, {supercomp::iron}, {_p})
+			compressOre({regular::gold}, {comp::gold}, {_p})
 			
