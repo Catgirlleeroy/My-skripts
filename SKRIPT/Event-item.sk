@@ -164,8 +164,10 @@ on mine:
 		giveBlocksCoinsAndXp(event-block, deepslate bricks, {regular::deepslatebricks}, player,  1,   2.3)
 		giveBlocksCoinsAndXp(event-block, deepslate tiles, {regular::deepslatetiles}, player,  1,   2.4)
 		giveBlocksCoinsAndXp(event-block, polished deepslate, {regular::polisheddeepslate}, player,  1,   2.5)
-		
-		
+		giveBlocksCoinsAndXp(event-block, blue wool, {regular::bluewool}, player,  1,   2.6)
+		giveBlocksCoinsAndXp(event-block, blue glass, {regular::blueglass}, player,  1,   2.7)
+		giveBlocksCoinsAndXp(event-block, black concrete, {regular::blackconcrete}, player,  1,   2.8)
+		giveBlocksCoinsAndXp(event-block, black concrete powder, {regular::blackconcretepowder}, player,  1,   2.9)
 		
 #	if (playerIsInWorld(player, "world_nether") = true):
 
