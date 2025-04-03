@@ -1,0 +1,52 @@
+on load:
+	add "- Wood" and "- Stone" and "- Coal" and "- Iron" and "- Copper" and "- Gold" and "- Diamond" and "- Emerald" and "- Redstone" and "- Lapis" to {OverworldCompressors::*} 
+
+# Auto compresses ores while in offhand every second
+function compressOre(ore: item type, newOre: item type, p: player):
+	if name of {_ore} is not set:
+		set {_ore} to plain {_ore}
+
+	set {_amount} to amount of {_ore} in {_p}'s inventory
+
+	{_amount} >= 64
+	set {_num} to floor({_amount} / 64)
+	remove ({_num} * 64) of {_ore} from {_p}'s inventory
+	
+	enchant {_newOre} with mending
+	
+	give {_num} of {_newOre} with item flags hide enchants to {_p}
+
+on join:
+	while player is online:
+
+		checkAutoCompressor(player)
+		wait 1 second
+
+local function checkAutoCompressor(p: player):
+	if offhand tool of {_p} is air:
+		stop
+	loop lore of {_p}'s offhand tool:
+		if {OverworldCompressors::*} contains uncolored loop-value:
+			compressOre({regular::wood}, {comp::wood}, {_p})
+			compressOre({comp::wood}, {supercomp::wood}, {_p})
+			compressOre({regular::cobblestone}, {comp::stone}, {_p})
+			compressOre({comp::stone}, {supercomp::stone}, {_p})
+			compressOre({regular::coal}, {comp::coal}, {_p})
+			compressOre({comp::coal}, {supercomp::coal}, {_p})
+			compressOre({regular::iron}, {comp::iron}, {_p})
+			compressOre({comp::iron}, {supercomp::iron}, {_p})
+			compressOre({regular::gold}, {comp::gold}, {_p})
+			compressOre({comp::gold}, {supercomp::gold}, {_p})
+			compressOre({regular::copper}, {comp::copper}, {_p})			
+			compressOre({comp::copper}, {supercomp::copper}, {_p})
+			compressOre({regular::diamond}, {comp::diamond}, {_p})
+			compressOre({comp::diamond}, {supercomp::diamond}, {_p})
+			compressOre({regular::emerald}, {comp::emerald}, {_p})
+			compressOre({comp::emerald}, {supercomp::emerald}, {_p})
+			compressOre({regular::redstone}, {comp::redstone}, {_p})
+			compressOre({comp::redstone}, {supercomp::redstone}, {_p})
+			compressOre({regular::lapis}, {comp::lapis}, {_p})
+			compressOre({comp::lapis}, {supercomp::lapis}, {_p})
+			compressOre({regular::beacon}, {comp::beacon}, {_p})
+			compressOre({comp::beacon}, {supercomp::beacon}, {_p})
+			
