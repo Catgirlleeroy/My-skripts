@@ -23,6 +23,10 @@ command /shop [<player>] <string>:
 			openCustomShop(arg-1, "lapis", "<#9F0404>&lLapis", diamond sword, diamond chestplate) 
 		if arg-2 is "food":
 			FoodShop(arg-1)
+		if arg-2 is "blackmarket":
+			BlackShop(arg-1)
+		if arg-2 is "beacon":
+			BeaconShop(arg-1)
 function openCustomShop(p: player, entityName: text, guiTitle: text, toolItem: itemtype, armorItem: itemtype):
 	set metadata tag {_entityName} of {_p} to chest inventory with 3 rows named "%{_guiTitle}% Shop"
 	set {_gui} to metadata tag {_entityName} of {_p}
@@ -36,6 +40,18 @@ function FoodShop(p: player):
 		set {_gui} to metadata tag "Food" of {_p}
 		set slots (integers from 0 to 30) of {_gui} to gray stained glass pane named " "
 		set slot 13 of {_gui} to bread named "Food" with item flags enchants hidden
+		open {_gui} to {_p}
+function BlackShop(p: player):
+		set metadata tag "BMS" of {_p} to chest inventory with 3 rows named "Black Market Shop"
+		set {_gui} to metadata tag "BMS" of {_p}
+		set slots (integers from 0 to 30) of {_gui} to gray stained glass pane named " "
+		set slot 13 of {_gui} to bundle named "Black Market Shop" with item flags enchants hidden
+		open {_gui} to {_p}
+function BeaconShop(p: player):
+		set metadata tag "beacon" of {_p} to chest inventory with 3 rows named "Beacon Shop"
+		set {_gui} to metadata tag "beacon" of {_p}
+		set slots (integers from 0 to 30) of {_gui} to gray stained glass pane named " "
+		set slot 13 of {_gui} to beacon named "Beacon shop" with item flags enchants hidden
 		open {_gui} to {_p}
 on inventory click:
 	if event-inventory =  (metadata tag "wood" of player):
@@ -132,4 +148,14 @@ on inventory click:
 		if event-inventory is not player's inventory:
 			cancel event
 			if event-slot is 13:
-				execute console command "shopkeeper open foodshop %player%"
+				execute console command "shopkeeper open food %player%"
+	if event-inventory = (metadata tag "BMS" of player):
+		if event-inventory is not player's inventory:
+			cancel event
+			if event-slot is 13:
+				execute console command "shopkeeper open blackmarket %player%"
+	if event-inventory = (metadata tag "beacon" of player):
+		if event-inventory is not player's inventory:
+			cancel event
+			if index of event-slot is 13:
+				execute console command "shopkeeper open beacon %player%"
