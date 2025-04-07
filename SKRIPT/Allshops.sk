@@ -1,0 +1,133 @@
+command /shop [<player>] <string>: 
+	permission: op 
+	trigger: 
+		if arg-2 is "wood": 
+			openCustomShop(arg-1, "wood", "<#673D14>&lWood", wooden sword, leather chestplate) 
+		if arg-2 is "stone": 
+			openCustomShop(arg-1, "stone", "<#4f4f4f>&lStone", stone sword, chainmail chestplate)
+		if arg-2 is "coal":
+			openCustomShop(arg-1, "coal", "<#000000>&lCoal", stone sword, chainmail chestplate)
+		if arg-2 is "copper":
+			openCustomShop(arg-1, "copper", "<#B87333>&lCopper", stone sword, chainmail chestplate)
+		if arg-2 is "iron": 
+			openCustomShop(arg-1, "iron", "&f&lIron", iron sword, iron chestplate)
+		if arg-2 is "gold":
+			openCustomShop(arg-1, "gold", "<#FFD700>&lGold", golden sword, golden chestplate)
+		if arg-2 is "diamond": 
+			openCustomShop(arg-1, "diamond", "<#00A0FF>&lDiamond", diamond sword, diamond chestplate) 
+		if arg-2 is "emerald": 
+			openCustomShop(arg-1, "emerald", "<#02FF00>&lEmerald", diamond sword, diamond chestplate) 
+		if arg-2 is "redstone": 
+			openCustomShop(arg-1, "redstone", "<#DB0000>&lRedstone", diamond sword, diamond chestplate) 
+		if arg-2 is "lapis": 
+			openCustomShop(arg-1, "lapis", "<#9F0404>&lLapis", diamond sword, diamond chestplate) 
+		if arg-2 is "food":
+			FoodShop(arg-1)
+function openCustomShop(p: player, entityName: text, guiTitle: text, toolItem: itemtype, armorItem: itemtype):
+	set metadata tag {_entityName} of {_p} to chest inventory with 3 rows named "%{_guiTitle}% Shop"
+	set {_gui} to metadata tag {_entityName} of {_p}
+	set slots (integers from 0 to 30) of {_gui} to gray stained glass pane named " "
+	set slot 11 of {_gui} to {_toolItem} named "%{_guiTitle}% Tools!" with item flags enchants hidden
+	set slot 13 of {_gui} to {_armorItem} named "%{_guiTitle}% Armor!" with item flags enchants hidden
+	set slot 15 of {_gui} to piston named "%{_guiTitle}% Compressor!" with item flags enchants hidden
+	open {_gui} to {_p}
+function FoodShop(p: player):
+		set metadata tag "Food" of {_p} to chest inventory with 3 rows named "Food Shop"
+		set {_gui} to metadata tag "Food" of {_p}
+		set slots (integers from 0 to 30) of {_gui} to gray stained glass pane named " "
+		set slot 13 of {_gui} to bread named "Food" with item flags enchants hidden
+		open {_gui} to {_p}
+on inventory click:
+	if event-inventory =  (metadata tag "wood" of player):
+		if event-inventory is not player's inventory:
+			cancel event
+			if index of event-slot is 11:
+				execute console command "shopkeeper open woodtools %player%"
+			if index of event-slot is 13:
+				execute console command "shopkeeper open woodarmor %player%"
+			if index of event-slot is 15:
+				execute console command "shopkeeper open woodcomp %player%"
+	if event-inventory =  (metadata tag "stone" of player):
+		if event-inventory is not player's inventory:
+			cancel event
+			if index of event-slot is 11:
+				execute console command "shopkeeper open stonetools %player%"
+			if index of event-slot is 13:
+				execute console command "shopkeeper open stonearmor %player%"
+			if index of event-slot is 15:
+				execute console command "shopkeeper open stonecomp %player%"
+	if event-inventory = (metadata tag "coal" of player):
+		if event-inventory is not player's inventory:
+			cancel event
+			if index of event-slot is 11:
+				execute console command "shopkeeper open coaltools %player%"
+			if index of event-slot is 13:
+				execute console command "shopkeeper open coalarmor %player%"
+			if index of event-slot is 15:
+				execute console command "shopkeeper open coalcomp %player%"
+	if event-inventory = (metadata tag "copper" of player):
+		if event-inventory is not player's inventory:
+			cancel event
+			if index of event-slot is 11:
+				execute console command "shopkeeper open coppertools %player%"
+			index of event-slot is 13:
+				execute console command "shopkeeper open copperarmor %player%"
+	if event-inventory =  (metadata tag "iron" of player):
+		if event-inventory is not player's inventory:
+			cancel event
+			if index of event-slot is 11:
+				execute console command "shopkeeper open irontools %player%"
+			if index of event-slot is 13:
+				execute console command "shopkeeper open ironarmor %player%"
+			if index of event-slot is 15:
+				execute console command "shopkeeper open ironcomp %player%"
+	if event-inventory =  (metadata tag "gold" of player):
+		if event-inventory is not player's inventory:
+			cancel event
+			if index of event-slot is 11:
+				execute console command "shopkeeper open goldtools %player%"
+			if index of event-slot is 13:
+				execute console command "shopkeeper open goldarmor %player%"
+			if index of event-slot is 15:
+				execute console command "shopkeeper open goldcomp %player%"
+	if event-inventory =  (metadata tag "diamond" of player):
+		if event-inventory is not player's inventory:
+			cancel event
+			if index of event-slot is 11:
+				execute console command "shopkeeper open diamondtools %player%"
+			if index of event-slot is 13:
+				execute console command "shopkeeper open diamondarmor %player%"
+			if index of event-slot is 15:
+				execute console command "shopkeeper open diamondcomp %player%"
+	if event-inventory =  (metadata tag "emerald" of player):
+		if event-inventory is not player's inventory:
+			cancel event
+			if index of event-slot is 11:
+				execute console command "shopkeeper open emeraldtools %player%"
+			if index of event-slot is 13:
+				execute console command "shopkeeper open emeraldarmor %player%"
+			if index of event-slot is 15:
+				execute console command "shopkeeper open emeraldcomp %player%"
+	if event-inventory = (metadata tag "redstone" of player):
+		if event-inventory is not player's inventory:
+			cancel event
+			if event-slot is 11:
+				execute console command "Shopkeeper open redstonetools %player%"
+			if event-slot is 13:
+				execute console command "Shopkeeper open redstonearmor %player%"
+			if event-slot is 15:
+				execute console command "shopkeeper open redstonecomp %player%"
+	if event-inventory = (metadata tag "lapis" of player):
+		if event-inventory is not player's inventory:
+			cancel event
+			if event-slot is 11:
+				execute console command "shopkeeper open lapistools %player%"
+			if event-slot is 13:
+				execute console command "shopkeeper open lapisarmor %player%"
+			if event-slot is 15:
+				execute console command "shopkeeper open lapiscomp %player%"
+	if event-inventory = (metadata tag "Food" of player):
+		if event-inventory is not player's inventory:
+			cancel event
+			if event-slot is 13:
+				execute console command "shopkeeper open foodshop %player%"
