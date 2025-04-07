@@ -72,6 +72,8 @@ on inventory click:
 				execute console command "shopkeeper open coppertools %player%"
 			index of event-slot is 13:
 				execute console command "shopkeeper open copperarmor %player%"
+			index of event-slot is 15:
+				execute console command "shopkeeper open coppercomp %player%"
 	if event-inventory =  (metadata tag "iron" of player):
 		if event-inventory is not player's inventory:
 			cancel event
