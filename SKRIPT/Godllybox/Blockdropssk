@@ -120,7 +120,7 @@ local function transferSecondBlock(p: player, blck: block):
 		give {_p} 8 of {regular::emerald}
 		addxp({_p}, (9 * 2.2))
 		addCoins({_p}, (9 * 1))
-	if {_blck} is redstone ore:
+	if {_blck} is redstone block:
 		give {_p} 8 of {regular::redstone}
 		addxp({_p}, (9 * 1.6))
 		addCoins({_p}, (9 * 1))		
@@ -158,17 +158,7 @@ on mine:
 		giveBlocksCoinsAndXp(event-block, emerald ore, {regular::emerald},     player,  1,   1.8)
 		giveBlocksCoinsAndXp(event-block, redstone,    {regular::redstone},    player,  1,   1.9)
 		giveBlocksCoinsAndXp(event-block, lapis ore,   {regular::lapis},       player,  1,   2.0)
-		giveBlocksCoinsAndXp(event-block, beacon,      {regular::beacon},      player, 500, 50)
-		giveBlocksCoinsAndXp(event-block, sculk,       {regular::sculk},       player,  1,   2.1)
-		giveBlocksCoinsAndXp(event-block, sculk catalyst, {regular::sculkcatalyst},   player,  1,   2.2)
-		giveBlocksCoinsAndXp(event-block, deepslate bricks, {regular::deepslatebricks}, player,  1,   2.3)
-		giveBlocksCoinsAndXp(event-block, deepslate tiles, {regular::deepslatetiles}, player,  1,   2.4)
-		giveBlocksCoinsAndXp(event-block, polished deepslate, {regular::polisheddeepslate}, player,  1,   2.5)
-		giveBlocksCoinsAndXp(event-block, blue wool, {regular::bluewool}, player,  1,   2.6)
-		giveBlocksCoinsAndXp(event-block, blue glass, {regular::blueglass}, player,  1,   2.7)
-		giveBlocksCoinsAndXp(event-block, black concrete, {regular::blackconcrete}, player,  1,   2.8)
-		giveBlocksCoinsAndXp(event-block, black concrete powder, {regular::blackconcretepowder}, player,  1,   2.9)
-		
+		giveBlocksCoinsAndXp(event-block, beacon,      {regular::beacon},      player, 500, 50)		
 #	if (playerIsInWorld(player, "world_nether") = true):
 
 	
