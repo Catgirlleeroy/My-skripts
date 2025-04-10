@@ -1,0 +1,455 @@
+options:
+ prefix: &8&l[&d&lFemSkyNet&8&l]&r
+ permission message: &cWait a second too many commands running!!
+ time: 3 seconds
+command /spawn:
+	cooldown: {@time}
+	cooldown message: {@prefix} {@permission message}
+	trigger:
+		if {spawn} is set:
+			if {spawnrequest::%player's uuid%} is not set:
+				set {spawnrequest::%player's uuid%} to true
+				send action bar "&aSending you to Spawn in 3 second" to player
+				play sound "entity.experience_orb.pickup" to player
+				if {spawnrequest::%player's uuid%} is true:
+					wait 1 second
+					if {spawnrequest::%player's uuid%} is true:
+						send action bar "&aSending you to Spawn in 2 second" to player
+						play sound "entity.experience_orb.pickup" to player
+						if {spawnrequest::%player's uuid%} is true:
+							wait 1 second
+							if {spawnrequest::%player's uuid%} is true:
+								send action bar "&aSending you to Spawn in 1 second" to player
+								play sound "entity.experience_orb.pickup" to player
+								if {spawnrequest::%player's uuid%} is true:
+									wait 1 second
+									if {spawnrequest::%player's uuid%} is true:
+										send title "&a&lWelcome to Spawn" to player
+										teleport player to {spawn}
+										play sound "entity.enderman.teleport" to player
+										delete {spawnrequest::%player's uuid%}
+									else if {spawn} is not set:
+										send action bar "&cSpawn is not set" to player
+										play sound "entity.villager.no" to player
+on player move:
+    if {spawnrequest::%player's uuid%} is true:
+        delete {spawnrequest::%player's uuid%}
+        delete {tprequest::%player's uuid%}
+        delete {teleportrequest::%player's uuid%}
+        send action bar "&cTeleport request canceled because you moved" to player
+        play sound "entity.villager.no" to player
+    if {arenarequest::%player's uuid%} is true:
+        delete {arenarequest::%player's uuid%}
+        delete {tprequest::%player's uuid%}
+        delete {teleportrequest::%player's uuid%}
+        send action bar "&cTeleport request canceled because you moved" to player
+        play sound "entity.villager.no" to player
+    if {endrequest::%player's uuid%} is true:
+        delete {endrequest::%player's uuid%}
+        delete {tprequest::%player's uuid%}
+        delete {teleportrequest::%player's uuid%}
+        send action bar "&cTeleport request canceled because you moved" to player
+        play sound "entity.villager.no" to player
+    if {heavenrequest::%player's uuid%} is true:
+        delete {heavenrequest::%player's uuid%}
+        delete {tprequest::%player's uuid%}
+        delete {teleportrequest::%player's uuid%}
+        send action bar "&cTeleport request canceled because you moved" to player
+        play sound "entity.villager.no" to player
+    if {junglerequest::%player's uuid%} is true:
+        delete {junglerequest::%player's uuid%}
+        delete {tprequest::%player's uuid%}
+        delete {teleportrequest::%player's uuid%}
+        send action bar "&cTeleport request canceled because you moved" to player
+        play sound "entity.villager.no" to player
+    if {netherrequest::%player's uuid%} is true:
+        delete {netherrequest::%player's uuid%}
+        delete {tprequest::%player's uuid%}
+        delete {teleportrequest::%player's uuid%}
+        send action bar "&cTeleport request canceled because you moved" to player
+        play sound "entity.villager.no" to player
+    if {sandrequest::%player's uuid%} is true:
+        delete {sandrequest::%player's uuid%}
+        delete {tprequest::%player's uuid%}
+        delete {teleportrequest::%player's uuid%}
+        send action bar "&cTeleport request canceled because you moved" to player
+        play sound "entity.villager.no" to player
+    if {cratesrequest::%player's uuid%} is true:
+        delete {cratesrequest::%player's uuid%}
+        delete {tprequest::%player's uuid%}
+        delete {teleportrequest::%player's uuid%}
+        send action bar "&cTeleport request canceled because you moved" to player
+        play sound "entity.villager.no" to player
+    if {drequest::%player's uuid%} is true:
+        delete {drequest::%player's uuid%}
+        delete {tprequest::%player's uuid%}
+        delete {teleportrequest::%player's uuid%}
+        send action bar "&cTeleport request canceled because you moved" to player
+        play sound "entity.villager.no" to player
+    if {spacerequest::%player's uuid%} is true:
+        delete {spacerequest::%player's uuid%}
+        delete {tprequest::%player's uuid%}
+        delete {teleportrequest::%player's uuid%}
+        send action bar "&cTeleport request canceled because you moved" to player
+        play sound "entity.villager.no" to player		
+    if {pvprequest::%player's uuid%} is true:
+        delete {pvprequest::%player's uuid%}
+        delete {tprequest::%player's uuid%}
+        delete {teleportrequest::%player's uuid%}
+        send action bar "&ctelport request canceled because you moved" to player
+        play sound "entity.villager.no" to player
+    if {oceanrequest::%player's uuid%} is true:
+        delete {oceanrequest::%player's uuid%}
+        delete {tprequest::%player's uuid%}
+        delete {teleportrequest::%player's uuid%}
+        send action bar "&cTeleport request canceled because you moved" to player
+        play sound "entity.villager.no" to player
+
+command /spawnbypass:
+	permission: spawn.admin
+	trigger:
+		teleport player to {spawn}
+		play sound "entity.enderman.teleport" to player
+		send title "&a&lWelcome to Spawn" to player
+on join:
+    teleport player to {spawn}
+    wait 2 second
+    send ""
+    send ""
+    send "          &8[&d&lFemSkyNet&8]"      
+    send "&d&m-=============================-"  
+    send ""
+    send "<link:https://discord.gg/puSu266hNa>          &9&lDiscord:      &8[&3HERE&8]                       <reset>"
+    send ""
+    send "<link:https://FemSkyNet.tebex.io/>             &6&lStore:      &8[&3HERE&8]                       <reset>"
+    send ""
+    send "&d&m-=============================-"  
+    delete {spawnrequest::%player's uuid%}
+command /arena:
+	cooldown: {@time}
+	cooldown message: {@prefix} {@permission message}
+	trigger:
+		if {arenarequest::%player's uuid%} is not set:
+			set {arenarequest::%player's uuid%} to true
+			send action bar "&aSending you to &d&lArena&r&a in 3 second" to player
+			play sound "entity.experience_orb.pickup" to player
+			if {arenarequest::%player's uuid%} is true:
+				wait 1 second
+				if {arenarequest::%player's uuid%} is true:
+					send action bar "&aSending you to The &d&lArena&r&a in 2 second" to player
+					play sound "entity.experience_orb.pickup" to player
+					if {arenarequest::%player's uuid%} is true:
+						wait 1 second
+						if {arenarequest::%player's uuid%} is true:
+							send action bar "&aSending you to The &d&lArena&r&a in 1 second" to player
+							play sound "entity.experience_orb.pickup" to player
+							if {arenarequest::%player's uuid%} is true:
+								wait 1 second
+								if {arenarequest::%player's uuid%} is true:
+									send action bar "&aSending you to &d&lArena" to player
+									execute console command "warp pvp %player%"
+									play sound "entity.enderman.teleport" to player
+									delete {arenarequest::%player's uuid%}		
+		
+command /end:
+	cooldown: {@time}
+	cooldown message: {@prefix} {@permission message}
+	trigger:
+		if {endnrequest::%player's uuid%} is not set:
+			set {endrequest::%player's uuid%} to true
+			send action bar "&aSending you to &f&lThe End&a in 3 second" to player
+			play sound "entity.experience_orb.pickup" to player
+			if {endrequest::%player's uuid%} is true:
+				wait 1 second
+				if {endrequest::%player's uuid%} is true:
+					send action bar "&aSending you to &f&lThe End&a in 2 second" to player
+					play sound "entity.experience_orb.pickup" to player
+					if {endrequest::%player's uuid%} is true:
+						wait 1 second
+						if {endrequest::%player's uuid%} is true:
+							send action bar "&aSending you to &f&lThe End&a in 1 second" to player
+							play sound "entity.experience_orb.pickup" to player
+							if {endrequest::%player's uuid%} is true:
+								wait 1 second
+								if {endrequest::%player's uuid%} is true:
+									send title "&aWelcome to &f&lThe End" to player
+									teleport player to {end}
+									play sound "entity.enderman.teleport" to player
+									delete {endrequest::%player's uuid%}
+		
+command /endbypass:
+	permission: end.admin
+	permission message: {@prefix} &cNo Permission!
+	trigger:
+		send action bar "&aSending you to The &f&lEnd" to player
+		play sound "Entity.enderman.teleport" to player
+		teleport player to {end}
+command /heaven:
+	cooldown: {@time}
+	cooldown message: {@prefix} {@permission message}
+	trigger:
+		if {heavenrequest::%player's uuid%} is not set:
+			set {heavenrequest::%player's uuid%} to true
+			send action bar "&aSending you to &f&lHeaven&r&a in 3 second" to player
+			play sound "entity.experience_orb.pickup" to player
+			if {heavenrequest::%player's uuid%} is true:
+				wait 1 second
+				if {heavenrequest::%player's uuid%} is true:
+					send action bar "&aSending you to &f&lHeaven&r&a in 2 second" to player
+					play sound "entity.experience_orb.pickup" to player
+					if {heavenrequest::%player's uuid%} is true:
+						wait 1 second
+						if {heavenrequest::%player's uuid%} is true:
+							send action bar "&aSending you to &f&lHeaven&r&a in 1 second" to player
+							play sound "entity.experience_orb.pickup" to player
+							if {heavenrequest::%player's uuid%} is true:
+								wait 1 second
+								if {heavenrequest::%player's uuid%} is true:
+									send title "&a&lWelcome to &f&lHeaven" to player
+									teleport player to {heaven}
+									play sound "entity.enderman.teleport" to player
+									delete {heavenrequest::%player's uuid%}
+								
+		
+command /heavenbypass:
+	permission: heaven.admin
+	permission message: &8[&dFemSkyMines&8]&c No Permission!
+	trigger:
+		play sound "entity.enderman.teleport" to player
+		send action bar "&aSending you to &f&lHeaven" to player
+		teleport player to {heaven}
+command /jungle:
+	cooldown: 3 seconds
+	cooldown message: &8&l[&d&lFemSkyNet&8&l]&r&cWait a second too many commands running!!
+	trigger:
+		if {junglerequest::%player's uuid%} is not set:
+			set {junglerequest::%player's uuid%} to true
+			send action bar "&aSending you to &3&lJungle&a in 3 second" to player
+			play sound "entity.experience_orb.pickup" to player
+			if {junglerequest::%player's uuid%} is true:
+				wait 1 second
+				if {junglerequest::%player's uuid%} is true:
+					send action bar "&aSending you to &3&lJungle&a in 2 second" to player
+					play sound "entity.experience_orb.pickup" to player
+					if {junglerequest::%player's uuid%} is true:
+						wait 1 second
+						if {junglerequest::%player's uuid%} is true:
+							send action bar "&aSending you to &3&lJungle&a in 1 second" to player
+							play sound "entity.experience_orb.pickup" to player
+							if {junglerequest::%player's uuid%} is true:
+								wait 1 second
+								if {junglerequest::%player's uuid%} is true:
+									send title "&a&lWelcome to &3&lJungle" to player
+									execute console command "warp jungle %player%"
+									play sound "entity.enderman.teleport" to player
+									delete {junglerequest::%player's uuid%}
+		
+command /junglebypass:
+	permission: jungle.admin
+	permission message: &8[&dFemSkyMines&8]&c No Permission!
+	trigger:
+		send title "&a&lWelcome to &3&lJungle" to player
+		play sound "entity.enderman.teleport" to player
+		execute console command "warp jungle %player%"
+command /nether:
+	cooldown: 3 seconds
+	cooldown message: &8&l[&d&lFemSkyNet&8&l]&r&cWait a second too many commands running!!
+	trigger:
+		if {netherrequest::%player's uuid%} is not set:
+			set {netherrequest::%player's uuid%} to true
+			send action bar "&aSending you to the &c&lNether&r&a in 3 second" to player
+			play sound "entity.experience_orb.pickup" to player
+			if {netherrequest::%player's uuid%} is true:
+				wait 1 second
+				if {netherrequest::%player's uuid%} is true:
+					send action bar "&aSending you to the &c&lNether&r&a in 2 second" to player
+					play sound "entity.experience_orb.pickup" to player
+					if {netherrequest::%player's uuid%} is true:
+						wait 1 second
+						if {netherrequest::%player's uuid%} is true:
+							send action bar "&aSending you to the &c&lNether&r&a in 1 second" to player
+							play sound "entity.experience_orb.pickup" to player
+							if {netherrequest::%player's uuid%} is true:
+								wait 1 second
+								if {netherrequest::%player's uuid%} is true:
+									send action bar "&aSending you to the &c&lNether&r" to player
+									teleport player to {nether}
+									play sound "entity.enderman.teleport" to player
+									delete {netherrequest::%player's uuid%}
+		
+command /netherbypass:
+	permission: nether.admin
+	permission message: &8[&dFemSkyMines&8] &c No permission!
+	trigger:
+		send action bar "&aSending to &a&lcThe nether" to player
+		play sound "entity.enderman.teleport" to player
+		teleport player to {nether}
+
+command /desert:
+	cooldown: 3 seconds
+	cooldown message: &8&l[&d&lFemSkyNet&8&l]&r&cWait a second too many commands running!!
+	trigger:
+		if {sandrequest::%player's uuid%} is not set:
+			set {sandrequest::%player's uuid%} to true
+			send action bar "&aSending you to &e&lSand&r&a in 3 second" to player
+			play sound "entity.experience_orb.pickup" to player
+			if {sandrequest::%player's uuid%} is true:
+				wait 1 second
+				if {sandrequest::%player's uuid%} is true:
+					send action bar "&aSending you to &e&lSand&r&a in 2 second" to player
+					play sound "entity.experience_orb.pickup" to player
+					if {sandrequest::%player's uuid%} is true:
+						wait 1 second
+						if {sandrequest::%player's uuid%} is true:
+							send action bar "&aSending you to &e&lSand&r&a in 1 second" to player
+							play sound "entity.experience_orb.pickup" to player
+							if {sandrequest::%player's uuid%} is true:
+								wait 1 second
+								if {sandrequest::%player's uuid%} is true:
+									send action bar "&aSending you to &e&lSand" to player
+									teleport player to {sand}
+									play sound "entity.enderman.teleport" to player
+									delete {sandrequest::%player's uuid%}
+								
+command /cratesarea:
+	cooldown: 3 seconds
+	cooldown message: &8&l[&d&lFemSkyNet&8&l]&r&cWait a second too many commands running!!
+	trigger:
+		if {cratesrequest::%player's uuid%} is not set:
+			set {cratesrequest::%player's uuid%} to true
+			send action bar "&aSending you to Crates in 3 second" to player
+			play sound "entity.experience_orb.pickup" to player
+			if {cratesrequest::%player's uuid%} is true:
+				wait 1 second
+				if {cratesrequest::%player's uuid%} is true:
+					send action bar "&aSending you to Crates in 2 second" to player
+					play sound "entity.experience_orb.pickup" to player
+					if {cratesrequest::%player's uuid%} is true:
+						wait 1 second
+						if {cratesrequest::%player's uuid%} is true:
+							send action bar "&aSending you to Crates in 1 second" to player
+							play sound "entity.experience_orb.pickup" to player
+							if {cratesrequest::%player's uuid%} is true:
+								wait 1 second
+								if {cratesrequest::%player's uuid%} is true:
+									send title "&a&lWelcome to Crates" to player
+									teleport player to {crates}
+									play sound "entity.enderman.teleport" to player
+									delete {cratesrequest::%player's uuid%}
+command /donator:
+	permission: donator.use
+	cooldown: 3 seconds
+	cooldown message: &8&l[&d&lFemskymines&8&l]&r&cWait a second too many commands running!!
+	trigger:
+		if {drequest::%player's uuid%} is not set:
+			set {drequest::%player's uuid%} to true
+			send action bar "&aSending you to Donator in 3 second" to player
+			play sound "entity.experience_orb.pickup" to player
+			if {drequest::%player's uuid%} is true:
+				wait 1 second
+				if {drequest::%player's uuid%} is true:
+					send action bar "&aSending you to Donator in 2 second" to player
+					play sound "entity.experience_orb.pickup" to player
+					if {drequest::%player's uuid%} is true:
+						wait 1 second
+						if {drequest::%player's uuid%} is true:
+							send action bar "&aSending you to Donator in 1 second" to player
+							play sound "entity.experience_orb.pickup" to player
+							if {drequest::%player's uuid%} is true:
+								wait 1 second
+								if {drequest::%player's uuid%} is true:
+									teleport player to {donator}
+									send title "&a&lWelcome to Donatormine" to player
+									play sound "entity.enderman.teleport" to player
+									delete {drequest::%player's uuid%}	
+command /space:
+	permission: space.use
+	permission message: Nuh Uh
+	trigger:
+		if {spacerequest::%player's uuid%} is not set:
+			set {spacerequest::%player's uuid%} to true
+			send action bar "&aSending You to &f&lSpace&a in 3 seconds!" to player
+			play sound "entity.experience_orb.pickup" to player
+			if {spacerequest::%player's uuid%} is true:
+				wait 1 second
+				if {spacerequest::%player's uuid%} is true:
+					send action bar "&aSending You to &f&lSpace&a in 2 seconds!" to player
+					play sound "entity.experience_orb.pickup" to player
+					if {spacerequest::%player' uuid%} is true:
+						wait 1 second
+						send action bar "&aSending You to &f&lSpace&a in 1 second!" to player
+						play sound "entity.experience_orb.pickup" to player
+						if {spacerequest::%player's uuid%} is true:
+							wait 1 second
+							send title "&aWelcome to &f&lSpace" to player
+							play sound "entity.enderman.teleport" to player
+							execute console command "warp space %player%"
+							delete {spacerequest::%player's uuid%}
+		
+command /spacebypass:
+	permission: space.use
+	permission message: {@prefix} You dont have acces to this command!
+	trigger:
+		execute console command "warp space %player%"
+command /ocean:
+	permission: ocean.use
+	permission message: {@prefix} You dont have acces to this command!
+	trigger:
+		if {oceanrequest::%player's uuid%} is not set:
+			set {oceanrequest::%player's uuid%} to true
+			send action bar "&aSending You to &3&lOcean&a in 3 seconds!" to player
+			play sound "entity.experience_orb.pickup" to player
+			if {oceanrequest::%player's uuid%} is true:
+				wait 1 second
+				if {oceanrequest::%player' uuid%} is true:
+					send action bar "&aSending You to &3&lOcean&a in 2 seconds!" to player
+					play sound "entity.experience_orb.pickup" to player
+					if {oceanrequest::%player's uuid%} is true:
+						wait 1 second
+						send action bar "&aSending You to &3&lOcean&a in 1 second!" to player
+						play sound "entity.experience_orb.pickup" to player
+						if {oceanrequest::%player's uuid%} is true:
+							wait 1 second
+							send title "&aWelcome to &3&lOcean" to player
+							play sound "entity.enderman.teleport" to player
+							execute console command "warp ocean %player%"
+							delete {oceanrequest::%player's uuid%}
+command /oceanbypass:
+	permission: ocean.use.bypass
+	permission message: {@prefix} You dont have acces to this command!
+	trigger:
+		execute console command "warp ocean %player%"
+		send action bar "&a&lWelcome to &3&lOcean" to player
+		play sound "entity.enderman.teleport" to player
+command /afkwarp:
+	trigger:
+		if {afkrequest::%player's uuid%} is not set:
+			set {afkrequest::%player's uuid%} to true
+			send action bar "&aSending You to &3&lAFK&a in 3 seconds!" to player
+			play sound "entity.experience_orb.pickup" to player
+			if {afkrequest::%player's uuid%} is true:
+				wait 1 second
+				if {afkrequest::%player' uuid%} is true:
+					send action bar "&aSending You to &3&lAFK&a in 2 seconds!" to player
+					play sound "entity.experience_orb.pickup" to player
+					if {afkrequest::%player's uuid%} is true:
+						wait 1 second
+						send action bar "&aSending You to &3&lAFK&a in 1 second!" to player
+						play sound "entity.experience_orb.pickup" to player
+						if {afkrequest::%player's uuid%} is true:
+							wait 1 second
+							send title "&aWelcome to &3&lAFK" to player
+							play sound "entity.enderman.teleport" to player
+							teleport player to {afk}
+							delete {afkrequest::%player's uuid%}
+on region enter:
+	if "%event-region%" contain "void":
+		teleport player to {spawn}
+command /tprequest:
+	permission: *
+	trigger:
+		if {tprequest::%player's uuid%} is set:
+			delete {tprequest::%player's uuid%}
+		else:
+			if {tprequest::%player's uuid%} is not set:
+				send "Wasnt set!" to player

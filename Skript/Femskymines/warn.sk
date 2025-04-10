@@ -1,0 +1,41 @@
+command /warn <offline player> [<text>]:
+	permission: staff
+	trigger:
+		add 1 to {warns::%arg-1's uuid%}
+		play sound "minecraft:entity.warden.sonic_boom" with volume 1 to arg 1
+		broadcast nl
+		broadcast "&4&l                  &x&7&4&0&0&0&0&lW&x&6&9&0&0&0&0&lA&x&5&e&0&0&0&0&lR&x&5&3&0&0&0&0&lN!        "
+		broadcast nl
+		if arg 2 is set:
+			broadcast "&c%arg-1% &7HAS BEEN &4&lWARNED&r&7 BY &c%player% &7for &r%arg-2% &8(&4%{warns::%arg-1's uuid%}%&8/&43&8)"
+		else:
+			broadcast "&c%arg-1% &7HAS BEEN &4&lWARNED&r&7 BY &c%player% &8(&4%{warns::%arg-1's uuid%}%&8/&43&8)"
+		broadcast nl and nl
+		if {warns::%arg-1's uuid%} = 3:
+			wait 2 seconds
+			if {warns::%arg-1's uuid%} = 3:
+				console command "tempban %arg-1% 1d &4You had too many warnings&c!"
+				delete {warns::%arg-1's uuid%}
+command /unwarn <offline player>:
+	permission: staff
+	usage: /unwarn <player>
+	trigger:
+		if {warns::%arg-1's uuid%} is 0:
+			send "&4%arg-1% &chas no warns" to player
+		else:
+			subtract 1 from {warns::%arg-1's uuid%}
+			broadcast nl
+			broadcast "&4&l                  &x&0&9&A&4&0&0&lU&x&1&6&B&3&0&A&lN&x&2&3&C&2&1&4&lW&x&3&0&D&2&1&F&lA&x&3&D&E&1&2&9&lR&x&4&A&F&0&3&3&lN&x&5&7&F&F&3&D&l!        "
+			broadcast nl
+			broadcast "&a%arg-1% &7HAS BEEN &2&lUN-WARNED &r&7BY &a%player%&r! &8(&2%{warns::%arg-1's uuid%}%&8/&23&8)"
+			broadcast nl and nl
+command /warns [<offline player>]:
+	usage: /checkwarns <player>
+	trigger:
+		if arg 1 is not set:
+			send "&cYou have &4%{warns::%player's uuid%} ? 0%&8/&43 &cwarns"
+		else:
+			if arg 1 is player:
+				send "&cYou have &4%{warns::%player's uuid%} ? 0%&8/&43 &cwarns"
+			else:
+				send "&4%arg-1% &chas &4%{warns::%arg-1's uuid%} ? 0%&8/&43 &cwarns"

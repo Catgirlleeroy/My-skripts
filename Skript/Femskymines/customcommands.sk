@@ -1,0 +1,245 @@
+command /cc:
+    description: Clear chat for all players
+    permission: clearchat.clear
+    trigger:
+        loop 300 times:
+            send " " to all players
+        send "&7&m-----------------------------------------" to all players
+        broadcast "&a&lChat has been cleared by &3&l%player ? "Console"%!"
+command /apply:
+	Trigger:
+		send "&bHelper applications&r: <link:APPLYCATION LINK> &6&lApply here&r<reset>"
+		send "&bBuilder applications&r:<link:APPLYCATION LINK> &6&lApply here&r<reset>"
+		send "&bDeveloper applications&r:<link:APPLYCATION LINK> &6&lApply here&r<reset>"
+		send "&bConsole Applications!&r:<link:APPLYCATION LINK> &6&lApply here&r<reset>"
+		send "Required:"
+#		send "*&c Need to be over 14"
+		send "*&c Discord is a must"
+#		send "*&c Need to have 24 hours of playtime"
+#		send "*&c Need to be kind all the playtime"
+#		send "*&c No troll apps"
+#		make player execute "discord"
+command /shrug:
+    permission: shrug.chat
+    trigger:
+        broadcast "%player's display name%%coloured player's suffix%&f> &f¯\_(ツ)_/¯" 
+on chat:
+    loop all players:
+        if message contains ":skull:":
+            replace every ":skull:" in message with "&f☠&r"
+        if message contains "<3":
+            replace every "<3" in message with "&c♥&r"
+        if message contains ":ooo:":
+            replace every ":ooo:" in message with "&e~.~&r"
+        if message contains ":smile:":
+            replace every ":smile:" in message with "&e｡◕‿ ◕｡&r"
+        if message contains ":angry:":
+            replace every ":angry:" in message with "&c>:("
+on craft:
+	if player has permission "craft.bypass":
+		stop
+	else if player doesn't have permission "craft.bypass":
+		cancel event
+		send title "&c&lCrafting is disabled" to player
+		play sound "entity.villager.no"
+
+on death:
+    victim is a player
+    damager is a player
+    send "&c&kiii&r&cYou've killed %victim%!&r&c&kiii&r" to damager
+    send "&c&kiii&r&cYou've been killed by %attacker%&r&c&kiii&r" to victim
+	
+on death of player:
+	damager is a player
+	chance of 50%:
+		set death message to "&c&kiii&r&c%victim% got killed by %attacker%&r&c&kiii&r"
+	chance of 30%:
+		set death message to "&c&kiii&r&c%victim% got recked from %attacker%&r&c&kiii&r"
+	chance of 10%:
+		set death message to "&c&kiii&r&cLOSER %victim% got killed by %attacker%&r&c&kiii&r"
+	chance of 10%:
+		set death message to "&c&kiii&r&c%victim% got killed by %attacker% because they were trash&r&c&kiii&r"
+			
+on death of player:
+	if damage was done by void:
+		set death message to ""
+		send "&c&kiii&r&cYou died because of void damage&r&c&kiii&r" to victim
+	if damage was done by burning:
+		set death message to ""
+		send "&c&kiii&r&cYou died because it was too hot for you!&r&c&kiii&r" to victim
+command /broadcast [<text>]:
+	permission: announce.use
+	trigger:
+		arg is set:
+			broadcast "&7-----------------------------------------------------"
+			broadcast "&7[&x&f&b&1&f&8&9&lғ&x&f&0&2&0&9&a&lᴇ&x&e&5&2&0&a&b&lᴍ&x&d&b&2&1&b&d&ls&x&d&0&2&1&c&e&lᴋ&x&c&5&2&2&d&f&lʏ&x&d&0&2&1&c&e&lᴍ&x&d&b&2&1&b&d&lɪ&x&e&5&2&0&a&b&lɴ&x&f&0&2&0&9&a&lᴇ&x&f&b&1&f&8&9&ls&7]&r %coloured arg-1%"
+			broadcast "&7-----------------------------------------------------"
+		else:
+			send "&7Please type a argument to broadcast" to player
+command /report <player> <text>:
+    trigger:
+        message "<light green>Your complaint has been forwarded to officials !"
+        add text-argument to {sikayetler::*}
+        set {sikayeteden.%text-argument%} to player
+        set {sikayetedilen.%text-argument%} to player argument
+        loop all players:
+            if loop-player has permission "report.show":
+                send "<gold><bold><underlined>Report System" to loop-player
+                send "<gold>Report:<yellow> ""%text-argument%""" to loop-player
+                send "<gold>The reported person: <yellow>%player argument%" to loop-player
+                send "<gold>Sender: <yellow>%player%" to loop-player       
+command /reportadmin <text> [<integer>]:
+    permission: report.admin
+    trigger:
+        text-argument is "list":
+            set {_numara} to 1
+            loop {sikayetler::*}:
+                set {numara.%loop-value%} to {_numara}
+                message "<gold>%{numara.%loop-value%}%. Report Reason: <yellow>%loop-value% <light green>| <gold>Complained: <yellow>%{sikayetedilen.%loop-value%}% <light green>| <gold>Whining: <yellow>%{sikayeteden.%loop-value%}%"
+        text-argument is "remove":
+            if integer argument is not set:
+                message "<pink>Enter a number !"
+            else:
+                set {_silindi} to false
+                loop {sikayetler::*}:
+                    if {numara.%loop-value%} is integer argument:
+                        remove loop-value from {sikayetler::*}
+                        set {_silindi} to true
+                        delete {numara.%loop-value%}
+                        delete {sikayetedilen.%loop-value%}
+                        delete {sikayeteden.%loop-value%}
+                        exit loop
+                if {_silindi} is true:
+                    message "<light green>Complaints have been deleted from the system."
+                else:
+                    message "<pink>No complaints."
+        text-argument is "clear":   
+            loop {sikayetler::*}:
+                remove loop-value from {sikayetler::*}
+                delete {numara.%loop-value%}
+                delete {sikayetedilen.%loop-value%}
+                delete {sikayeteden.%loop-value%}
+            message "<light green>Your complaints have been cleared."
+        text-argument is "help":
+            message "<gold><bold>Complaints System Commands:"
+            message "<gold>/reportadmin list <light green>| <yellow>Lists Complaints"
+            message "<gold>/reportadmin remove <numara> <light green>| <yellow>It deletes a complaint from the system."
+            message "<gold>/reportadmin clear <light green>| <yellow>All complaints will delete from the system."
+            message "<gold>/reportadmin help <light green>| <yellow>Complaints about the show commands in the system."
+every second:
+    loop all players:
+        add 1 to {s::%loop-player's uuid%}
+        if {s::%loop-player's uuid%} > 59:
+            remove 60 from {s::%loop-player's uuid%} 
+            add 1 to {m::%loop-player's uuid%}
+        if {m::%loop-player's uuid%} > 59:
+            remove 60 from {m::%loop-player's uuid%}
+            add 1 to {h::%loop-player's uuid%}
+        if {h::%loop-player's uuid%} > 23:
+            remove 24 from {h::%loop-player's uuid%}
+            add 1 to {d::%loop-player's uuid%}
+
+command /playtime [<offlineplayer>]:
+    trigger:
+        arg isn't set:
+            wait 1 tick
+            send ""
+            send "&f&l    YOUR PLAYTIME (&7&l%player%&f)"
+            send ""
+            send "&f&l  SECONDS:&7 %{s::%player's uuid%} ? 0%"
+            send "&f&l  MINUTES:&7 %{m::%player's uuid%} ? 0%"
+            send "&f&l  HOURS:&7 %{h::%player's uuid%} ? 0%"
+            send "&f&l  DAYS:&7 %{d::%player's uuid%} ? 0%"
+            send ""
+        else:
+            wait 1 tick
+            send ""
+            send "&f&l    PLAYTIME OF &7&l%arg%"
+            send ""
+            send "&f&l  SECONDS:&7 %{s::%arg's uuid%} ? 0%"
+            send "&f&l  MINUTES:&7 %{m::%arg's uuid%} ? 0%"
+            send "&f&l  HOURS:&7 %{h::%arg's uuid%} ? 0%"
+            send "&f&l  DAYS:&7 %{d::%arg's uuid%} ? 0%"
+            send ""
+on chat:
+    if message contains "nigger" or "nigga" or "nigge" or "nigg" or "nig g" or "migger":
+        cancel event
+        send ""               
+        send ""
+        send "&c&lYou can't say that!"
+        send ""
+        send ""
+        execute console command "/tempmuteip %player%  N-word"
+        play sound "BLOCK.ANVIL.LAND" to player
+command /mutechat:
+    permission: chat.mute
+    permission message: &c You don't have the required permission to perform that command.
+    trigger:
+        if {Globalchat} is not set:
+            set {Globalchat} to true
+            broadcast "&7[&d&lFemSkyNet] &8| &fChat was &cmuted &fby %player ? console%"
+            stop trigger
+
+        if {Globalchat} is set:
+            clear {Globalchat}
+            broadcast "&7[&d&lFemSkyNet] &8| &fChat was &aunmuted &fby %player ? console%"
+on chat:
+    if {Globalchat} is true:
+        if player has permission "chat.mute.bypass":
+            stop trigger
+        else:
+            cancel event
+            send "&cDue to low TPS chat is currently muted."
+command /endersee <offline player>:
+  aliases: ecsee, oe
+  permission: endersee.use
+  permission message: &cYou can't use that!
+  trigger:
+    if arg is not set:
+      send "&cCorrect usage: /endersee <player>"
+    else if arg is set:
+      open arg's ender chest to player
+on chat:
+  loop all players:
+    if message contains "%loop-player%":
+      replace "%loop-player%" with "&x&a&d&f&3&f&d&l%loop-player%&r" in the message 
+      play sound "entity_player_levelup" at volume 1 at pitch 2 to loop-player
+on command "/bukkit:plugins":
+	if player does not have the permission "sk.viewplugins":
+		cancel event
+		send "&fPlugins (1): &aSkript&f, &aMore Skript&f, &aAnd some skript&f." to player
+on command "/plugins":
+	if player does not have the permission "plugins.view":
+		cancel event
+		send "&fPlugins (1): &aSkript&f, &aMore Skript&f, &aAnd some skript&f." to player
+on command "/bukkit:pl":
+	if player does not have the permission "plugins.view":
+		cancel event
+		send "&fPlugins (1): &aSkript&f, &aMore Skript&f, &aAnd some skript&f." to player
+on command "/pl":
+	if player does not have the permission "plugins.view":
+		cancel event
+		send "&fPlugins (1): &aSkript&f, &aMore Skript&f, &aAnd some skript&f." to player
+
+on drop:
+    if player has permission "drop.bypass":
+        uncancel event
+    else if player doesn't have permission "drop.bypass":
+        cancel event
+command /discord:
+	trigger:
+		send "<link:DISCORD LINK>Click Here<reset>"
+command /coins:
+    trigger:
+        execute console command "shopkeeper open bob %player%"
+on command "/help":
+    cancel event
+    send "You do not have acces to this command!" to player
+command /topkills:
+    trigger:
+        set {_top::*} to sorted indices of {kills::*} in descending order
+        loop 10 times:
+            add {_top::%loop-value%} to {_top_10::*}
+        loop {_top_10::*}:
+            add 1 to {_n}
+            send "&a&l%{_n}% &7- &2%{_top_10::%{_n}%} parsed as offlineplayer% &7- &6%{kills::%{_top_10::%{_n}%}%}% kills" to player

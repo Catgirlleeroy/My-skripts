@@ -1,0 +1,7 @@
+#every 3 seconds:
+#  loop all players:
+#    if loop-player can't hold knowledge book:
+#      send "&c&lWarning Your inventory is FULL!" to loop-player
+on block break:
+    if player can't hold knowledge book:
+        send action bar "&c&lWarning Your inventory is FULL!" to player 

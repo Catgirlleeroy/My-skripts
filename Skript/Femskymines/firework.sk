@@ -1,0 +1,40 @@
+options:
+	amound: 20
+command /firework [<offline player>]:
+	permission: firework.use
+	trigger:
+		if arg-1 is not set:
+			set {_loc} to player's location
+			set {_fr1} to flickering ball large firework effect coloured green and lime and black
+			set {_fr2} to flickering ball large firework effect coloured purple and lime and blue
+			set {_fr3} to flickering ball large firework effect coloured red and purple and pink
+			set {_fr4} to flickering ball large firework effect coloured black and white
+			set {_fr5} to flickering ball large firework effect coloured red and black and pink
+			set {_fr6} to flickering ball large firework effect coloured blue and red
+			set {_fr7} to flickering ball large firework effect coloured yellow and lime and red
+			set {_fr8} to flickering ball large firework effect coloured blue and white and pink
+			set {_fr9} to flickering ball large firework effect coloured yellow and black and lime
+			set {_fr10} to flickering ball large firework effect coloured blue and lime and red
+			launch {_fr1} at {_loc} timed {@amound}
+			wait 1 second
+			launch {_fr5} at {_loc} timed {@amound}
+			launch {_fr2} at {_loc} timed {@amound}
+			launch {_fr3} at {_loc} timed {@amound}
+			wait 2 seconds
+			launch {_fr1} at {_loc} timed {@amound}
+			launch {_fr1} at {_loc} timed {@amound}
+			launch {_fr1} at {_loc} timed {@amound}
+			launch {_fr10} at {_loc} timed {@amound}
+			wait 5 ticks
+			launch {_fr7} at {_loc} timed {@amound}
+			wait 3 seconds
+			launch {_fr5} at {_loc} timed {@amound}
+			launch {_fr9} at {_loc} timed {@amound}
+			launch {_fr7} at {_loc} timed {@amound}
+			launch {_fr8} at {_loc} timed {@amound}
+			wait 5 seconds
+			launch {_fr2} at {_loc} timed {@amound}
+			launch {_fr4} at {_loc} timed {@amound}
+			launch {_fr10} at {_loc} timed {@amound}
+			wait 3 seconds
+			launch {_fr8} at {_loc} timed {@amound}

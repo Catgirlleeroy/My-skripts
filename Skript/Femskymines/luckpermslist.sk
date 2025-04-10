@@ -1,0 +1,57 @@
+options:
+ prefix: &8[&dFemSkyMines&8] &cNo Permisson!
+command /whohelper [<offline player>]:
+	permission: luckperms
+	permission message: {@prefix}
+	trigger:
+		execute player command "lp group helper listmembers"
+command /whomod [<offline player>]:
+	permission: luckperms
+	permission message: {@prefix}
+	trigger:
+		execute player command "lp group mod listmembers"
+		execute console command "lp group mod listmembers"
+command /whosrmod [<offline player>]:
+	permission: luckperms
+	permission message: {@prefix}
+	trigger:
+		execute player command "lp group srmod listmembers"
+		execute console command "lp group drmod listmembers"
+command /whoadmin [<offline player>]:
+	permission: luckperms
+	permission message: {@prefix}
+	trigger:
+		execute player command "lp group admin listmembers"
+		execute console command "lp group admin listmembers"
+command /whohadmin [<offline player>]:
+	permission: luckperms
+	permission message: {@prefix}
+	trigger:
+		execute player command "lp group head-admin listmembers"
+		execute console command "lp group head-admin listmembers"
+command /whomanager [<offline player>]:
+	permission: luckperms
+	permission message: {@prefix}
+	trigger:
+		execute player command "lp group manager listmembers"
+		execute console command "lp group manager listmembers"
+command /whoyoutube [<offline player>]:
+	permission: luckperms
+	permission message: {@prefix}
+	trigger:
+		execute player command "lp group youtube listmembers"
+command /whotwitch [<offline player>]:
+	permission: luckperms
+	permission message: {@prefix}
+	trigger:
+		execute player command "lp group twitch listmembers"
+command /default [<offline player>]:
+	permission: luckperms
+	permission message: {@prefix}
+	trigger:
+		if arg-1 is not set:
+			execute console command "lp user %player% parent set default"
+			send "Done"
+		else:
+			execute console command "lp user %arg-1% parent set default"
+			send "Done" to player

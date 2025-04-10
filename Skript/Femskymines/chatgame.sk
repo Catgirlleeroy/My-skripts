@@ -1,0 +1,121 @@
+options:
+    Error_Message: &6&lFem&5S&lky&6&lNet  &8» &x&c&6&8&0&0&0Something went wrong, check syntaxes.
+    permission_message: &6&lFem&5S&lky&6&lNet  &8» &x&c&6&8&0&0&0Hey! You cannot use that commmand!
+    prefix: &6&lFem&5S&lky&6&lNet &8»
+    announce_prefix: &6&lFem&5S&lky&6&lNet
+    Time: 5
+    
+
+
+command /chatgame [<text>] [<text>]:
+    aliases: cg
+    permission: chatgames.use
+    permission message: {@permission_message}
+    trigger:
+        if arg-1 is set:
+            if arg-1 is "add":
+                if arg-2 is set:
+                    if {reactions::*} does not contain arg-2:
+                        add arg-2 to {reactions::*}
+                        message "{@prefix} &4%arg-2% &x&c&6&8&0&0&0has been added to the chat games."
+                    else:
+                        message "{@prefix}&4%arg-2% &x&c&6&8&0&0&0is already in the reaction game."
+                else:
+                    message "{@Error_Message}"
+            if arg-1 is "remove":
+                if arg-2 is set:
+                    if {reactions::*} contains arg-2: 
+                        remove arg-2 from {reactions::*}
+                        message "{@prefix}&4%arg-2% &x&c&6&8&0&0&0has been removed from the chat games."
+                        stop
+                    else:
+                        message "{@prefix}&4%arg-2% &x&c&6&8&0&0&0is not in the reaction game."
+                else:
+                    message "{@Error_Message}"
+            if arg-1 is "list":
+                if arg-2 is not set:
+                    if {reactions::*} is set:    
+                        message "{@prefix}&x&c&6&8&0&0&0&r %{reactions::*}%"
+                if {reactions::*} is not set:
+                    message "{@prefix}&x&c&6&8&0&0&0Set a reaction first with /chatgame add [reaction]"
+            if arg-1 is "now":
+                set {reaction} to random element out of {reactions::*}
+                set {reaction.now} to now
+                broadcast ""
+                broadcast "{@announce_prefix}"
+                broadcast ""
+                broadcast "&7&l| &x&c&6&8&0&0&0A chat game has started! Type &4%{reaction}% &x&c&6&8&0&0&0to gain rewards!"
+                broadcast ""
+                play sound "block.note_block.xylophone" at volume 1 for all players
+                wait 40 seconds
+                if {reaction} is not set:
+                    stop
+                broadcast ""
+                broadcast "{@announce_prefix}"
+                broadcast ""
+                broadcast "&fChatGame made by &cCatboyLeeroy"
+                broadcast "&7&l| &fNo one was able to anwser &4%{reaction}%&f in 40 seconds!"
+                broadcast "" 
+                wait 5 ticks
+                play sound "block.note_block.xylophone" at volume 1 with pitch 0.6 to all players
+                wait 5 ticks
+                play sound "block.note_block.xylophone" at volume 1 with pitch 0.4 to all players
+                wait 5 ticks
+                play sound "block.note_block.xylophone" at volume 1 with pitch 0.2 to all players
+                delete {reaction}
+                delete {reaction.now}
+                delete {difference.REACTION}
+            if arg-1 is not "now" or "list" or "remove" or "add" or "help":
+                message "{@Error_Message}"
+        if arg-1 is "help":
+            send "" to player
+            send "" to player
+            send "&c/chatgame now" to player
+            send "&c/chatgame add [Reaction]" to player
+            send "&c/chatgame remove [Reaction]" to player 
+            send "&c/chatgame list" to player
+            send "" to player
+            
+
+
+on chat: 
+    if message contains {reaction}:
+        cancel event
+        set {difference.REACTION} to difference between {reaction.now} and now
+        broadcast ""
+        broadcast "{@announce_prefix}"
+        broadcast ""
+        broadcast "&7&l| &4%player% &x&c&6&8&0&0&0has gotten &4%{reaction}% &x&c&6&8&0&0&0in &4%{difference.REACTION}%"
+        broadcast ""
+        play sound "block.note_block.xylophone" at volume 1 for all players
+        make console execute command "/excellentcrates key give %player% chatgame 1"
+        delete {reaction}
+        delete {reaction.now}
+        delete {difference.REACTION}
+
+every {@Time} minutes:
+    set {reaction} to random element out of {reactions::*}
+    set {reaction.now} to now
+    broadcast ""
+    broadcast "{@announce_prefix}"
+    broadcast ""
+    broadcast "&7&l| &x&c&6&8&0&0&0A chat game has started! Type &4%{reaction}% &x&c&6&8&0&0&0to gain rewards!"
+    broadcast ""
+    play sound "block.note_block.xylophone" at volume 1 for all players
+    wait 40 seconds
+    if {reaction} is not set:
+        stop
+    broadcast ""
+    broadcast "{@announce_prefix}"
+    broadcast ""
+    broadcast "&7&l| &fNo one was able to anwser &4%{reaction}%&f in 40 seconds!"
+    broadcast "" 
+    wait 5 ticks
+    play sound "block.note_block.xylophone" at volume 1 with pitch 0.6 to all players
+    wait 5 ticks
+    play sound "block.note_block.xylophone" at volume 1 with pitch 0.4 to all players
+    wait 5 ticks
+    play sound "block.note_block.xylophone" at volume 1 with pitch 0.2 to all players
+    delete {reaction}
+    delete {reaction.now}
+    delete {difference.REACTION}

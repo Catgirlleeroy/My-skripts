@@ -1,0 +1,24 @@
+options:
+  prefix: &5[&d&lFemSkyNet&5] &8>> &7
+
+command /deepdark <text> <text> <integer>:
+	permission: *
+	trigger:
+		if arg-1 and arg-2 and arg-3 are set:
+			if arg-3 < 13:
+				if arg-1 is "Fortune":
+					if arg-2 is "add":
+						if player's held item isn't air:
+							set line 2 of lore of player's tool to "&7Deep Dark Fortune %arg-3%"
+							send "{@prefix} &aYou have added Deep Dark Fortune %arg-3% to your tool"
+					if arg-2 is "remove":
+						if player's held item isn't air:
+							clear line 2 of lore of player's tool
+							send "{@prefix} &aYou have removed Deep Dark Fortune %arg-3% from your tool"
+			else:
+				send "{@prefix} &cMax level is 12!"
+		  
+on tab complete of "/deepdark":
+  set tab completions for position 1 to "Fortune"
+  set tab completions for position 2 to "add" or "remove"
+  set tab completions for position 3 to "1" or "2" or "3" or "4" or "5" or "6" or "7" or "8" or "9" or "10" or "11" or "12"

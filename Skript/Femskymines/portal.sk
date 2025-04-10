@@ -1,0 +1,56 @@
+on region enter:
+    if event-region is "nethertospawn":
+        if {combattag::%player's uuid%} is set:
+            stop
+        else:
+            teleport player to {nethertospawn}
+            play sound "entity.enderman.teleport" to player
+on region enter:
+    if event-region is "spawntonether":
+        if {combattag::%player's uuid%} is set:
+            cancel event
+        else:
+            teleport player to {nether}
+            play sound "entity.enderman.teleport" to player
+on region enter:
+    if event-region is "nethertosand":
+        if {combattag::%player's uuid%} is set:
+            cancel event
+        else:
+            teleport player to {nethertosand}
+            play sound "entity.enderman.teleport" to player
+on region enter:
+    if event-region is "sandtonether":
+        if {combattag::%player's uuid%} is set:
+            cancel event
+        else:
+            teleport player to {sandtonether}
+            play sound "entity.enderman.teleport" to player
+on region enter:
+    if event-region is "sandtoend":
+        if {combattag::%player's uuid%} is set:
+            cancel event
+        else:
+            teleport player to {sandtoend}
+            play sound "entity.enderman.teleport" to player
+on region enter:
+    if event-region is "endtosand":
+        if {combattag::%player's uuid%} is set:
+            cancel event
+        else:
+            teleport player to {endtosand}
+            play sound "entity.enderman.teleport" to player
+on region enter:
+    if event-region is "heaventoend":
+        if {combattag::%player's uuid%} is set:
+            cancel event
+        else:
+            teleport player to {heaventoend}
+            play sound "entity.enderman.teleport" to player
+on region enter:
+    if event-region is "endtoheaven":
+        if {combattag::%player's uuid%} is set:
+            cancel event
+        else:
+            teleport player to {endtoheaven}
+            play sound "entity.enderman.teleport" to player

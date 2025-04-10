@@ -1,0 +1,35 @@
+command /rules:
+  trigger:
+    send "&8[&a1&8] &7Be respectful to staff and other players." to player
+    send "" to player
+    send "&8[&a2&8] &7Any form of hacking is not allowed." to player
+    send "" to player
+    send "&8[&a3&8} &7Making use of exploits and bugs is strictly prohibited." to player
+    send "" to player
+    send "&8[&a4&8] &7Flooding, spamming or using character spam is not allowed and will result in a (temp) mute." to player
+    send "" to player
+    send "&8[&a5&8] &7Swearing or being toxic to others is not tollerated, and will result in up to a ban." to player
+    send "" to player
+    send "&8[&a6&8] &7Abuse off caps will not be tollerated, and will mostlikly end up in a punishment." to player
+    send "" to player
+    send "&8[&a7&8] &7Using racism is strictly forbidden and will result in up to a ban. This also includes the N-Word." to player
+    send "" to player
+    send "&8[&a8&8] &7Minimodding is not allowed! You are allowed to minimod when there is no staff online!" to player
+    send "" to player
+    send "&8[&a8&8] &7Spam killing(3+ kills in 60s) will not be tollerated!" to player
+    send "" to player
+    send "&8[&a9&8] &7No camping/targeting!" to player
+    send "" to player
+    send "&8[&a10&8] &7Do not simulate spam killing!" to player
+    send "" to player
+    send "&8[&a11&8] &7Naked killing is not allowed!" to player
+    send "" to player
+    send "&8[&a12&8] &7If you have any problems, please contact staff in the discord server by making a ticket." to player
+    send "" to player
+    send "&8[&a13&8] &7Boosting is not allowed!" to player
+    send "" to player
+    send "&8[&a14&8] &7If you want to suggest an idea, please do so in &9Suggestions&7 in our discord." to player
+    send "" to player
+    send "&8[&a15&8] &7If you want to report a player, please do so in &9player-reports&7 in our discord or do &3/report ingame." to player
+    send "" to player
+    send "&8[&a16&8] &7Most important of all, &eHave fun playing!" to player

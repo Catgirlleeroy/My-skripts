@@ -1,0 +1,49 @@
+options:
+    #If you write - no message will be showing
+    auto.msg.1: &6Do /Buy to gain boosts!
+    auto.msg.2: Do /discord for updates and give aways
+    auto.msg.3: Do /report if You see a hacker or someone who is abusing their permissions as a staff member
+    auto.msg.4: Want to apply for staff? do /apply!
+    auto.msg.5: -
+    auto.msg.6: -
+    auto.msg.7: -
+    auto.msg.8: -
+    auto.msg.9: -
+    auto.msg.10: -
+    #Automic Messages Cooldown
+    auto.msg.cooldown: 5 minutes
+    #Automic Messages Prefix
+    auto.msg.prefix: &8&m               &c&l FemSkyNet&8&m               &c
+
+on load:
+    clear {automessages::*}
+    "{@auto.msg.1}" is not "-":
+        add "{@auto.msg.1}" to {automessages::*}
+    "{@auto.msg.2}" is not "-":
+        add "{@auto.msg.2}" to {automessages::*}
+    "{@auto.msg.3}" is not "-":
+        add "{@auto.msg.3}" to {automessages::*}
+    "{@auto.msg.4}" is not "-":
+        add "{@auto.msg.4}" to {automessages::*}
+    "{@auto.msg.5}" is not "-":
+        add "{@auto.msg.5}" to {automessages::*}
+    "{@auto.msg.6}" is not "-":
+        add "{@auto.msg.6}" to {automessages::*}
+    "{@auto.msg.7}" is not "-":
+        add "{@auto.msg.7}" to {automessages::*}
+    "{@auto.msg.8}" is not "-":
+        add "{@auto.msg.8}" to {automessages::*}
+    "{@auto.msg.9}" is not "-":
+        add "{@auto.msg.9}" to {automessages::*}
+    "{@auto.msg.10}" is not "-":
+        add "{@auto.msg.10}" to {automessages::*}
+
+every {@auto.msg.cooldown}:
+    if size of {automessages::*} is bigger than or equal to 1:
+        set {_msg} to random element out of {automessages::*}
+        broadcast "{@auto.msg.prefix}"
+        broadcast ""
+        broadcast "%{_msg}%"
+        broadcast ""
+        broadcast "{@auto.msg.prefix}"
+        play sound "entity_player_levelup" to all players

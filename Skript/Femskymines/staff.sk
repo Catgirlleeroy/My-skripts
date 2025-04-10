@@ -1,0 +1,5 @@
+command sc <text>:
+	aliases: /a, /ac, /sc
+	permission: staff
+	trigger:
+		send "<##86F558>S<##95F059>t<##A4EC59>a<##B2E75A>f<##C1E35A>f <##D0DE5B>C<##DFD95B>h<##EDD55C>a<##FCD05C>t &e%player ? "Console"% &8» &f%arg-1%" to all players where [input has permission "staff"]#input's groups contains "trainee", "helper", "mod", "sr.mod", "admin", "head-admin", "manager", "co-owner", "owner", "dev", "head-dev", "builder", or "head-dev"]

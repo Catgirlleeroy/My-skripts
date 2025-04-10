@@ -1,0 +1,26 @@
+on first join:
+    set {time::daily::%player's uuid%} to 24
+
+every hour:
+    loop all offline players where [{time::daily::%uuid of input%} > 0]:
+        remove 1 from {time::daily::%loop-value's uuid%}
+
+on join:
+    if {time::daily::%player's uuid%} is not set:
+        set {time::daily::%player's uuid%} to 24
+
+command /daily:
+    trigger:
+        if {time::daily::%player's uuid%} <= 0:
+            set {time::daily::%player's uuid%} to 24
+            execute console command "/excellentcrates key give %player% daily 1"
+            send "&eYou reclaimed your daily reward" to player
+        else:
+            send "&4&lYou need to wait 24 hours to reclaim your next daily reward" to player
+            send "&7Time remaining: &e%{time::daily::%player's uuid%}% hours" to player
+
+command /fixdaily:
+    permission: *
+    trigger:
+        loop all players:
+            set {time::daily::%loop-player's uuid%} to 0

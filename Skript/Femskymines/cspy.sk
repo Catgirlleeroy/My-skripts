@@ -1,0 +1,50 @@
+on command:
+	sender is not console
+	loop all players:
+		if {cspy::%loop-player's uuid%} is true:
+			if loop-player has permission "command.spy":
+				if event-commandsender is a player:
+					if event-commandsender is not loop-player:
+						if {cspyExempt::%loop-player's uuid%} is not set:
+							send "&8[&cCSPY&8] &c%event-commandsender%&8: &c/%whole command%" to loop-player
+						if event-commandsender has permission "op":
+							send "&8[&cCSPY&8] &c%event-commandsender%&8: &c/%whole command%" to loop-player
+				else:
+					send "&8[&cCSPY&8] &cCONSOLE&8: &c/%whole command%" to loop-player		
+command /cspy [<text>] [<offlineplayer>]:
+	permission: command.spy
+	trigger:
+		if arg-1 is "on":
+			set {cspy::%player's uuid%} to true
+			send "&8[&cCSPY&8] &7Command spy is now &aENABLED" to player
+			stop
+		if arg-1 is "off":
+			delete {cspy::%player's uuid%}
+			send "&8[&cCSPY&8] &7Command spy is now &cDISABLED" to player
+			stop
+		if arg-1 is "exempt":
+			if arg-2 is set:
+				if player has permission "cspy.admin":
+					if {cspyExempt::%arg-2's uuid%} is not set:
+						set {cspyExempt::%arg-2's uuid%} to true
+						send "&8[&cCSPY&8] &7%arg-2% is now exempted from cspy." to player
+						stop
+					else:
+						delete {cspyExempt::%arg-2's uuid%}
+						send "&8[&cCSPY&8] &7%arg-2% is no longer exempted from cspy." to player
+						stop
+				else:
+					send "&8[&cCSPY&8] &7You don't have the perms for this." to player
+			else:
+				send "&8[&cCSPY&8] &7Specify a player." to player
+		else:
+			if {cspy::%player's uuid%} is not set:
+				set {cspy::%player's uuid%} to true
+				send "&8[&cCSPY&8] &7Command spy is now &aENABLED" to player
+				stop
+			else:
+				delete {cspy::%player's uuid%}
+				send "&8[&cCSPY&8] &7Command spy is now &cDISABLED" to player
+				stop
+on tab complete for "/cspy":
+	set tab completions for position 1 to "on", "off", and "exempt"

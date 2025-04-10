@@ -1,0 +1,27 @@
+on rightclick:
+    if name of entity is "Frank":
+        set {missingitem} to false
+        if player's helmet is not diamond helmet:
+            send "ERROR: You are missing items" to player
+            set {missingitem} to true
+            stop
+        if player's chestplate is not diamond chestplate:
+            send "ERROR: You are missing items!" to player
+            set {missingitem} to true
+            stop
+        if player's leggings is not diamond leggings:
+            send "ERROR: You are missing items!" to player
+            set {missingitem} to true
+            stop
+        if player's boots is not diamond boots:
+            send "ERROR: You are missing items!" to player
+            set {missingitem} to true
+            stop
+        if player's tool is not diamond sword:
+            send "ERROR: You are missing items!" to player
+            set {missingitem} to true
+            stop
+        if {missingitem} is false:
+            send "You have gained 1 rebirth!" to player
+            add 1 to {rebirth::%player's uuid%}
+            broadcast "%player% just rebirth for the %{rebirth::%player's uuid%}%th time"
