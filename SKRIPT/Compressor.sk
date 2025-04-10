@@ -1,6 +1,3 @@
-on load:
-	add "- Wood" and "- Stone" and "- Coal" and "- Iron" and "- Copper" and "- Gold" and "- Diamond" and "- Emerald" and "- Redstone" and "- Lapis" to {OverworldCompressors::*} 
-	add "-Cave" to {CaveCompressors::*}
 # Auto compresses ores while in offhand every second
 function compressOre(ore: item type, newOre: item type, p: player):
 	if name of {_ore} is not set:
@@ -25,54 +22,37 @@ on join:
 local function checkAutoCompressor(p: player):
 	if offhand tool of {_p} is air:
 		stop
-	loop lore of {_p}'s offhand tool:
-		if {OverworldCompressors::*} contains uncolored loop-value:
+	loop lore of {_p}'s offhand item:
+		if uncolored loop-value contains "- Wood":
 			compressOre({regular::wood}, {comp::wood}, {_p})
 			compressOre({comp::wood}, {supercomp::wood}, {_p})
+		if uncolored loop-value contains "- Stone":
 			compressOre({regular::cobblestone}, {comp::stone}, {_p})
 			compressOre({comp::stone}, {supercomp::stone}, {_p})
+		if uncolored loop-value contains "- Coal":
 			compressOre({regular::coal}, {comp::coal}, {_p})
 			compressOre({comp::coal}, {supercomp::coal}, {_p})
+		if uncolored loop-value contains "- Iron":
 			compressOre({regular::iron}, {comp::iron}, {_p})
 			compressOre({comp::iron}, {supercomp::iron}, {_p})
+		if uncolored loop-value contains "- Gold":
 			compressOre({regular::gold}, {comp::gold}, {_p})
 			compressOre({comp::gold}, {supercomp::gold}, {_p})
+		if uncolored loop-value contains "- Copper":
 			compressOre({regular::copper}, {comp::copper}, {_p})			
 			compressOre({comp::copper}, {supercomp::copper}, {_p})
+		if uncolored loop-value contains "- Diamond":
 			compressOre({regular::diamond}, {comp::diamond}, {_p})
 			compressOre({comp::diamond}, {supercomp::diamond}, {_p})
+		if uncolored loop-value contains "- Emerald":
 			compressOre({regular::emerald}, {comp::emerald}, {_p})
 			compressOre({comp::emerald}, {supercomp::emerald}, {_p})
+		if uncolored loop-value contains "- Redstone":
 			compressOre({regular::redstone}, {comp::redstone}, {_p})
 			compressOre({comp::redstone}, {supercomp::redstone}, {_p})
+		if uncolored loop-value contains "- Lapis":
 			compressOre({regular::lapis}, {comp::lapis}, {_p})
 			compressOre({comp::lapis}, {supercomp::lapis}, {_p})
+		if uncolored loop-value contains "- Beacon":
 			compressOre({regular::beacon}, {comp::beacon}, {_p})
 			compressOre({comp::beacon}, {supercomp::beacon}, {_p})
-		if {CaveCompressors::*} contains uncolored loop-value:
-			compressOre({regular::sculk}, {comp::sculk}, {_p})
-			compressOre({comp::sculk}, {supercomp::sculk}, {_p})
-			compressOre({regular::sculkcata}, {comp::sculkcata}, {_p})
-			compressOre({comp::sculkcata}, {supercomp::sculkcata}, {_p})
-			compressOre({regular::deepslatebricks}, {comp::deepslatebricks}, {_p})
-			compressOre({comp::deepslatebricks}, {supercomp::deepslatebricks}, {_p})
-			compressOre({regular::deepslatetiles}, {comp::deepslatetiles}, {_p})
-			compressOre({comp::deepslatetiles}, {supercomp::deepslatetiles}, {_p})
-			compressOre({regular::deepslatebricks}, {comp::deepslatebricks}, {_p})
-			compressOre({comp::deepslatebricks}, {supercomp::deepslatebricks}, {_p})
-			compressOre({regular::deepslatetiles}, {comp::deepslatetiles}, {_p})
-			compressOre({comp::deepslatetiles}, {supercomp::deepslatetiles}, {_p})
-			compressOre({regular::deepslatebricks}, {comp::deepslatebricks}, {_p})
-			compressOre({comp::deepslatebricks}, {supercomp::deepslatebricks}, {_p})
-			compressOre({regular::deepslatetiles}, {comp::deepslatetiles}, {_p})
-			compressOre({comp::deepslatetiles}, {supercomp::deepslatetiles}, {_p})
-			compressOre({regular::polisheddeepslate}, {comp::polisheddeepslate}, {_p})
-			compressOre({comp::polisheddeepslate}, {supercomp::polisheddeepslate}, {_p})
-			compressOre({regular::bluewool}, {comp::bluewool}, {_p})
-			compressOre({comp::bluewool}, {supercomp::bluewool}, {_p})
-			compressOre({regular::blueglass}, {comp::blueglass}, {_p})
-			compressOre({comp::blueglass}, {supercomp::blueglass}, {_p})
-			compressOre({regular::blackconcrete}, {comp::blackconcrete}, {_p})
-			compressOre({comp::blackconcrete}, {supercomp::blackconcrete}, {_p})
-			compressOre({regular::blackconcretepowder}, {comp::	blackconcretepowder}, {_p})
-			compressOre({comp::blackconcretepowder}, {supercomp::blackconcretepowder}, {_p})
