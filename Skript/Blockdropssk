@@ -94,40 +94,40 @@ local function giveBlocksCoinsAndXp(evntBlock: block, checkItem: item type, give
 local function transferSecondBlock(p: player, blck: block):
 	if {_blck} is cobblestone:
 		give {_p} 8 of {regular::cobblestone}
-		addxp({_p}, (9 * 1.4))
-		addCoins({_p}, (9 * 1))	
+		addxp({_p}, (8 * 1.4))
+		addCoins({_p}, (8 * 1))	
 	if {_blck} is coal block:
 		give {_p} 8 of {regular::coal}
-		addxp({_p}, (9 * 1.4))
-		addCoins({_p}, (9 * 1))
+		addxp({_p}, (8 * 1.4))
+		addCoins({_p}, (8 * 1))
 	if {_blck} is iron block:
 		give {_p} 8 of {regular::iron}
-		addxp({_p}, (9 * 1.6))
-		addCoins({_p}, (9 * 1))
+		addxp({_p}, (8 * 1.6))
+		addCoins({_p}, (8 * 1))
 	if {_blck} is gold block:
 		give {_p} 8 of {regular::gold}
-		addxp({_p}, (9 * 1.8))
-		addCoins({_p}, (9 * 1))		
+		addxp({_p}, (8 * 1.8))
+		addCoins({_p}, (8 * 1))		
 	if {_blck} is copper block:
 		give {_p} 8 of {regular::copper}
-		addxp({_p}, (9 * 1.4))
-		addCoins({_p}, (9 * 1))		
+		addxp({_p}, (8 * 1.4))
+		addCoins({_p}, (8 * 1))		
 	if {_blck} is diamond block:
 		give {_p} 8 of {regular::diamond}
-		addxp({_p}, (9 * 2.0))
-		addCoins({_p}, (9 * 1))
+		addxp({_p}, (8 * 2.0))
+		addCoins({_p}, (8 * 1))
 	if {_blck} is emerald block:
 		give {_p} 8 of {regular::emerald}
-		addxp({_p}, (9 * 2.2))
-		addCoins({_p}, (9 * 1))
+		addxp({_p}, (8 * 2.2))
+		addCoins({_p}, (8 * 1))
 	if {_blck} is redstone block:
 		give {_p} 8 of {regular::redstone}
-		addxp({_p}, (9 * 1.6))
-		addCoins({_p}, (9 * 1))		
+		addxp({_p}, (8 * 1.6))
+		addCoins({_p}, (8 * 1))		
 	if {_blck} is lapis block:
 		give {_p} 8 of {regular::lapis}
-		addxp({_p}, (9 * 1.6))
-		addCoins({_p}, (9 * 1))		
+		addxp({_p}, (8 * 1.6))
+		addCoins({_p}, (8 * 1))		
 	stop
 on mine:
 	chance of 0.1%:
