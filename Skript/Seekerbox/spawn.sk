@@ -1,0 +1,78 @@
+command /spawn [<player>]:
+    trigger:
+        player is op:
+            set {_who} to arg-1 ? player
+        else:
+            set {_who} to player
+        teleport {_who} to {spawn}
+        wait 1 tick
+        if {lagprev.particles::*} doesn't contain {_who}'s uuid:
+            sendParticleRandom({_who})
+        add {_who}'s uuid to {lagprev.particles::*}
+        wait 0.75 seconds
+        remove {_who}'s uuid from {lagprev.particles::*}
+on death:
+  teleport victim to {spawn}
+on region enter:
+  if event-region is ("sumodeath" parsed as region):
+    teleport player to {spawn}
+on tab complete:
+    event-string is "/spawn"
+    set tab completions for position 1 to all players
+on join:
+    wait 1 tick
+    teleport player to {spawn}
+
+        #if arg-1 is not set:
+        #    teleport player to {spawn}
+        #    set {spawn.vector} to vector from player's head to player's eye location
+        #    loop 3 times:
+        #        show 5 flame with offset of 0, 0, 0 speed 1 {spawn.vector} player's head
+        #else:
+        #    if player has permission "setspawn.franco":
+        #        set {spawn} to player's location
+        #    else:
+        #        teleport player to {spawn}
+        #        set {spawn.vector} to vector from player's head to player's eye location
+        #        loop 3 times:
+        #            show 5 flame with offset of 0, 0, 0 speed 1 {spawn.vector} player's head
+
+
+command /testparticle [<number>]:
+	permission: yleoft.skripts.spawn.particles.testparticle
+	trigger:
+		sendParticleT(player, arg-1)
+
+on join:
+	wait 5 ticks
+	sendParticle(player)
+
+		
+on skript load:
+	clear {lagprev.particles::*}
+
+function sendParticleRandom(p: player):
+    chance of 50%:
+        sendParticle({_p})
+    else:
+        sendParticle2({_p})
+
+function sendParticle(p: player):
+    set {_t} to 2
+    set {_loc} to {_p}'s location
+    add 1 to {_loc}'s y-coordinate
+    loop (16 * {_t}) times:
+        loop (16 * {_t}) times:
+            set {_v} to spherical vector radius {_t}, yaw (loop-value-1*12*{_t}), pitch (loop-value-2*12*{_t})
+            draw 1 of dripping water at {_loc} ~ {_v} with extra 0 to all players
+
+function sendParticle2(p: player):
+    draw 100 white_smoke at {_p} with offset vector(0.5, 0, 0.5) with extra 0.3
+
+function sendParticleT(p: player, t: number):
+	set {_loc} to {_p}'s location
+	add 1 to {_loc}'s y-coordinate
+	loop (16 * {_t}) times:
+		loop (16 * {_t}) times:
+			set {_v} to spherical vector radius {_t}, yaw (loop-value-1*12*{_t}), pitch (loop-value-2*12*{_t})
+			draw 1 of dripping water at {_loc} ~ {_v} with extra 0 to all players

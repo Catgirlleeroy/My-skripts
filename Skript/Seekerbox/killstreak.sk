@@ -1,0 +1,42 @@
+function checkKillStreak(p: player, n: number):
+	if {killstreak::%{_p}'s uuid%} is {_n}:
+		broadcast "&e&l%{_p}'s name% &a&lreached a %{_n}% kill streak!"
+	
+on death:
+	if victim is a player:
+		set {_vick} to {killstreak::%victim's uuid%}
+		if {_vick} is higher or equal to 3:
+			broadcast "&e&l%victim's name% &c&llost his kill streak of %{_vick}%"
+		set {killstreak::%victim's uuid%} to 0
+		if attacker is a player:			
+			checkKillStreak(attacker, 3)
+			checkKillStreak(attacker, 5)
+			checkKillStreak(attacker, 10)
+			checkKillStreak(attacker, 15)
+			checkKillStreak(attacker, 20)
+			checkKillStreak(attacker, 30)
+			checkKillStreak(attacker, 75)
+			checkKillStreak(attacker, 100)
+			checkKillStreak(attacker, 125)
+			checkKillStreak(attacker, 150)
+			checkKillStreak(attacker, 200)
+			checkKillStreak(attacker, 250)
+			checkKillStreak(attacker, 280)
+			checkKillStreak(attacker, 300)
+			
+			#checkKillStreak(attacker, 4) #the 4 is the number of it
+
+command /killstreak [<offline player>]:
+	trigger:
+		if arg-1 is set:
+			send "&e%arg-1's name% kill streak is: &a%{killstreak::%arg-1's uuid%} ? 0%"
+		else:
+			send "&eYour kill streak is: &a%{killstreak::%player's uuid%}%"
+
+#every 5 minutes:
+#	loop all offlineplayers:
+#		if {killstreaklast::%loop-offlineplayer's uuid%} is set:
+		#	if {killstreaklast::%loop-offlineplayer's uuid%}+20 <= {killstreak::%loop-offlineplayer's uuid%}:
+		#		make console execute command "/jail %loop-offlineplayer's name% spawn 15m"
+		#		broadcast "&4&l%loop-offlineplayer's name% &c&lwas jailed for 15 minutes! (20 killstreak in 5m)"
+#		set {killstreaklast::%loop-offlineplayer's uuid%} to {killstreak::%loop-offlineplayer's uuid%}

@@ -1,0 +1,119 @@
+import:
+    xzot1k.plugins.sp.api.events.PortalEnterEvent
+    
+command /resetportals [<player>]:
+    trigger:
+        if player is op:
+            if arg-1 is set:
+                if arg-1 is a player:
+                    clear {portals::%arg-1's uuid%::*}
+                    send "&aYou have reset &e%arg-1%'s &aportals!" to the player
+                    send "&aYour portals have been reset!" to arg-1
+                else:
+                    send "&cThat is not a valid player!"
+            else:
+                clear {portals::%player's uuid%::*}
+                send "&aYour portals have been reset!"
+        else:
+            send "&cYou must be OP to use this command!"
+
+
+on PortalEnterEvent:
+    set {_portal} to event.getPortal().getPortalId()
+    set {_p} to event.getEntity()
+    set line 6 of {_p}'s scoreboard to "&8&l▏ &f⦿ &6ʙᴀʟᴀɴᴄᴇ &7- &6%{newcoins::%{_p}%} ? 0%"
+    if {_portal} is "cave1":
+        if {portals::%uuid of {_p}%::*} does not contain "cave":
+            cancel event
+            teleport {_p} to location({_p}'s x coord+3, {_p}'s y coord, {_p}'s z coord, world of {_p}, {_p}'s yaw, pitch of {_p})
+            push {_p} (vector from location({_p}'s x coord -3, {_p}'s y coord - 1, {_p}'s z coord) to {_p}) at speed 2
+            if {prestiges::%{_p}'s uuid%} >= 1:
+                create a gui with virtual chest inventory with 3 rows named "Buy Portal?":
+                    make gui slot (all integers from 0 to 100) with gray stained glass pane named "&f"
+                    make gui slot 13 to gold ingot with all item flags with name "&fBuy Portal?" with lore "&eThis portal costs &a10,000 coins&e!":
+                        close player's inventory
+                        if {newcoins::%{_p}%} >= 10000:
+                            uncancel the event
+                            subtract 10000 from {newcoins::%{_p}%}
+                            add "cave" to {portals::%uuid of {_p}%::*}
+                            send "&aYou can now enter the cave!"
+                        else:
+                            send "&cYou don't have enough money!"
+                open last gui to {_p}
+            else:
+                send "&cYou cannot buy this portal yet!" to {_p}
+        else:
+            stop
+    if {_portal} is "deepcave1":
+        if {portals::%uuid of {_p}%::*} does not contain "deepcave":
+            cancel event
+            teleport {_p} to location({_p}'s x coord-3, {_p}'s y coord, {_p}'s z coord, world of {_p}, {_p}'s yaw, pitch of {_p})
+            push {_p} (vector from location({_p}'s x coord+3, {_p}'s y coord - 1, {_p}'s z coord) to {_p}) at speed 2
+            if {prestiges::%{_p}'s uuid%} >= 4:
+                create a gui with virtual chest inventory with 3 rows named "Buy Portal?":
+                    make gui slot (all integers from 0 to 100) with gray stained glass pane named "&f"
+                    make gui slot 13 to gold ingot with all item flags with name "&fBuy Portal?" with lore "&eThis portal costs &a100,000 coins&e!":
+                        close player's inventory
+                        if {newcoins::%{_p}%} >= 100000:
+                            uncancel the event
+                            subtract 100000 from {newcoins::%{_p}%}
+                            add "deepcave" to {portals::%uuid of {_p}%::*}
+                            send "&aYou can now enter the deep cave!"
+                        else:
+                            send "&cYou don't have enough money!"
+                open last gui to {_p}
+            else:
+                send "&cYou cannot buy this portal yet!" to {_p}
+        else:
+            stop
+    if {_portal} is "deepdark1":
+        if {portals::%uuid of {_p}%::*} does not contain "deepdark":
+            cancel event
+            teleport {_p} to location({_p}'s x coord-3, {_p}'s y coord + 1, {_p}'s z coord+3, world of {_p}, {_p}'s yaw, pitch of {_p})
+            push {_p} (vector from location({_p}'s x coord+3, {_p}'s y coord - 1, {_p}'s z coord-3) to {_p}) at speed 2
+            if {prestiges::%{_p}'s uuid%} >= 7:
+                create a gui with virtual chest inventory with 3 rows named "Buy Portal?":
+                    make gui slot (all integers from 0 to 100) with gray stained glass pane named "&f"
+                    make gui slot 13 to gold ingot with all item flags with name "&fBuy Portal?" with lore "&eThis portal costs &a500,000 coins&e!":
+                        close player's inventory
+                        if {newcoins::%{_p}%} >= 500000:
+                            uncancel the event
+                            subtract 500000 from {newcoins::%{_p}%}
+                            add "deepdark" to {portals::%uuid of {_p}%::*}
+                            send "&aYou can now enter the deep dark!"
+                        else:
+                            send "&cYou don't have enough money!"
+                open last gui to {_p}
+            else:
+                send "&cYou cannot buy this portal yet!" to {_p}
+        else:
+            stop
+    if {_portal} is "nether1":
+        if {portals::%uuid of {_p}%::*} does not contain "nether":
+            cancel event
+            teleport {_p} to location({_p}'s x coord - 3, {_p}'s y coord + 1, {_p}'s z coord-3, world of {_p}, {_p}'s yaw, pitch of {_p})
+            push {_p} (vector from location({_p}'s x coord, {_p}'s y coord - 1, {_p}'s z coord+3) to {_p}) at speed 2
+            if {blocks::%{_p}'s uuid%} >= 500000:
+                if {prestiges::%{_p}'s uuid%} >= 8:
+                    create a gui with virtual chest inventory with 3 rows named "Buy Portal?":
+                        #run on inventory close:
+                        #    broadcast event-reason
+                        make gui slot (all integers from 0 to 100) with gray stained glass pane named "&f"
+                        make gui slot 13 to gold ingot with all item flags with name "&fBuy Portal?" with lore "&eThis portal costs &a750,000 coins&e!":
+                            close player's inventory
+                            if {newcoins::%{_p}%} >= 750000:
+                                uncancel the event
+                                subtract 750000 from {newcoins::%{_p}%}
+                                add "nether" to {portals::%uuid of {_p}%::*}
+                                send "&aYou can now enter the nether!"
+                            else:
+                                send "&cYou don't have enough money!"
+                    open last gui to {_p}
+                else:
+                    send "&cYou cannot buy this portal yet!" to {_p}
+            else:
+                stop
+on player portal:
+    cancel event if player is not op
+
+

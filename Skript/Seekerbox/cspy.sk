@@ -1,0 +1,39 @@
+options:
+    error: &4&lERROR &8| &7
+    prefix: &3&lSeekerBox &8| &7
+
+command /commandspy [<offlineplayer>]:
+    aliases: /cspy
+    permission: server.commandspy
+    permission message: {@error}You do not have the required permission &8(&c&lserver.commandspy&8)
+    usage: {@error}Incorrect usage&8: &c&l/commandspy
+    trigger:
+        if:
+            arg-1 is set
+            player has permission "server.commandspy.others"
+        then:
+            if {server::commandspy::%arg-1%} is true:
+                set {server::commandspy::%arg-1%} to false
+                message "{@prefix}Commands spy for %arg-1% &b&ldisabled"
+            else:
+                set {server::commandspy::%arg-1%} to true
+                message "{@prefix}Commands spy for %arg-1% &b&lenabled"
+            stop
+        if {server::commandspy::%player%} is true:
+            set {server::commandspy::%player%} to false
+            message "{@prefix}Commands spy &b&ldisabled"
+        else:
+            set {server::commandspy::%player%} to true
+            message "{@prefix}Commands spy &b&lenabled"
+
+on command:
+    message "&7[&3CSPY&7] &b%sender%&7 -> &b/%full command%" to all players where [{server::commandspy::%input%} is true]
+
+
+
+
+
+
+on command:
+    sender is console
+    send "[Server thread/INFO]: Console issued server command: /%full command%" to console if full command does not start with  "!"

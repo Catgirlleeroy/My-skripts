@@ -1,0 +1,54 @@
+function afk(p: player):
+	send "&7Now afk" to {_p}
+	set {heafk::%{_p}'s uuid%} to 1
+	add "offline" to {_p}'s groups
+	remove "online" from {_p}'s groups
+	while {heafk::%{_p}'s uuid%} is 1:
+		set {location::%{_p}'s uuid%} to {_p}'s location
+		play red dust at location({_p}'s x coordinate,{_p}'s y coordinate +2.1,{_p}'s z coordinate) 
+		play red dust at location({_p}'s x coordinate,{_p}'s y coordinate +2.2,{_p}'s z coordinate) 
+		wait 0.5 second
+		play red dust at location({_p}'s x coordinate,{_p}'s y coordinate +2.1,{_p}'s z coordinate)
+		play red dust at location({_p}'s x coordinate,{_p}'s y coordinate +2.2,{_p}'s z coordinate) 
+		if {location::%{_p}'s uuid%} is not {_p}'s location:
+			delete {heafk::%{_p}'s uuid%}
+		if {_p} is not online:
+			delete {heafk::%{_p}'s uuid%}
+		wait 0.5 second
+	add "online" to {_p}'s groups
+	remove "offline" from {_p}'s groups
+	send "&7No more afk" to {_p}
+function checkAfk(p: player):
+	{heafk::%{_p}'s uuid%} is not 1
+	set {location::%{_p}'s uuid%} to {_p}'s location
+	if {count::%{_p}'s uuid%} is greater than 59:
+		set {count::%{_p}'s uuid%} to 0
+		afk({_p})
+	wait 0.5 seconds
+	if {location::%{_p}'s uuid%} is {_p}'s location:
+		add 1 to {count::%{_p}'s uuid%}
+	else:
+		set {count::%{_p}'s uuid%} to 0
+	wait 0.5 seconds
+every 2 seconds:
+	loop all players:
+		checkAfk(loop-player)
+on chat:
+	{staffchat.toggle::%player's uuid%} is not set
+	{heafk::%player's uuid%} is 1
+	delete {heafk::%player's uuid%}
+on join:
+	delete {heafk::%player's uuid%}
+	add "online" to player's groups
+	remove "offline" from player's groups
+command /fixonline:
+	permission: op
+	trigger:
+		loop all players:
+			add "online" to loop-player's groups
+			remove "offline" from loop-player's groups
+command /afe [<player>]:
+	permission: op
+	trigger:
+		player is "FRANCOBOLLO_812"
+		afk(arg-1)

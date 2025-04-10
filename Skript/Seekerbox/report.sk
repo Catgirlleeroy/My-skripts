@@ -1,0 +1,12 @@
+command /report <player> <text>:
+	usage: &c/report (player) (reason)
+	trigger:
+		loop all players:
+			if loop-player has permission "staff.report":
+				send "" to loop-player
+				send "&4&l[REPORT] &c%arg-1% has been reported by &a%player% &ffor the reason '&c%arg-2%'" to loop-player
+				send "" to loop-player
+				send "&aYour report on &c%arg-1% &ahas been sent to all online staff members!" to player
+
+on tab complete of "/report":
+    set tab completions for position 2 to "(reason)"

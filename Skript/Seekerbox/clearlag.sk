@@ -1,0 +1,8 @@
+command clearlag:
+    permission: group.helper
+    trigger:
+        broadcast "<#00ff00>S<#00ff20>e<#00ff40>e<#00ff60>k<#00ff80>e<#00ff9f>r<#00ffbf>B<#00ffdf>o<#00ffff>x &8» &aClearlag in 5 seconds"
+        wait 5 seconds
+        set {_kill::*} to all arrows and all dropped items
+        kill {_kill::*}
+        broadcast "<#00ff00>S<#00ff20>e<#00ff40>e<#00ff60>k<#00ff80>e<#00ff9f>r<#00ffbf>B<#00ffdf>o<#00ffff>x &8» &aKilled &2%size of {_kill::*}%&a entities."

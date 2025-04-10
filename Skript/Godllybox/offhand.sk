@@ -1,0 +1,24 @@
+command /offhand:
+	trigger:
+		if off hand item is not air:
+			send "Your offhand must be empty"
+		else:
+			set offhand item to player's held item
+			set player's held item to air
+
+			
+#on right click:
+#	if player's held item
+#	
+	
+on right click:
+    if name of tool of player is "Something":
+        push the player upwards
+
+
+
+
+
+
+
+  

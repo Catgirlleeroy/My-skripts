@@ -1,0 +1,15 @@
+command /pvptoggle [<text>]:
+	trigger:
+		if arg-1 is not set:
+			if {pvpoff::%player's uuid%} is not set:
+				set {pvpoff::%player's uuid%} to true
+				send "&bYou have pvp &4disabled" to player
+			else:
+				delete {pvpoff::%player's uuid%}
+				send "&bYou have pvp &aenabled" to player
+		else if arg-1 is "on":
+			delete {pvpoff::%player's uuid%}
+			send "&bYou have pvp &aenabled" to player
+		else if arg-1 is "off":
+			set {pvpoff::%player's uuid%} to true
+			send "&bYou have pvp &4disabled" to player

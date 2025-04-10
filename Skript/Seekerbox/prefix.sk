@@ -1,0 +1,41 @@
+command /setprefix [<text>] [<text>]:
+	trigger:
+		if player has permission "prefixchange":
+			if arg-1 is "set":
+				if arg-2 does not contain "NIGGA" or "NIGA" or "NIGGAS" or "NEGER" or "NIGAS" or "NIGGER" or "NIGGERS" or "NIGER " or "NIGERS" or "nigga" or "nigger" or "niggas" or "niggers" or "niga " or "nigas" or "n1gga" or "n1gger" or "n1ggers" or "n1ggas" or "n1gas" or "n1ger" or "n1ga" or "nibba" or "nigge " or "nigg " or " nig " or "niggg " or "niggger" or "nigggers" or "Nigggers" or "Niggger" or "niggga" or "niggge" or "nigggr" or "negro" or "negrone" or "negros" or "N i G g E r" or "n I g G e R" or "nega " or "N i G g A":
+					if all:
+						arg-2 contains "+" or "[" or "]"
+						player is not op
+					then:
+						send "&4No" to player
+						stop
+					if player has permission "customplus.sk":
+						make console execute "/lp user %player% meta addprefix 9997 ""&8[&f%arg-2%&8]&7 """
+					else:
+						make console execute "/lp user %player% meta addprefix 9997 ""&8[&f%arg-2%&8]&7 """
+				else:
+					send "&4No" to player
+			else if arg-1 is "remove":
+				make console execute "/lp user %player% meta removeprefix 9997"
+on tab complete of "/setprefix":
+	set tab completions for position 1 to "set" and "remove"
+	set tab completions for position 2 to "your prefix"
+	
+	
+
+command /setsuffix [<text>] [<text>]:
+	trigger:
+		if player has permission "suffixchange":
+			if arg-1 is "set":
+				if arg-2 does not contain "NIGGA" or "NIGA" or "NIGGAS" or "NEGER" or "NIGAS" or "NIGGER" or "NIGGERS" or "NIGER " or "NIGERS" or "nigga" or "nigger" or "niggas" or "niggers" or "niga " or "nigas" or "n1gga" or "n1gger" or "n1ggers" or "n1ggas" or "n1gas" or "n1ger" or "n1ga" or "nibba" or "nigge " or "nigg " or " nig " or "niggg " or "niggger" or "nigggers" or "Nigggers" or "Niggger" or "niggga" or "niggge" or "nigggr" or "negro" or "negrone" or "negros" or "N i G g E r" or "n I g G e R" or "nega " or "N i G g A" or "[" or "]":
+					if player has permission "customplus.sk":
+						make console execute "/lp user %player% meta addsuffix 9997 "" &8[&f%arg-2%&8]"""
+					else:
+						make console execute "/lp user %player% meta addsuffix 9997 "" &8[&f%arg-2%&8]"""
+				else:
+					send "&4No" to player
+			else if arg-1 is "remove":
+				make console execute "/lp user %player% meta removesuffix 9997"
+on tab complete of "/setsuffix":
+	set tab completions for position 1 to "set" and "remove"
+	set tab completions for position 2 to "your suffix"	

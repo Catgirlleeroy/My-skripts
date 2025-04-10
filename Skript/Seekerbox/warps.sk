@@ -1,0 +1,132 @@
+options:
+	prefix: &8[&c&lCombatTag&8] &7
+on right click:
+    if name of entity is "warps":
+        set metadata tag "Warps!" of player to chest inventory with 3 rows named "Warps!"
+        set slot 0 of metadata tag "Warps!" of player to barrel named "&rCrates!" with lore "Click me to teleport to Crates!"
+        set slot 1 and 2 and 3 and 4 and 5 and 6 and 7 and 9 and 10 and 11 and 12 and 13 and 14 and 15 and 16 and 17 and 18 and 19 and 20 and 21 and 22 and 23 and 24 and 25 of metadata tag "Warps!" of player to purple stained glass pane named " "
+        set slot 8 of metadata tag "Warps!" of player to barrier named "&rClose" with lore "Click me to close this GUI!"
+        set slot 10 of metadata tag "Warps!" of player to nether wart block named "&rNether!" with lore "&rClick Me to warp to the nether!"
+        set slot 12 of metadata tag "Warps!" of player to barrier named "&rComming soon!"
+        set slot 14 of metadata tag "Warps!" of player to barrier named "&rComming soon!"
+        set slot 16 of metadata tag "Warps!" of player to barrier named "&rComming soon!"
+        set slot 18 of metadata tag "Warps!" of player to barrier named "&rRandom Area"
+        set slot 26 of metadata tag "Warps!" of player to barrier named "More soon!"
+        open (metadata tag "Warps!" of player) to player
+on inventory click:
+    if event-inventory =  (metadata tag "Warps!" of player):
+        if event-inventory is not player's inventory:
+            cancel event
+            if index of event-slot is 0:
+                close player's inventory
+                if {combattag::%player's uuid%} is set:
+                    cancel event
+                    send "{@prefix}You may not go to the Crates now!" to player
+                else:
+                    if {cratesrequest::%player's uuid%} is not set:
+                        set {cratesrequest::%player's uuid%} to true
+                        send action bar "&aSending you to Crates in 3 seconds!" to player
+                        play sound "entity.experience_orb.pickup" to player
+                        if {cratesrequest::%player's uuid%} is true:
+                            wait 1 second
+                            if {cratesrequest::%player's uuid%} is true:
+                                send action bar "&aSending you to Crates in 2 seconds!" to player
+                                play sound "entity.experience_orb.pickup" to player
+                                if {cratesrequest::%player's uuid%} is true:
+                                    wait 1 second
+                                    if {cratesrequest::%player's uuid%} is true:
+                                        send action bar "&aSending you to Crates in 1 second!" to player
+                                        play sound "entity.experience_orb.pickup" to player
+                                        if {cratesrequest::%player's uuid%} is true:
+                                            wait 1 second
+                                            if {cratesrequest::%player's uuid%} is true:
+                                                send title "&a&lWelcome to Crates" to player
+                                                teleport player to {crates}
+                                                play sound "entity.enderman.teleport" to player
+                                                delete {cratesrequest::%player's uuid%}
+            if index of event-slot is 8:
+                close player's inventory
+            if index of event-slot is 10:
+                close player's inventory
+                if {combattag::%player's uuid%} is set:
+                    cancel event
+                    send "{@prefix}You may not go to the Nether now!" to player
+                else:
+                    if {netherrequest::%player's uuid%} is not set:
+                        set {netherrequest::%player's uuid%} to true
+                        send action bar "&aSending you to the &c&lNether&r&a in 3 second" to player
+                        play sound "entity.experience_orb.pickup" to player
+                        if {netherrequest::%player's uuid%} is true:
+                            wait 1 second
+                            if {netherrequest::%player's uuid%} is true:
+                                send action bar "&aSending you to the &c&lNether&r&a in 2 second" to player
+                                play sound "entity.experience_orb.pickup" to player
+                                if {netherrequest::%player's uuid%} is true:
+                                    wait 1 second
+                                    if {netherrequest::%player's uuid%} is true:
+                                        send action bar "&aSending you to the &c&lNether&r&a in 1 second" to player
+                                        play sound "entity.experience_orb.pickup" to player
+                                        if {netherrequest::%player's uuid%} is true:
+                                            wait 1 second
+                                            if {netherrequest::%player's uuid%} is true:
+                                                send action bar "&aSending you to the &c&lNether&r" to player
+                                                teleport player to {nether}
+                                                play sound "entity.enderman.teleport" to player
+                                                delete {netherrequest::%player's uuid%}
+            if index of event-slot is 18:
+                close player's inventory
+                if {combattag::%player's uuid%} is set:
+                    cancel event
+                    send "{@prefix}You may not go to this location now!" to player
+                else:
+                    if {randomarearequest::%player's uuid%} is not set:
+                        set {randomarearequest::%player's uuid%} to true
+                        send action bar "&aSending you to Random Area in 3 seconds!" to player
+                        play sound "entity.experience_orb.pickup" to player
+                        if {randomarearequest::%player's uuid%} is true:
+                            wait 1 second
+                            if {randomarearequest::%player's uuid%} is true:
+                                send action bar "&aSending you to Random Area in 2 seconds!" to player
+                                play sound "entity.experience_orb.pickup" to player
+                                if {randomarearequest::%player's uuid%} is true:
+                                    wait 1 second
+                                    if {randomarearequest::%player's uuid%} is true:
+                                        send action bar "&aSending you to Random Area in 1 second!" to player
+                                        play sound "entity.experience_orb.pickup" to player
+                                        if {randomarearequest::%player's uuid%} is true:
+                                            wait 1 second
+                                            if {randomarearequest::%player's uuid%} is true:
+                                                send action bar "&aSending you to Random Area Now!" to player
+                                                teleport player to {randomarea}
+                                                play sound "entity.enderman.teleport" to player
+                                                delete {randomarearequest::%player's uuid%}
+                  
+#            if event-slot is 26:
+#                set metadata tag "Warps 2!" of player to chest inventory with 3 rows named "Warps!"
+#                set slot 0 and 1 and 2 and 3 and 4 and 5 and 6 and 7 and 9 and 10 and 11 and 12 and 13 and 14 and 15 and 16 and 17 and 18 and 19 and 20 and 21 and 22 and 23 and 24 and 25 and 26 of metadata tag "Warps 2!" of player to purple stained glass pane named " "
+#                set slot 8 of metadata tag "Warps 2!" of player to barrier named "&rClose" with lore "Click me to close this GUI!"
+#                set slot 10 of metadata tag "Warps 2!" of player to jungle log named "&rJungle Warp!" with lore "&rClick Me to warp to the Jungle!"
+#                set slot 12 of metadata tag "Warps 2!" of player to sculk block named "&rDeepDark Warp!" with lore "&rClick Me to warp to DeepDark!"
+#                set slot 14 of metadata tag "Warps 2!" of player to barrier named "&r&cComming Soon!"
+#                set slot 16 of metadata tag "Warps 2!" of player to barrier named "&r&cComming Soon!"
+#                set slot 18 of metadata tag "Warps 2!" of player to barrier named "Return to the last page!" with lore "Click me to return to the last page!"
+#                open (metadata tag "Warps 2!" of player) to player
+#on inventory click:
+#    if event-inventory =  (metadata tag "Warps 2!" of player):
+#        if event-inventory is not player's inventory:
+#            cancel event
+#        if event-slot is 18:
+#            open (metadata tag "Warps!" of player) to player
+on player move:
+    if {netherrequest::%player's uuid%} is true:
+        delete {netherrequest::%player's uuid%}
+        send action bar "&cTeleport request canceled because you moved" to player
+        play sound "entity.villager.no" to player
+    if {cratesrequest::%player's uuid%} is true:
+        delete {cratesrequest::%player's uuid%}
+        send action bar "&cTeleport request canceled because you moved" to player
+        play sound "entity.villager.no" to player
+    if {randomarearequest::%player's uuid%} is true:
+        delete {randomarearequest::%player's uuid%}
+        send action bar "&cTeleport request canceled because you moved" to player
+        play sound "entity.villager.no" to player

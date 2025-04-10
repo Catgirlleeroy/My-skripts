@@ -1,0 +1,27 @@
+options:
+	fefix: &2[&6Bank&2]&7
+	cool: 5
+command /pay [<offlineplayer>] [<number>]:
+	cooldown: {@cool} seconds
+	cooldown message: Once every {@cool} seconds!
+	trigger:
+		if arg-1 is not set:
+			send "{@fefix} Please insert a player. /pay (player) (amount)" to player
+		else:
+			arg-1 is not player
+			if arg-2 is not set:	
+				send "{@fefix} Please insert the amount you want to pay. /pay %arg-1% (amount)" to player
+			else:
+				if arg-2 is greater than 99:
+					if arg-2 <= {newcoins::%player's uuid%}:
+						send "{@fefix} Succesfully sent %arg-2% coins to %arg-1%" to player
+						send "{@fefix} You received %arg-2% coins from %player%!" to arg-1
+						remove arg-2 from {newcoins::%player's uuid%}
+						add arg-2 to {newcoins::%arg-1's uuid%}
+					else:
+						send "{@fefix} Not enough money!" to player
+				else:
+					send "{@fefix} Please insert an amount greater or equal to 100 coins. /pay %arg-1% (amount)" to player
+
+on tab complete of "/pay":
+    set tab completions for position 2 to "(amount)"

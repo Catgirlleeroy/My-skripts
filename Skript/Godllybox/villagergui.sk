@@ -1,0 +1,89 @@
+function helpmessage(p: player):
+	send "&6How to use this command? nice, here you go dumbass" to {_p}
+	send "&6/villagergui check &c-> &7to check a name of any entity" to {_p}
+	send "&6/villagergui create (name) (name of the shopkeeper to link to) ('empty'/armor/comp) &c-> &7do not actually write 'empty', just dont put anything to open tool shop" to {_p}
+	send "&6/villagergui delete (name) &c-> &7does what it says" to {_p}
+	send "&6/villagergui list &c-> &7literally just gives you a list of villagerguis" to {_p}
+	send "&aHope i helped. &7I even put colors!" to {_p}
+
+
+
+on right click:
+    if {villager::%clicked entity's name%} is set:
+        open chest with 3 rows named "&f&lShops <-> Click an item!" to player
+        loop numbers between 0 and 26:    
+            format slot loop-number of player with gray stained glass pane named " " to close
+        format slot 13 of player with iron chestplate with name "&rArmor!" to run "shopkeeper open %{villager::%clicked entity's name%::armor}% %player%"
+        format slot 11 of player with iron sword with name "&rTools!" to run "shopkeeper open %{villager::%clicked entity's name%}% %player%"
+        format slot 15 of player with sticky piston with name "&rCompressor!" to run "shopkeeper open %{villager::%clicked entity's name%::comp}% %player%"
+    if {check.entity.%player%} is set:
+        send clicked entity's name to player
+
+on inventory click:
+    if name of event-inventory is "&f&lShops <-> Click an item!":
+        cancel event
+
+command /villagergui [<text>] [<text>] [<text>] [<text>]:
+	permission: op
+	trigger:
+		if arg-1 is "check":
+			if {check.entity.%player%} is not set:
+				send "&aRight click an entity to check its name!" to player
+				set {check.entity.%player%} to 1
+			else:
+				send "&cDisabled check entity." to player
+				delete {check.entity.%player%}
+		else if arg-1 is "create":
+			if arg-2 is set:
+				if arg-3 is set:
+					if arg-4 is "armor" or "comp":
+						send "&2Created %arg-4% shop with name %arg-2% and shopkeeper linked to %arg-3%" to player
+						set {villager::%arg-2%::%arg-4%} to arg-3
+					else if arg-4 is set:
+						send "&4Invalid type" to player
+					else:
+						send "&2Created tool shop with name %arg-2% and shopkeeper linked to %arg-3%" to player
+						set {villager::%arg-2%} to arg-3
+				else:
+					send "&4Invalid name of shopkeeper" to player
+			else:
+				send "&4Invalid name" to player
+		else if arg-1 is "delete":
+			if arg-2 is set:
+				if {villager::%arg-2%} is set:
+					delete {villager::%arg-2%}
+					delete {villager::%arg-2%::armor}
+					delete {villager::%arg-2%::comp}
+				else:
+					send "&4There is no shop with that name" to player
+			else:
+				send "&4Invalid name" to player
+		else if arg-1 is "deleteall":
+			delete {villager::*}
+		else if arg-1 is "list":
+			set {villager.counter} to 0
+			loop {villager::*}:
+				send "&6- &c%{villager.counter}+1% &6-" to player
+				send "&6Shop: &a%loop-index% &7linked to &b%loop-value%" to player
+				loop {villager::%loop-index%::*}:
+					send "&6Shop: &a%loop-index-1% &7of &a%loop-index-2% &7linked to &b%loop-value-2%" to player
+				add 1 to {villager.counter}
+			send " " to player
+			send "&6%{villager.counter}% shop counted succesfully!" to player
+		else if arg-1 is "help":
+			helpmessage(player)
+		else if arg-1 is not set:
+			helpmessage(player)
+		else:
+			send "&4Wrong command. To see a list of commands, use /villagergui help" to player
+
+on tab complete for "/villagergui":
+	set tab completions for position 1 to "check","create","delete","list" and "help"
+	tab arg-1 is "create" or "delete"
+	set tab completions for position 2 to "Name"
+	tab arg-1 is "create"
+	set tab completions for position 3 to "ShopkeeperName"
+	set tab completions for position 4 to "Armor" and "Comp"
+on inventory click:
+	inventory name of the event-inventory is "&f&lShops <-> Click an item!"
+	cancel event

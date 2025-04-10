@@ -1,0 +1,54 @@
+command /newbie:
+    trigger:
+        if {newbie::*} contains player's uuid:
+            remove player's uuid from {newbie::*}
+            send "&eYou're no longer with newbie protection!"
+        else:
+            send "&cYou're not a newbie anymore."
+
+command /settimeplayed [<offline player>] [<timespan>]:
+    permission: yleoft.skripts.playtime.set
+    trigger:
+        if arg-1 and arg-2 is set:
+            set arg-1's time played to arg-2
+            send "&e'%arg-1%' &7time played set to &b%arg-2%"
+        else:
+            send "&c-> /settimeplayed <player> <time>"
+
+command /resetplaytime [<offline player>]:
+    permission: yleoft.skripts.playtime.reset
+    trigger:
+        if arg-1 is set:
+            set arg-1's time played to 1 second
+        else:
+            set player's time played to 1 second
+
+on join:
+    if player's time played is lower than or equal to 1 hour and 40 minutes:
+        add player's uuid to {newbie::*}
+
+on script load:
+    loop all players:
+        if loop-player's time played is lower than or equal to 1 hour and 40 minutes:
+            if {newbie::*} doesn't contain loop-player's uuid:
+                add loop-player's uuid to {newbie::*}
+                send "&eYou're now with newbie protection!" to loop-player
+
+on damage:
+    event is not cancelled
+    if attacker is set:
+        if attacker and victim is a player:
+            if victim's time played is greater than 1 hour and 40 minutes:
+                if {newbie::*} contains victim's uuid:
+                    remove victim's uuid from {newbie::*}
+                    send "&eYou're no longer protected as a new player!" to victim
+            if attacker's time played is greater than 1 hour and 40 minutes:
+                if {newbie::*} contains attacker's uuid:
+                    remove attacker's uuid from {newbie::*}
+                    send "&eYou're no longer protected as a new player!" to attacker
+            if {newbie::*} contains attacker's uuid:
+                cancel event
+                send "&cDo /newbie to attack players!" to attacker
+            if {newbie::*} contains victim's uuid:
+                cancel event
+                send "&cYou can't attack new players!" to attacker

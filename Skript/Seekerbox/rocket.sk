@@ -1,0 +1,34 @@
+options:
+	Cldown: 0 seconds
+	Sped: 2
+	rocket: a firework rocket named "&c&lINFINITE &f&lFIREWORK ROCKET" with lore "&eWhen &bRight-Clicked &egives you a boost, just like a normal," and "&efirework rocket, but you don't lost the rocket in use!" and "" and "&4Must have elytra equipped!"
+    
+on rightclick with a trident:
+	if player's tool is a trident:
+		if player's tool's name is "&f&lINFINITE FIREWORK ROCKET":
+			if {combatlog.player::%player's uuid%::timer} is not set:
+				if player is gliding:
+					dashf(player, "INFINITE FIREWORK ROCKET", {@Cldown}, {@Sped})
+
+
+on glide:
+	if {combatlog.player::%player's uuid%::timer} is set:
+		cancel event
+		wait 1 second
+
+command /infiniterocket:
+	permission: infiniterockets.sk
+	trigger:
+		give player {@rocket}
+
+on rightclick on air holding a firework rocket:
+	if event-item is {@rocket}:
+		if player is gliding:
+			if player's gamemode is not creative:
+				give {@rocket} to player
+
+on rightclick holding a firework rocket:
+	if event-item is {@rocket}:
+		if clicked block is not air:
+			if player's gamemode is not creative:
+				cancel event

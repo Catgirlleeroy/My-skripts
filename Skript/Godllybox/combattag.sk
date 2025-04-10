@@ -1,0 +1,123 @@
+options:
+	prefix: &8[&c&lCombatTag&8] &7
+	time: 15 seconds
+on load:
+	set {n} to 1
+	set {v} to -1
+	add "spawn" to {blockedcmds::*}
+	add "ft" to {blockedcmds::*}
+	add "fly" to {blockedcmds::*}
+on unload:
+	delete {blockedcmds::*}
+every 1 minute:
+	set {n} to 1
+	set {v} to -1
+on death:
+	victim is player
+	{combattag::%victim's uuid%} is set
+	{combattag::%attacker's uuid%} is set
+	delete {combattag::%victim's uuid%}
+	delete {combattag::%attacker's uuid%}
+	send "{@prefix}You are No longer in combat!" to attacker
+on damage:
+	if attacker or victim has permission "combat.bypass":
+		stop
+	else:
+		if {pvpoff::%victim%} is true:
+			stop
+		else:
+			victim is player
+			"%damage cause%" contains "attack"
+			add 1 to {n}
+			set {v} to {v} - 1
+			set {_n} to {n}
+			set {_v} to {v}
+		
+			if {combattag::%attacker's uuid%} is not set:
+			
+				send "&c&lCombat Tag!" to attacker
+				send "{@prefix}You may not go to spawn now! you hit %victim%!" to attacker
+			if {combattag::%victim's uuid%} is not set:
+			
+				send "&c&lCombat Tag!" to victim
+				send "{@prefix}You may not go to spawn now! you got hit by %attacker%" to victim
+			set {combattag::%victim's uuid%} to {v}
+			set {combattag::%attacker's uuid%} to {n}
+			set flight mode of attacker to false
+			set flight mode of victim to false
+			wait {@time}
+			if  {combattag::%attacker's uuid%} is {_n}:
+				delete {combattag::%attacker's uuid%}
+				send "{@prefix}&aYou are out of combattag you may go to spawn now!" to attacker
+			if {combattag::%victim's uuid%} is {_v}:
+				delete {combattag::%victim's uuid%}
+				send "{@prefix}&aYou are out of combattag you may go to spawn now!" to victim
+on command:
+	{combattag::%player's uuid%} is set
+	loop {blockedcmds::*}:
+		
+		if command contains loop-value:
+			cancel event
+			send "{@prefix}You may not execute this command while ur in combat!"
+			stop
+on region enter:
+	{combattag::%player's uuid%} is set
+	if "%event-region%" contains "spawn":
+		set {_x} to the x coordinate of player
+		set {_z} to the z coordinate of player
+		set {_y} to the y coordinate of player
+		set {_loc} to location of player
+		push player north with speed 2
+		set gliding state of player to false
+		send "{@prefix}&7You may not go to spawn while you are in combat."
+		cancel event
+		if "%event-region%" contains "spawn":
+			#set z coordinate of {_loc} to ({_z}+2)
+			
+			push player south with speed (50/{_y})
+#command /setcombat [<player>]:
+#	permission: combat.set
+#	trigger:
+#		if arg-1 is not set:
+#			set {combattag::%player's uuid%} to true
+#			send "done!" to player
+#		else:
+#			if arg-1 is set:
+#				set {combattag::%arg-1's uuid%} to true
+#				send "done!" to player
+#command /removecombat [<player>]:
+#	permission: combat.set
+#	trigger:
+#		if arg-1 is not set:
+#			delete {combattag::%player's uuid%}
+#			send "done!" to player
+#		else:
+#			if arg-1 is set:
+#				delete {combattag::%arg-1's uuid%}
+#				send "done!"
+on quit:
+	if {combattag::%player's uuid%} is set:
+		broadcast "{@prefix} %player% just combatlogged!"
+		delete {combattag::%player's uuid%}
+command combattag <text> [<player>]:
+	permission: combat.set
+	trigger:
+		if arg-1 is not set:
+			send "{@prefix} Error Please specify a Argument!"
+		else:
+			if arg-1 is "set":
+				if arg-2 is not set:
+					set {combattag::%player's uuid%} to true
+					send "{@prefix} Set Your combattag to true!"
+				else:
+					if arg-2 is set:
+						set {combattag::%arg-2's uuid%} to true
+						send "{@prefix} Set %arg-2%'s combattag to true!"
+			if arg-1 is "unset":
+				if arg-2 is not set:
+					delete {combattag::%player's uuid%}
+					send "{@prefix} Set Your combattag to false!"
+				else:
+					if arg-2 is set:
+						delete {combattag::%arg-2's uuid%}
+						send "{@prefix} Set %arg-2%'s combattag to false!"

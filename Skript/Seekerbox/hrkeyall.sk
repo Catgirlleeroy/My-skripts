@@ -1,0 +1,80 @@
+options:
+	hrkeyall: 60 minutes
+
+on join:
+	if size of players is greater than 50:
+		if {hrkeyalltrue} is not set:
+			set {hrkeyalltrue} to true
+			set {hrkeyall1} to {@hrkeyall}
+			set {hrkeyallc} to 0
+			set {hrkeyallprogression} to {hrkeyallc}/60*100
+			set {hrkeyallbossbar1} to bossbar with id "hourkeyall1" with title "&a&lHourly Keyall! - %{hrkeyallprogression}%％" with color cyan
+			make console execute "/bc &b&lHourly Keyall Has Started!"
+			play sound "entity.wither.spawn" with volume 50 to all players
+			loop all players:
+				#set {hrkeyallbossbar} to bossbar with id "hourkeyall" with title "&4&lHourly Key all activated" with color blue #with progress {hrkeyallprogression} with colors blue
+				add loop-player to {hrkeyallbossbar1}
+			set title of {hrkeyallbossbar1} to "&a&lHourly Keyall! - %{hrkeyallprogression}%％"
+			set bar progress of {hrkeyallbossbar1} to {hrkeyallprogression}
+		else:
+			add player to {hrkeyallbossbar1}
+
+
+
+on quit:
+	remove player from {hrkeyallbossbar1}
+
+every minute:
+	if {hrkeyalltrue} is set:
+		remove 1 minute from {hrkeyall1}
+		add 1 to {hrkeyallc}
+		set {hrkeyallprogression} to {hrkeyallc}/60*100
+		if {hrkeyallprogression} is 100:
+			set title of {hrkeyallbossbar1} to "&a&lHourly Keyall! - %{hrkeyallprogression}%％"
+			make console execute "/crate key giveall keyall_crate 1"
+			make console execute "/bc &4&lHour Keyall Has Happend!"
+			play sound "ui.toast.challenge_complete" with volume 99 and pitch 5 to all players
+			if {online-players} is greater than 50:
+				set {hrkeyall1} to {@hrkeyall}
+				set {hrkeyallc} to 0
+				set {hrkeyallprogression} to {hrkeyallc}/60*100
+				set bar progress of {hrkeyallbossbar} to {hrkeyallprogression}
+				set title of {hrkeyallbossbar1} to "&a&lHourly Keyall! - %{hrkeyallprogression}%％"
+				set bar progress of {hrkeyallbossbar1} to {hrkeyallprogression}
+			else:
+				loop all players:
+					remove loop-player from {hrkeyallbossbar1}
+				delete {hrkeyallbossbar} 
+				delete {hrkeyallprogression}
+				delete {hrkeyall1}
+				delete {hrkeyalltrue}
+				delete {hrkeyallc}
+				play sound "entity.wither.death" with volume 200 to all players
+				make console execute "/bc &c&lHourly Keyall Has Stopped!"
+		else:
+			set bar progress of {hrkeyallbossbar1} to {hrkeyallprogression}
+			set title of {hrkeyallbossbar1} to "&a&lHourly Keyall! - %{hrkeyallprogression}%％"
+	else:
+		stop
+
+
+
+                        
+command /stophrkeyall:
+	permission: op
+	trigger:
+		loop all players:
+			remove loop-player from {hrkeyallbossbar1}
+		delete {hrkeyallprogression}
+		delete {hrkeyall1}
+		delete {hrkeyalltrue}
+		delete {hrkeyallc}
+		delete {hrkeyallbossbar1}
+				
+command /seehrkeyallvar1:
+	permission: op
+	trigger:
+		send "%{hrkeyallprogression}%%nl%%{hrkeyall1}%%nl%%{hrkeyalltrue}%%nl%%{hrkeyallc}%%nl%%{hrkeyallbossbar1}%" to player
+			
+		
+		

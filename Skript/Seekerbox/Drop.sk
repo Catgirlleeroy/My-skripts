@@ -1,0 +1,37 @@
+on drop:
+  if player's gamemode is survival:
+    if {allowdroptoggle::%player%} is not set:
+      if {allowdrop::%player%} is not set:
+        send "&cPlease use the command '/drop'" to player
+        cancel event
+
+command /drop [<text>]:
+  trigger:
+    if arg-1 is not set:
+      if {allowdroptoggle::%player%} is not set:
+        delete {allowdrop::%player%}
+        send "&bYou can drops items for &e30 &bseconds!" to player
+        wait 1 second
+        set {allowdrop::%player%} to 30
+        while {allowdrop::%player%} is set:
+          add -1 to {allowdrop::%player%}
+          wait 1 second
+          if {allowdrop::%player%} is 0:
+            delete {allowdrop::%player%}
+      else:
+        send "&eYou already turned on dropping items!"
+    else if arg-1 is "on":
+      delete {allowdrop::%player%}
+      set {allowdroptoggle::%player%} to true
+      send "&aYou can drop your items!" to player
+    else if arg-1 is "off":
+      delete {allowdroptoggle::%player%}
+      delete {allowdrop::%player%}
+      send "&4You have turned off dropping items!"
+      
+
+on quit:
+  delete {allowdrop::%player%}
+
+on tab complete of "/drop":
+  set tab completions of position 1 to "on" and "off"

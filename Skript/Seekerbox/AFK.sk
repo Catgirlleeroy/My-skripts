@@ -1,0 +1,73 @@
+options:
+    afktime: 10 minutes
+
+command /timeafked [<offlineplayer>]:
+    trigger:
+        if:
+            arg-1 is set
+            player has permission "skript.timeafked"
+        then:
+            send "&5Total time afked of %arg-1%: &d%{-afktimertotal::%arg-1's uuid%}%"
+            stop
+        send "&5Your total time afked: &d%{-afktimertotal::%player's uuid%}%"
+
+on join:
+    if {afkpool.afk.%player%} is not set:
+        delete {afkpool.afk.%player%}
+    if {-afktimertotal::%player's uuid%} is not set:
+        set {-afktimertotal::%player's uuid%} to 0 seconds
+
+every second:
+    loop all players:
+        if "%region at loop-player%" contains "afk":
+            if {afkpool.afk.%loop-player%} is true:
+                if {-afktimer::%loop-player's uuid%} is greater than 0 second:
+                    remove 1 second from {-afktimer::%loop-player's uuid%}
+                    add 1 second to {-afktimertotal::%loop-player's uuid%}
+                    if loop-player has permission "customplus.sk":
+                        send action bar "&f &d&lAFK &8&l»&f %{-afktimer::%loop-player's uuid%}% | &dCustom+ Boosted" to loop-player # @skignore
+                    else:
+                        send action bar "&f &5&lAFK &8&l»&f %{-afktimer::%loop-player's uuid%}%" to loop-player # @skignore
+                else if {-afktimer::%loop-player's uuid%} is 0 seconds:
+                    set {-afktimer::%loop-player's uuid%} to {@afktime}
+                    if uncolored name of loop-player's helmet is "AFK Helmet":
+                        add 1 to {afkrewardcount::%loop-player%}
+                    if uncolored name of loop-player's chestplate is "AFK Chestplate":
+                        add 1 to {afkrewardcount::%loop-player%}
+                    if uncolored name of loop-player's leggings is "AFK Leggings":
+                        add 1 to {afkrewardcount::%loop-player%}
+                    if uncolored name of loop-player's boots is "AFK Boots":
+                        add 1 to {afkrewardcount::%loop-player%}
+                    if loop-player has permission "customplus.sk":
+                        give loop-players {afkrewardcount::%loop-player%}+5 of diamond named "&eAFK TOKEN" 
+                        send "you have got afk tokens" to loop-player	
+                    else:
+                        give loop-players {afkrewardcount::%loop-player%}+1 of diamond named "&eAFK TOKEN" 
+                        send "you have got afk tokens" to loop-player
+                    delete {afkrewardcount::%loop-player%}
+every second:
+    loop all players:
+        if "%region at loop-player%" contains "afk":
+            set {afkpool.afk.%loop-player%} to true
+
+on region exit:
+    if "%event-region%" contains "afk":
+        delete {afkpool.afk.%player%}
+        delete {-afktimer::%player's uuid%}
+        send title "&cYou have left the afk area" to player
+
+on region enter:
+    if "%event-region%" contains "afk":
+        set {afkpool.afk.%player%} to true
+        set {-afktimer::%player's uuid%} to {@afktime}
+        send title "&eYou have Entered the afk area" to player
+on quit:
+    if "%region at player%" contains "afk":
+        delete {afkpool.afk.%player%}
+        delete {-afktimer::%player's uuid%}
+        send title "&cYou have left the afk area" to player
+on join:
+    if "%region at player%" contains "afk":
+        set {afkpool.afk.%player%} to true
+        set {-afktimer::%player's uuid%} to {@afktime}
+        send title "&eYou have Entered the afk area" to player

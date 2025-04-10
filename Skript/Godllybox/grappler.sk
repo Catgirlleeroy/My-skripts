@@ -1,0 +1,70 @@
+command /grappler:
+	permission: op
+	trigger:
+		give fishing rod named "&b&lGrappling Hook" with lore "&7(Right-Click to use grappler)" to player
+
+on fish:
+	if uncolored name of player's tool is "Grapple":
+		if "%fish state%" is "IN_GROUND" or "CAUGHT_ENTITY" or "CAUGHT" or "REEL_IN":
+			if {grapplemode2::%player%} is not set:
+				if {grapplewait::%player%} is not set:
+					push player (direction from player's location to fishing hook) with speed 3
+					play sound "entity.breeze.wind_burst" to all players in radius 5 of player
+					draw 3 gust at player with offset vector(0,1,0)
+					loop 5 times:
+						loop 5 times:
+							play white dust at location(player's x coordinate,player's y coordinate+1,player's z coordinate)
+							play white dust at location(player's x coordinate,player's y coordinate+1,player's z coordinate)
+							play white dust at location(player's x coordinate,player's y coordinate+1,player's z coordinate)
+							wait 1 tick
+					set {grapplewait::%player%} to 5
+					while {grapplewait::%player%} is set:
+						add -1 to {grapplewait::%player%}
+						wait 1 second
+						if {grapplewait::%player%} is 0:
+							delete {grapplewait::%player%}	
+				else:
+					send action bar "&9&lGrapple cool down: %{grapplewait::%player%}%s"
+					play sound "entity.villager.hurt" at volume 10 and pitch 1 to player
+			else if "%fish state%" is "CAUGHT_ENTITY" or "CAUGHT" or "REEL_IN" or "IN_GROUND":
+				if {grapplemode2wait::%player%} is not set:
+					set {grapplemode2wait::%player%} to 3
+					loop all players in radius 4 of fishing hook:
+						if {level::%loop-player%} is set:
+							if {pvpoff::%loop-player%} is not set:
+								if "%region at fishing hook%" does not contain "spawndoorthing" or "spawn" or "woodpvpoff":
+									push loop-player (direction from loop-player's location to player) with speed 3
+									draw 3 explosion at loop-player with offset vector(0,1,0)
+									play sound "entity.wither.ambient" with volume 10 with pitch 50 at loop-player
+					while {grapplemode2wait::%player%} is set:
+						add -1 to {grapplemode2wait::%player%}
+						wait 1 second
+						if {grapplemode2wait::%player%} is 0:
+							delete {grapplemode2wait::%player%}
+				else:
+					send action bar "&c&lGrapple cool down: %{grapplemode2wait::%player%}%s"
+					play sound "entity.villager.hurt" at volume 10 and pitch 1 to player
+
+
+on left click:
+	if uncolored name of player's tool is "Grapple":
+		if {grapplemode2::%player%} is not set:
+			set {grapplemode2::%player%} to true
+			send "&cPull mode!" to player
+		else:
+			delete {grapplemode2::%player%}
+			send "&cGrapple mode!" to player
+
+
+
+
+
+
+on join:
+	delete {grapplewait::%player%}
+	delete {grapplemode2::%player%}
+	delete {grapplemode2wait::%player%}
+on quit:
+	delete {grapplewait::%player%}
+	delete {grapplemode2::%player%}
+	delete {grapplemode2wait::%player%}

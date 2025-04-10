@@ -1,0 +1,251 @@
+command /heal:
+	trigger:
+		execute player command "/eheal"
+command /worldguard:heal:
+	trigger:
+		execute player command "/eheal"
+command /perks [<text>]:
+    trigger:
+        if arg-1 is "vip":
+            send "&a1. Green Eglow" to player
+            send "&a2. Green Chatcolor" to player
+            send "&a3. 3 Personal Vaults" to player
+        if arg-1 is "vip+":
+            send "&a1. Green and Aqua Eglow" to player
+            send "&a2. Red and Blue Chatcolor" to player
+            send "&a3. 4 Personal Vaults"
+        if arg-1 is "mvp":
+            send "&b1. Blue and Red Eglow" to player
+            send "&b2. Blue and Red Chatcolor" to player
+            send "&b3. 6 Personal Vaults" to player
+        if arg-1 is "mvp+":
+            send "&b1. Blue,Red and Black Eglow" to player
+            send "&b2. Blue and Red Chatcolor" to player
+            send "&b3. 8 Personal Vaults"
+        if arg-1 is "Platinum":
+            send "&71. Green,Aqua,Blue,Purple and Cyan Chatcolor"
+            send "&72. Green,Aqua,Blue,Black,Darkaqua and Darkblue Eglow"
+            send "&73. Kill Effect"
+            send "&74. 10 Personal Vaults"
+        if arg-1 is "Legend":
+            send "&61. All Platinum perms" to player
+            send "&62. Red,Orange and Yellow Chatcolor" to player
+            send "&63. Red,Darkred,Gold and Yellow Eglow" to player
+            send "&64. Kill Effect: Flame,Fire,Potion and TNT" to player
+            send "&65. /fly" to player
+            send "&66. 15 Personal Vaults" to player
+        if arg-1 is "Mythic":
+            send "&61. All Legend perms" to player
+            send "&62. Black and Pink Chatcolor" to player
+            send "&63. Pink Chatcolor" to player
+            send "&64. Nickname(Basic Minecraft colors)" to player
+            send "&65. 20 Personal Vaults" to player
+        if arg-1 is "divine":
+            send "&71. All Mythic perms" to player
+            send "&72. Crystal Chatcolor" to player
+            send "&73. White Eglow" to player
+            send "&74. Kill effect: Rain" to player
+            send "&75. /Heal" to player
+            send "&76. 25 Personal Vaults" to player
+        if arg-1 is "Cosmmic":
+            send "&51. All Divine perms" to player
+            send "&52. All Chatcolors" to player
+            send "&53. All Eglow and Blink" to player
+            send "&54. Killeffect: Potion" to player
+            send "&55. 30 Personal Vaults" to player
+        if arg-1 is "Custom":
+            send "&f1. All Chatcolors" to player
+            send "&f2. All Kill effect" to player
+            send "&f3. 50 Personal Vaults" to player
+            send "&f4. Custom Suffix" to player
+            send "&f5. Fly" to player
+            send "&f6. Warp Gui Compass" to player
+        if arg-1 is "Custom+":
+            send "&f1. All Chatcolors" to player
+            send "&f2. All Kill effect" to player
+            send "&f3. 2x XP Gain" to player
+            send "&f4. 25 PV's" to player
+            send "&f5. Custom Prefix and Suffix" to player
+            send "&f6. 5x AFK Rewards" to player
+            send "&f7. Fly" to player
+            send "&f8. Warp Gui Compass" to player
+command /staffperks [<text>]:
+  permission: perks.staff
+  trigger:
+    if arg-1 is "trainee":
+      send "1. Tempmute(max 3 days)" to player
+      send "2. Warn" to player
+      send "3. Staffchat" to player
+    if arg-1 is "helper":
+      send "1. Kick" to player
+      send "2. Tempmute (no limit)" to player
+      send "3. Unmute" to player
+      send "4. Clearlag(/clearlag)" to player
+      send "5. Jail" to player
+      send "6. Clearchat(/cc)" to player
+      send "7. Staffchat" to player
+      send "8. Vulcan Alerts" to player
+    if arg-1 is "Mod" or "Moderator":
+      send "1. Fly" to player
+      send "2. Clearchat(/cc)" to player
+      send "3. Jail" to player
+      send "4. Teleport(/tp)" to player
+      send "5. Warn" to player
+      send "6. Unwarn" to player
+      send "7. Tempban" to player
+      send "8. Mute" to player
+      send "9. Unmute" to player
+      send "10. Opening inventory and Enderchests(/Openinv)(/Openender)" to player
+      send "11. Clearlag(/clearlag)" to player
+      send "12. Vanish(/v)" to player
+      send "13. Vulcan Alerts" to player
+      send "14. Staffchat"
+    if arg-1 is "sr-mod":
+      send "1. Fly" to player
+      send "2. Clearchat(/cc)" to player
+      send "3. Jail" to player
+      send "4. Teleport(/tp)" to player
+      send "5. Teleport here" to player
+      send "6. Warn" to player
+      send "7. Unwarn" to player
+      send "8. Banlist(/Banlist)"
+      send "9. Tempban" to player
+      send "10. Checkban(/checkban)" to player
+      send "11. Mute" to player
+      send "12. Unmute" to player
+      send "13. Checkmute (/checkmute)" to player
+      send "14. Opening inventory and Enderchests(/Openinv)(/Openender)" to player
+      send "15. Clearlag(/clearlag)" to player
+      send "16. Vanish(/v)" to player
+      send "17. Edit and Acces All player's vaults" to player
+      send "18. Staffchat"
+      send "19. Vulcan Alerts" to player
+#on tab complete:
+#  if input is "/staffperks":
+#    set tab completion to "trainee", "Helper", "Mod", "Sr-mod"
+command /rules:
+	trigger:
+		send "&7----------------------------------------------------" to player
+		send ""
+		send "&71. &c&lNO SPAM KILLING" to player
+		send "&72. &c&lNO ADVERTISING OF ANYKIND &7(unless told to)" to player
+		send "&73. &c&lNO HACKING/CHEATING OF ANYKIND" to player
+		send "&74. &c&lDONT DISRESPECT STAFF" to player
+		send "&75. &c&lNO STAFF IMPERSONATION" to player
+		send "&76. &c&lNO BLOCK GLITCHING" to player
+		send "&77. &c&lNO AFK MINING" to player
+		send "&78. &c&lNO SPAMMING CHAT/FLOODING CHAT" to player
+		send "&79. &c&lNO RACISM/SLURS" to player
+		send "&710. &c&lNO GRIEFING" to player
+		send "&711. &c&lNO BUG ABUSING" to player
+		send "&712. &c&lUSE COMMON SENSE" to player
+		send "&713. &c&lNO SCAMING" to player
+		send "&714. &c&lNO NSFW" to player
+		send "&715. &a&lHAVE FUN!" to player
+		send "" to player
+		send "&7----------------------------------------------------" to player
+		
+		
+command /crates:
+	trigger:
+		teleport player to {crates}
+		
+
+
+on join:
+	if player has played before:
+		set join message to "&8[&a+&8] %player%"		
+	else:
+		set join message to "&e&lWelcome &a&l%player%&7! &8[&b%number of offline players%&8]"
+
+on quit:
+	set quit message to "&8[&c-&8] %player%"
+		
+
+
+command /bc [<text>]:
+    permission: broadcast.*
+    trigger:
+        if arg-1 is set:
+            broadcast ""
+            broadcast "&8[&b&lSeeker&a&lBox&8]  &f%colored arg-1%%nl%&r "
+            broadcast ""
+            play sound "block.bell.resonate" with volume 10 and pitch 4 at player
+        else:
+            send "usage: /bc <text>"
+
+
+command /cc:
+    description: Clear chat for all players
+    permission: clearchat.clear
+    trigger:
+        loop 3000 times:
+            broadcast " "
+        send "&7&m-----------------------------------------" to all players
+        broadcast "&a&lChat has been cleared by &3&l%player ? "Console"%!"
+        retrieve last 10 messages from text channel with id "INGAMECHAT CHANNEL ID" and store them in {_msgs::*}
+        purge {_msgs::*}
+        post "Chat has been cleared by %player ? "Console"%!" to text channel with id "INGAMECHAT CHANNEL ID"
+command /discord:
+    trigger:
+        send ""
+        send "<link:DISCORDLINK>&b&lᴄʟɪᴄᴋ ʜᴇʀᴇ ꜰᴏʀ ᴅɪѕᴄᴏʀᴅ!!!<reset>"
+        send ""
+
+
+
+on load:
+    set {mutechat} to false
+command /mutechat [<text>]:
+    aliases: /togglechat, /stopchat
+    permission: chat.mute
+    permission message: &cNo permission!
+    trigger:
+        if arg-1 is "force":
+            set {mutechat} to 1
+            broadcast "&b&lChat has been force muted."
+        else if {mutechat} = false:
+            set {mutechat} to true
+            broadcast "&b&lChat has been muted."
+        else:
+            if {mutechat} = true:
+                set {mutechat} to false
+                send "&a&lChat has been un-muted."
+on chat:
+  if {mutechat} = 1:
+    cancel event
+  else if {mutechat} = true:
+    if player does not have permission "op":
+      cancel event
+command /setblocks <text> [<int>]:
+    permission: admin
+    trigger:
+        if arg-1 is "remove":
+            remove arg-2 from {blocks::%player's uuid%}
+        if arg-1 is "add":
+            add arg-2 to {blocks::%player's uuid%}
+        if arg-1 is "clear":
+            if arg-2 is set:
+                send "Dumbass this Command doesnt need a 2nd argument!" to player
+                stop
+            else:
+                set {blocks::%player's uuid%} to 0
+command /setprestige <text> [<int>]:
+    permission: admin
+    trigger:
+        if arg-1 is "remove":
+            remove arg-2 from {prestiges::%player's uuid%}
+        if arg-1 is "add":
+            add arg-2 to {prestiges::%player's uuid%}
+        if arg-1 is "clear":
+            if arg-2 is set:
+                send "Dumbass this Command doesnt need a 2nd argument!" to player
+                stop
+            else:
+                set {prestiges::%player's uuid%} to 0
+on tab complete of "/setblocks":
+    set tab completions for position 1 to "add", "clear", and "remove"
+    set tab completions for position 2 to "<amount>"
+on tab complete of "/setprestige":
+    set tab completions for position 1 to "add", "clear", and "remove"
+    set tab completions for position 2 to "<amount>"
