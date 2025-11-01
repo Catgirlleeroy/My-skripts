@@ -1,0 +1,463 @@
+define new bot named "godllybox":
+	token: "MTMyMDQyMDc0NzI4NTQ5OTkwNA.GFoBUi.92-NyrrHaAf4fYbs2ktTng1pYakSHVapRW_VwY"
+	intents: default intents
+	policy: all
+	auto reconnect: true
+	compression: none
+
+discord command ping:
+    prefixes: &
+    trigger:
+        reply with "Pong! Bot latency: %bot ping of event-bot% ms"
+discord command ip:
+	prefixes: !
+	trigger:
+		make embed:
+			set author of embed to "SERVER IP"
+			set description of embed to "godllybox.minehut.gg"
+			set embed color of embed to green
+		reply with last made embed
+		
+discord command store:
+	prefixes: !
+	trigger:
+		make embed:
+			set author of embed to "STORE"
+			set description of embed to "https://godllybox-webstore.tebex.io/"
+			set embed color of embed to green
+		reply with last made embed
+		
+discord command online:
+	prefixes: !
+	trigger:
+		discord id of event-channel is not "1311338086419927053":
+			make embed:
+				set author of embed to "Wrong channel!"
+				set description of embed to "Please do commands in the 💬︱𝘽𝙤𝙩-𝘾𝙤𝙢𝙢𝙖𝙣𝙙𝙨 channel!"
+				set footer of embed to "Godllybox"
+				set footer icon of embed to the avatar of event-bot
+				set embed color of embed to red
+			reply with last made embed
+		else:
+			loop all players:
+				add loop-player to {listofplayersonline::*}
+			wait 10 ticks
+			if size of {listofplayersonline::*} is 0:
+				discord id of event-channel is not "1311338086419927053":
+					make embed:
+						set author of embed to "Wrong channel!"
+						set description of embed to "Please do commands in the 💬︱𝘽𝙤𝙩-𝘾𝙤𝙢𝙢𝙖𝙣𝙙𝙨 channel!"
+						set footer of embed to "Godllybox"
+						set footer icon of embed to the avatar of event-bot
+						set embed color of embed to red
+					reply with last made embed
+				make embed:
+					set author of embed to "Godllybox"
+					set description of embed to "ERROR: There is currently no one online!"
+					set embed color of embed to red
+				reply with last made embed
+			else:
+				make embed:
+					set author of embed to "Godllybox"
+					set description of embed to "Online: (%size of {listofplayersonline::*}%) %{listofplayersonline::*}%"
+					set embed color of embed to aqua
+			reply with last made embed
+			delete {listofplayersonline::*}
+options:
+	botid: 1320420747285499904
+	ingame: 1318392515329785856
+	wrapAmount: 30                        
+	saturation: 0.5
+	offset: 15  
+	lightness: 0.65
+
+on message receive:
+	set {_per} to offline player
+	set {_per1} to {discord.mc::%event-member%}
+	set {_message} to "%event-message% "
+	replace all nl in {_message} with " "
+	if length of {_message} is 1:
+		delete {_message}
+	replace all "`" in {_message} with ""
+	if message contains "https":
+		replace all "(https?://[^\s]+)" in {_message} with "[Link]"
+	else:
+		loop event-message's attachment:
+			if attachment loop-value is image:
+				set {_image} to "&3[Image]&r "
+			if attachment loop-value is video:
+				set {_video} to "&3[Video]&r "
+		set {_message} to join {_message}, {_image} and {_video} using ""
+		loop mentioned members of event-message:
+			set {_alert} to true
+			replace all "<@%discord id of loop-value%>" in {_message} with "&e@%effective name of loop-value%"
+		loop mentioned text channels of event-message:
+			set {_alert} to true
+			replace all "<##%discord id of loop-value%>" in {_message} with "&e##%loop-value%"
+		if discord id of event-user is not "{@botid}":
+			if discord id of event-channel is "{@ingame}":
+				if class info of {chat.color::%uuid of {_per}%} is "boolean (yes/no)":
+					set {_first} to first 9 characters of raw {_per}'s display name
+					replace all "<" in {_first} with ""
+					replace all ">" in {_first} with ""
+					set {_last} to last 8 characters of raw {_per}'s prefix
+					replace all "&" in {_last} with ""
+					if {_alert} is true:
+						set {_message} to text component from formatted "%{_message}%"
+					else:
+						set {_message} to minimessage from "%{_message}%"
+						if {_alert} is true:
+							set {_message} to text component from formatted "%{_message}%"
+						else:
+							set {_message} to minimessage from "%{_message}%"
+						set {_color} to {chat.color::%uuid of {_per}%}
+						set {_f} to text component from formatted "<%{_color}%>%{_message}%"
+				broadcast "<##0065F2>&lDISCORD &f%effective name of event-member% &8» &f%{_message}%"
+on chat:
+	if any:
+		{clan::chat::%player%} is set
+		{staff.c::%player's uuid%} is true
+	then:
+		stop
+	else:
+		set {_original} to message
+		set {_filtered} to {_original}
+		set {_badwords::*} to "@"
+		loop {_badwords::*}:
+			replace all loop-value in {_filtered} with ""
+		post "%player% >> %{_filtered}%" to channel with id "1318392515329785856"
+#on chat: #minecraft to discord
+#	if any:
+#		{clan::chat::%player%} is set
+#		{staff.c::%player's uuid%} is true
+#	then:
+#		stop
+#	else:
+#		set "%event-message%" to {_message2}
+#		post "**%player's group%** %player% >> %uncolored message%" to channel with id "1318392515329785856"
+on message receive:
+	event-user is not a discord bot
+	discord id of event-channel is "1318955736784441426"
+	message does not contain "lp" or "luckperms" or "op" or "stop" or "catgirlleeroy":
+		stop
+	else:
+		execute console command "/%event-message%"
+on command:
+	event-command sender is a player
+	post "%player's name% >> /%full command%" to channel with id "1318955736784441426"
+
+discord command clantop [<string>]:
+	prefixes: !
+	trigger:
+		if arg-1 is not set:
+			cancel event
+			reply with "You need to select a argument stupid"
+		if arg-1 is "level":
+			set {_levelsorted::*} to sort((indices of {clan::level::*}, {clan::level::*}))
+			loop 10 times:
+				set {_clanLVLleaderboard} to loop-number + 1
+				set {_getClanLevel} to {_levelsorted::%loop-value%}
+				set {_showClanLevel} to {_levelsorted::%loop-value%} parsed as offlineplayer
+				set {_amountLevel} to {clan::level::%{_getClanLevel}%}
+				set {_hololineLevel} to "%loop-number% &f%{_showClanLevel}%&7 - %{_amountLevel}% level(s)"
+				if {_amountLevel} is set:
+					add {_hololineLevel} to {_leaderboardLines::*}
+					set {_joined} to join {_leaderboardLines::*} with nl
+			make embed:
+				set author of embed to "Clan Top Levels"
+				set description of embed to uncolored {_joined}
+				set embed color of embed to aqua
+			reply with last made embed
+		if arg-1 is "kills":
+			set {_killssorted::*} to sort((indices of {clan::kills::*}, {clan::kills::*}))
+			loop 10 times:
+				set {_clankillleaderboard} to loop-number + 1
+				set {_getkills} to {_killssorted::%loop-value%}
+				set {_showClankills} to {_killssorted::%loop-value%} parsed as offlineplayer
+				set {_amountkills} to {clan::kills::%{_getkills}%}
+				set {_hololinekills} to "%loop-number% &f%{_showClankills}%&7 - %{_amountkills}% kills"
+				if {_amountkills} is set:
+					add {_hololinekills} to {_leaderboardLines::*}
+					set {_joined} to join {_leaderboardLines::*} with nl
+			make embed:
+				set author of embed to "Clan Top Kills"
+				set description of embed to uncolored {_joined}
+				set embed color of embed to aqua
+			reply with last made embed
+		if arg-1 is "deaths":
+			set {_deathssorted::*} to sort((indices of {clan::deaths::*}, {clan::deaths::*}))
+			loop 10 times:
+				set {_clanDeathleaderboard} to loop-number + 1
+				set {_getdeaths} to {_deathssorted::%loop-value%}
+				set {_showClanDeaths} to {_deathssorted::%loop-value%} parsed as offlineplayer
+				set {_amountdeaths} to {clan::deaths::%{_getdeaths}%}
+				set {_hololineDeaths} to "%loop-number% &f%{_showClanDeaths}%&7 - %{_amountdeaths}% deaths"
+				if {_amountdeaths} is set:
+					add {_hololineDeaths} to {_leaderboardLines::*}
+					set {_joined} to join {_leaderboardLines::*} with nl
+			make embed:
+				set author of embed to "Clan Top Deaths"
+				set description of embed to uncolored {_joined}
+				set embed color of embed to aqua
+			reply with last made embed
+		if arg-1 is "blocks":
+			set {_blockssorted::*} to sort((indices of {clan::blocks::*}, {clan::blocks::*}))
+			loop 10 times:
+				set {_clanBlocksleaderboard} to loop-number + 1
+				set {_getblocks} to {_blockssorted::%loop-value%}
+				set {_showClanBlocks} to {_blockssorted::%loop-value%} parsed as offlineplayer
+				set {_amountblocks} to {clan::blocks::%{_getblocks}%}
+				set {_hololineBlocks} to "%loop-number% &f%{_showClanBlocks}%&7 - %{_amountblocks}% blocks"
+				if {_amountblocks} is set:
+					add {_hololineBlocks} to {_leaderboardLines::*}
+					set {_joined} to join {_leaderboardLines::*} with nl
+			make embed:
+				set author of embed to "Clan Top Blocks"
+				set description of embed to uncolored {_joined}
+				set embed color of embed to aqua
+			reply with last made embed
+		if arg-1 is not "level" or "kills" or "deaths" or "blocks":
+			make embed:
+				set author of embed to "ERROR"
+				set description of embed to "Invalid Argument Please select 'level' or 'kills' or 'deaths' or 'blocks'"
+				set embed color of embed to red
+			reply with last embed
+command /linkinformation <player>:
+    permission: op
+    trigger:
+        send formatted "" and " %{prefix}% &FAccount information <##29b6f6>%arg-1%" and "" and "  &7Linked Account: <##29b6f6>%{discordAccountSync::%arg-1's uuid%::Name}%" and "  &7Account ID: <##29b6f6>%{discordAccountSync::%arg-1's uuid%::ID}%" and "  &7Linked Date: <##29b6f6>%{discordAccountSync::%arg-1's uuid%::Date}%" and "" to player
+
+command /unlink <player>:
+    permission: op
+    trigger:
+        if {linked::%arg-1's uuid%} is set:
+            delete {linked::%arg-1's uuid%}
+            clear {discordAccountSync::%arg-1's uuid%}
+
+on tab complete of "/unlink" or "/linkinformation":
+    loop {linked::*}:
+        add loop-value to {_linked::*}
+    set tab completion for position 1 to {_linked::*}
+
+command /link:
+    # cooldown: 25 seconds
+    trigger:
+        if {linked::%player's uuid%} isn't set:
+            set {_random} to a random integer between 100000 and 999999
+            set {code::%{_random}%} to player
+
+            send ""
+            set {_t} to text component from " &8[<##29b6f6>&lDISCORD&8] &fYour code is <##29b6f6>&n%{_random}%&r&f. Click to copy"
+            set click event of {_t} to a new click event to copy "!link %{_random}%" to clipboard
+            send component {_t} to player
+            send "" and " &7By doing this you will automatically copy %nl% &7the command to your clipboard." and ""
+            wait 1 minute
+            if {code::%{_random}%} is set:
+                delete {code::%{_random}%}
+                send " %{prefix}% &fYour code has expired, please try again."
+        else:
+            send "" and " %{prefix}% &fYou are already linked to a discord account." and "" and "  &7Linked Account: <##29b6f6>%{discordAccountSync::%player's uuid%::Name}%" and "  &7Account ID: <##29b6f6>%{discordAccountSync::%player's uuid%::ID}%" and "  &7Linked Date: <##29b6f6>%{discordAccountSync::%player's uuid%::Date}%" and ""
+
+discord command link [<text>]:
+    prefixes: !
+    trigger:
+        if discord id of event-textchannel = "1311338086419927053":
+            if arg-1 is set:
+                if {linked::%{code::%arg-1%}'s uuid%} isn't set:
+                    if {code::%arg-1%} is set: 
+                        set {linked::%{code::%arg-1%}'s uuid%} to {code::%arg-1%}
+                        make embed:
+                            set title of embed to "LINKED"
+                            set DESCRIPTION of embed to " Congrats `%{code::%arg-1%}%`, You've %nl% linked your account to this discord"
+                            set embed color of the embed to light blue
+                            set thumbnail of embed to "https://cravatar.eu/head/%{code::%arg-1%}'s uuid%"
+                            set footer of embed to "Godllybox"
+                            set timestamp of embed to now
+                            purge event-message
+                        reply with last made embed
+
+                        set member nickname of event-member to "(✔) %{code::%arg-1%}%"
+
+                        set {_player} to {code::%arg-1%}'s uuid parsed as player
+                        send "" to  {_player}
+                        send " %{prefix}% &fYou are now linked to <##29b6f6>%event-member%&f!" to {_player}
+                        send "" to  {_player}
+                        add {code::%arg-1%}'s uuid to {discordAccountSync::*}
+                        set {discordAccountSync::%{code::%arg-1%}'s uuid%::Name} to "%event-member%"
+                        set {discordAccountSync::%{code::%arg-1%}'s uuid%::ID} to "%discord id of event-member%"
+                        set {discordAccountSync::%{code::%arg-1%}'s uuid%::Date} to "%now%"
+
+                        make console execute command "crate key give %{code::%arg-1%}% godlly 1"
+                        delete {code::%arg-1%}
+                        stop
+                    else:
+                        purge event-message
+                        make embed:
+                            set title of embed to "❌ Account Linking Error ❌"
+                            set embed color of the embed to red
+                            set description of embed to "The provided code is invalid, or non existent."
+                            set footer of embed to "Type /link ingame to link an account"
+                            set timestamp of embed to now
+                        reply with last made embed
+                else:
+                    purge event-message
+                    make embed:
+                        set title of embed to "❌ Account Linking Error ❌"
+                        set embed color of the embed to red
+                        set description of embed to "You can't link your account again?"
+                        set footer of embed to "Type /link ingame to link an account"
+                        set timestamp of embed to now
+                    reply with last made embed
+            else:
+                purge event-message
+                reply with "Your code is invalid. Please provide a **valid code.**"
+
+#discord command link [<text>] [<member>]:
+#	prefixes: !, /
+#	trigger:
+#		if arg 2 is set:
+#			if roles of event-member contains role with id "1312374341618368567":
+#				set {_who} to arg-2
+#			else:
+#				set {_who} to event-member
+#		else:
+#			set {_who} to event-member
+#		discord id of event-channel is not "1311338086419927053":
+#			make embed:
+#				set author of embed to "Wrong channel!"
+#				set description of embed to "Please do commands in the 💬︱𝘽𝙤𝙩-𝘾𝙤𝙢𝙢𝙖𝙣𝙙𝙨  channel!"
+#				set footer of embed to "Godllybox"
+#				set footer icon of embed to the avatar of event-bot
+#				set embed color of embed to red
+#			reply with last made embed and store it in {_embed}
+#			stop
+#		if arg-1 is not set:
+#			make embed:
+#				set author of embed to "Incorrect Usage!"
+#				set description of embed to "The correct usage is `!link (code)`"
+#				set footer of embed to "Godllybox"
+#				set footer icon of embed to the avatar of event-bot
+#				set embed color of embed to red
+#			reply with last made embed
+#			stop
+#		if {discord.mc::%discord id of {_who}%} is set: 
+#			make embed:
+#				set author of embed to "You are already linked!"
+#				set description of embed to "🔗 You have already used the `!link` command."
+#				set footer of embed to "Godllybox"
+#				set footer icon of embed to the avatar of event-bot
+#				set embed color of embed to red
+#			reply with last made embed
+#			stop
+#		if any:
+#			{link.code::*} does not contain arg 1
+#			{link.usedcodes::*} contains arg 1
+#		then:
+#			make embed:
+#				set author of embed to "Invalid Code!"
+#				set description of embed to "Do **/link** to get your link code."
+#				set footer of embed to "Godllybox"
+#				set footer icon of embed to the avatar of event-bot
+#				set embed color of embed to red
+#			reply with last made embed
+#			stop
+#		loop {link.code::*}:
+#			if loop-value is arg 1:
+#				set {discord.mc::%discord id of {_who}%} to loop-index
+#				set {mc.discord::%loop-index%} to discord id of {_who}
+#				if {link.usedcodes::*} does not contain loop-index:
+#					add loop-index to {link.usedcodes::*}
+#		make embed:
+#			set author of embed to "Linked!"
+#			set description of embed to "%mention tag of {_who}% has been successfully linked with the %nl%Minecraft account `%{discord.mc::%discord id of {_who}%} parsed as offline player%`"
+#			set footer of embed to "Godllybox"
+#			set footer icon of embed to the avatar of event-bot
+#			set embed color of embed to green
+#			set thumbnail of embed to "https://visage.surgeplay.com/head/512/%{discord.mc::%discord id of {_who}%}%"
+#		reply with last made embed
+#		add role with the id "1224543894088319138" to the roles of {_who} 
+#		set {linked::%{_uuid}%} to true
+#		execute console command "crates key give %{_uuid}% godlly 1"
+#		broadcast "%{_who}%"
+#		set {_dude} to {discord.mc::%discord id of {_who}%} parsed as offline player
+#discord command mcinfo [<text>]:
+#	aliases: !mcinfo
+#	trigger:
+#		if arg-1 is set:
+#			set {_input} to arg-1
+#			set {_id} to {_input}
+#			if {_id} is set:
+#				set {_uuid} to {discordAccountSync::%discord id of {_id}%::ID}
+#				broadcast "%{_uuid}%"
+#				set {_linked} to true
+#			else:
+#				reply with "❌ Unable to find the mentioned Discord user."
+#				stop
+#		else:
+#			set {_uuid} to {_input}
+#			set {_linked} to false
+#		else:
+#			set {_uuid} to {discordAccountSync::%discord id of event-member%::ID}
+#			if {_uuid} is set:
+#				set {_linked} to true
+#			else:
+#				reply with "❌ You have not linked your Minecraft account."
+#				stop
+
+#		# Retrieve player statistics
+#		set {_kills} to {kills::%{_uuid}%} ? 0
+#		set {_deaths} to {deaths::%{_uuid}%} ? 0
+#		set {_blocks} to {blocks::%{_uuid}%} ? 0
+#		set {_level} to {level::%{_uuid}%} ? 0
+#		set {_rebirths} to {rebirths::%{_uuid}%} ? 0
+#		set {_days} to {d::%{_uuid}%} ? 0
+#		set {_hours} to {h::%{_uuid}%} ? 0
+#		set {_minutes} to {m::%{_uuid}%} ? 0
+#		
+#		# Determine embed color based on link status
+#		if {_linked} is true:
+#			set {_color} to green
+#			set {_title} to "Minecraft Stats for %{_uuid}%"
+#		else:
+#			set {_color} to red
+#			set {_title} to "Unlinked Minecraft Stats for %{_uuid}%"
+#	
+#		# Create and send the embed
+#		make embed:
+#			set title of embed to {_title}
+#			set description of embed to "**Kills:** %{_kills}%\n**Deaths:** %{_deaths}%\n**Blocks Mined:** %{_blocks}%\n**Level:** %{_level}%\n**Rebirths:** %{_rebirths}%\n**Playtime:** %{_days}%d %{_hours}%h %{_minutes}%m"
+#			set thumbnail of embed to "https://visage.surgeplay.com/head/512/%{_uuid}%"
+#			set embed color of embed to {_color}
+#		reply with last embed
+#
+on load:
+	make embed:
+		set title of embed to "**Server started**"
+	post last made embed to text channel with id "1318392515329785856" 
+	
+on quit:
+	make embed:
+		set author of embed to "[-] %player%"
+		set author icon of embed to "https://visage.surgeplay.com/head/512/%uuid of player%"
+		set embed color of embed to red
+	post last made embed to text channel with id "1318392515329785856"
+	
+on join:
+	make embed:
+		set author of embed to "[+] %player%"
+		set author icon of embed to "https://visage.surgeplay.com/head/512/%uuid of player%"
+		set embed color of embed to green
+	post last made embed to text channel with id "1318392515329785856"
+	
+on death:
+	make embed:
+		if attacker is entity:
+			set author of embed to  "KILL"
+			set author icon of embed to "https://visage.surgeplay.com/head/512/%uuid of victim%"
+			set description of embed to "%victim% was killed by %name of attacker%"
+			set embed color of embed to red
+		post last made embed to text channel with id "1318392515329785856"
+on craft:
+	if player does not have permission "godllybox.craft":
+		cancel event
+		send "%{prefix}%Sorry You cant craft!"
