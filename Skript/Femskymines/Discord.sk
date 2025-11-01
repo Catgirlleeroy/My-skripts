@@ -1,5 +1,5 @@
 define new bot named "Femskynet":
-	token: "MTMyMDQyMDc0NzI4NTQ5OTkwNA.GFoBUi.92-NyrrHaAf4fYbs2ktTng1pYakSHVapRW_VwY"
+	token: "MTMyMDQyMDc0NzI4NTQ5OTkwNA.GFoBUi.92-NyrrHaAf4fYbs2ktTng1pYakSHVapRW_VwY"(NOT THE ACCTUAL BOT TOKEN!!)
 	intents: default intents
 	policy: all
 	auto reconnect: true
