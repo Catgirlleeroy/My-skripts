@@ -1,4 +1,4 @@
-define new bot named "godllybox":
+define new bot named "Femskynet":
 	token: "MTMyMDQyMDc0NzI4NTQ5OTkwNA.GFoBUi.92-NyrrHaAf4fYbs2ktTng1pYakSHVapRW_VwY"
 	intents: default intents
 	policy: all
@@ -14,7 +14,7 @@ discord command ip:
 	trigger:
 		make embed:
 			set author of embed to "SERVER IP"
-			set description of embed to "godllybox.minehut.gg"
+			set description of embed to "Femskynet.minehut.gg"
 			set embed color of embed to green
 		reply with last made embed
 		
@@ -23,7 +23,7 @@ discord command store:
 	trigger:
 		make embed:
 			set author of embed to "STORE"
-			set description of embed to "https://godllybox-webstore.tebex.io/"
+			set description of embed to "Coming soon!"
 			set embed color of embed to green
 		reply with last made embed
 		
@@ -34,7 +34,7 @@ discord command online:
 			make embed:
 				set author of embed to "Wrong channel!"
 				set description of embed to "Please do commands in the 💬︱𝘽𝙤𝙩-𝘾𝙤𝙢𝙢𝙖𝙣𝙙𝙨 channel!"
-				set footer of embed to "Godllybox"
+				set footer of embed to "Femskynet"
 				set footer icon of embed to the avatar of event-bot
 				set embed color of embed to red
 			reply with last made embed
@@ -47,18 +47,18 @@ discord command online:
 					make embed:
 						set author of embed to "Wrong channel!"
 						set description of embed to "Please do commands in the 💬︱𝘽𝙤𝙩-𝘾𝙤𝙢𝙢𝙖𝙣𝙙𝙨 channel!"
-						set footer of embed to "Godllybox"
+						set footer of embed to "Femskynet"
 						set footer icon of embed to the avatar of event-bot
 						set embed color of embed to red
 					reply with last made embed
 				make embed:
-					set author of embed to "Godllybox"
+					set author of embed to "Femskynet"
 					set description of embed to "ERROR: There is currently no one online!"
 					set embed color of embed to red
 				reply with last made embed
 			else:
 				make embed:
-					set author of embed to "Godllybox"
+					set author of embed to "Femskynet"
 					set description of embed to "Online: (%size of {listofplayersonline::*}%) %{listofplayersonline::*}%"
 					set embed color of embed to aqua
 			reply with last made embed
@@ -271,7 +271,7 @@ discord command link [<text>]:
                             set DESCRIPTION of embed to " Congrats `%{code::%arg-1%}%`, You've %nl% linked your account to this discord"
                             set embed color of the embed to light blue
                             set thumbnail of embed to "https://cravatar.eu/head/%{code::%arg-1%}'s uuid%"
-                            set footer of embed to "Godllybox"
+                            set footer of embed to "Femskynet"
                             set timestamp of embed to now
                             purge event-message
                         reply with last made embed
@@ -326,7 +326,7 @@ discord command link [<text>]:
 #			make embed:
 #				set author of embed to "Wrong channel!"
 #				set description of embed to "Please do commands in the 💬︱𝘽𝙤𝙩-𝘾𝙤𝙢𝙢𝙖𝙣𝙙𝙨  channel!"
-#				set footer of embed to "Godllybox"
+#				set footer of embed to "Femskynet"
 #				set footer icon of embed to the avatar of event-bot
 #				set embed color of embed to red
 #			reply with last made embed and store it in {_embed}
@@ -335,7 +335,7 @@ discord command link [<text>]:
 #			make embed:
 #				set author of embed to "Incorrect Usage!"
 #				set description of embed to "The correct usage is `!link (code)`"
-#				set footer of embed to "Godllybox"
+#				set footer of embed to "Femskynet"
 #				set footer icon of embed to the avatar of event-bot
 #				set embed color of embed to red
 #			reply with last made embed
@@ -344,7 +344,7 @@ discord command link [<text>]:
 #			make embed:
 #				set author of embed to "You are already linked!"
 #				set description of embed to "🔗 You have already used the `!link` command."
-#				set footer of embed to "Godllybox"
+#				set footer of embed to "Femskynet"
 #				set footer icon of embed to the avatar of event-bot
 #				set embed color of embed to red
 #			reply with last made embed
@@ -356,7 +356,7 @@ discord command link [<text>]:
 #			make embed:
 #				set author of embed to "Invalid Code!"
 #				set description of embed to "Do **/link** to get your link code."
-#				set footer of embed to "Godllybox"
+#				set footer of embed to "Femskynet"
 #				set footer icon of embed to the avatar of event-bot
 #				set embed color of embed to red
 #			reply with last made embed
@@ -370,7 +370,7 @@ discord command link [<text>]:
 #		make embed:
 #			set author of embed to "Linked!"
 #			set description of embed to "%mention tag of {_who}% has been successfully linked with the %nl%Minecraft account `%{discord.mc::%discord id of {_who}%} parsed as offline player%`"
-#			set footer of embed to "Godllybox"
+#			set footer of embed to "Femskynet"
 #			set footer icon of embed to the avatar of event-bot
 #			set embed color of embed to green
 #			set thumbnail of embed to "https://visage.surgeplay.com/head/512/%{discord.mc::%discord id of {_who}%}%"
@@ -458,6 +458,6 @@ on death:
 			set embed color of embed to red
 		post last made embed to text channel with id "1318392515329785856"
 on craft:
-	if player does not have permission "godllybox.craft":
+	if player does not have permission "Femskynet.craft":
 		cancel event
 		send "%{prefix}%Sorry You cant craft!"
