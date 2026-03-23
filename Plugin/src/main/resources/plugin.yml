@@ -1,0 +1,19 @@
+name: Bob
+author: Bob
+website: bob.org
+version: '1.0'
+main: dev.leeroy.plugin.Plugin
+api-version: '1.21'
+commands:
+  heal:
+    description: Heals a player to full HP, hunger, and saturation.
+    usage: /heal [player]
+    permission: healplugin.heal
+
+permissions:
+  healplugin.heal:
+    description: Allows the player to heal themselves.
+    default: op
+  healplugin.heal.others:
+    description: Allows the player to heal other players.
+    default: op
