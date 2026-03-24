@@ -4,11 +4,28 @@ website: bob.org
 version: '1.0'
 main: dev.leeroy.plugin.Plugin
 api-version: '1.21'
+
 commands:
   heal:
     description: Heals a player to full HP, hunger, and saturation.
     usage: /heal [player]
     permission: healplugin.heal
+  gm0:
+    description: Sets gamemode to Survival.
+    usage: /gm0 [player]
+    permission: gamemodes.self
+  gm1:
+    description: Sets gamemode to Creative.
+    usage: /gm1 [player]
+    permission: gamemodes.self
+  gm2:
+    description: Sets gamemode to Adventure.
+    usage: /gm2 [player]
+    permission: gamemodes.self
+  gm3:
+    description: Sets gamemode to Spectator.
+    usage: /gm3 [player]
+    permission: gamemodes.self
 
 permissions:
   healplugin.heal:
@@ -16,4 +33,10 @@ permissions:
     default: op
   healplugin.heal.others:
     description: Allows the player to heal other players.
+    default: op
+  gamemodes.self:
+    description: Allows the player to change their own gamemode.
+    default: op
+  gamemodes.others:
+    description: Allows the player to change other players' gamemode.
     default: op

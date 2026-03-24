@@ -8,13 +8,16 @@ public final class Plugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
         getCommand("heal").setExecutor(new HealCommand());
-        getCommand("Gamemode").setExecutor(new Gamemodes());
+
+        Gamemodes gamemodesExecutor = new Gamemodes();
+        getCommand("gm0").setExecutor(gamemodesExecutor);
+        getCommand("gm1").setExecutor(gamemodesExecutor);
+        getCommand("gm2").setExecutor(gamemodesExecutor);
+        getCommand("gm3").setExecutor(gamemodesExecutor);
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
     }
 }

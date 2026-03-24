@@ -1,2 +1,5 @@
+dev\leeroy\plugin\commands\Gamemodes$1.class
+dev\leeroy\plugin\commands\Gamemodes.class
 dev\leeroy\plugin\Utils\PlayerHealer.class
+dev\leeroy\plugin\commands\HealCommand.class
 dev\leeroy\plugin\Plugin.class
