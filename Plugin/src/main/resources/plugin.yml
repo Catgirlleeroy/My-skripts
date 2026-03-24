@@ -26,6 +26,18 @@ commands:
     description: Sets gamemode to Spectator.
     usage: /gm3 [player]
     permission: gamemodes.self
+  ban:
+    description: Permanently bans a player.
+    usage: /ban <player> [reason]
+    permission: bansystem.ban
+  tempban:
+    description: Temporarily bans a player.
+    usage: /tempban <player> <duration> [reason]
+    permission: bansystem.tempban
+  checkban:
+    description: Checks the ban status of a player.
+    usage: /checkban <player>
+    permission: bansystem.checkban
 
 permissions:
   healplugin.heal:
@@ -39,4 +51,13 @@ permissions:
     default: op
   gamemodes.others:
     description: Allows the player to change other players' gamemode.
+    default: op
+  bansystem.ban:
+    description: Allows the player to permanently ban others.
+    default: op
+  bansystem.tempban:
+    description: Allows the player to temporarily ban others.
+    default: op
+  bansystem.checkban:
+    description: Allows the player to check ban info.
     default: op
