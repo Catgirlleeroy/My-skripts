@@ -38,6 +38,10 @@ commands:
     description: Checks the ban status of a player.
     usage: /checkban <player>
     permission: bansystem.checkban
+  unban:
+    description: Unbans a player.
+    usage: /unban <player>
+    permission: bansystem.unban
 
 permissions:
   healplugin.heal:
@@ -60,4 +64,7 @@ permissions:
     default: op
   bansystem.checkban:
     description: Allows the player to check ban info.
+    default: op
+  bansystem.unban:
+    description: Allows the player to unban others.
     default: op
