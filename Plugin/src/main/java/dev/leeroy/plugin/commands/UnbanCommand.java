@@ -17,7 +17,7 @@ public class UnbanCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
-        if (!sender.hasPermission("bansystem.unban")) {
+        if (!sender.hasPermission("bob.unban")) {
             sender.sendMessage(ChatColor.RED + "You don't have permission to unban players.");
             return true;
         }

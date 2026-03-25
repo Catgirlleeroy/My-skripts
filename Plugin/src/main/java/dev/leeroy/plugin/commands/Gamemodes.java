@@ -13,12 +13,14 @@ public class Gamemodes implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
+        // Resolve the target gamemode from the command label (gm0/gm1/gm2/gm3)
         GameMode targetMode = resolveGameMode(label);
         if (targetMode == null) {
             sender.sendMessage(ChatColor.RED + "Unknown gamemode command.");
             return true;
         }
 
+        // No arguments — change own gamemode
         if (args.length == 0) {
             if (!(sender instanceof Player)) {
                 sender.sendMessage(ChatColor.RED + "Console must specify a player: /" + label + " <player>");
@@ -26,9 +28,10 @@ public class Gamemodes implements CommandExecutor {
             }
 
             Player player = (Player) sender;
+            String selfPerm = "bob.gamemode.self." + targetMode.name().toLowerCase();
 
-            if (!player.hasPermission("gamemodes.self")) {
-                player.sendMessage(ChatColor.RED + "You don't have permission to change your gamemode.");
+            if (!player.hasPermission(selfPerm) && !player.hasPermission("bob.gamemode.self")) {
+                player.sendMessage(ChatColor.RED + "You don't have permission to change your gamemode to " + formatGameMode(targetMode) + ".");
                 return true;
             }
 
@@ -37,9 +40,12 @@ public class Gamemodes implements CommandExecutor {
             return true;
         }
 
+        // One argument — change another player's gamemode
         if (args.length == 1) {
-            if (!sender.hasPermission("gamemodes.others")) {
-                sender.sendMessage(ChatColor.RED + "You don't have permission to change other players' gamemode.");
+            String othersPerm = "bob.gamemode.others." + targetMode.name().toLowerCase();
+
+            if (!sender.hasPermission(othersPerm) && !sender.hasPermission("bob.gamemode.others")) {
+                sender.sendMessage(ChatColor.RED + "You don't have permission to change other players' gamemode to " + formatGameMode(targetMode) + ".");
                 return true;
             }
 
@@ -60,6 +66,11 @@ public class Gamemodes implements CommandExecutor {
         sender.sendMessage(ChatColor.YELLOW + "Usage: /" + label + " [player]");
         return true;
     }
+
+    /**
+     * Maps a command label to its corresponding GameMode.
+     * Supports both short aliases (gm0–gm3) and the base "gamemode" command with a numeric arg.
+     */
     private GameMode resolveGameMode(String label) {
         return switch (label.toLowerCase()) {
             case "gm0" -> GameMode.SURVIVAL;
@@ -70,6 +81,7 @@ public class Gamemodes implements CommandExecutor {
         };
     }
 
+    /** Returns a nicely formatted gamemode name. */
     private String formatGameMode(GameMode mode) {
         return switch (mode) {
             case SURVIVAL  -> "Survival";

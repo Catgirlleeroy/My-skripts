@@ -3,6 +3,7 @@ package dev.leeroy.plugin;
 import dev.leeroy.plugin.Utils.BanManager;
 import dev.leeroy.plugin.commands.*;
 import dev.leeroy.plugin.listeners.BanListener;
+import dev.leeroy.plugin.listeners.CommandSpyListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Plugin extends JavaPlugin {
@@ -25,13 +26,18 @@ public final class Plugin extends JavaPlugin {
         getCommand("gm3").setExecutor(gamemodesExecutor);
 
         // Ban commands
-        getCommand("ban").setExecutor(new BanCommand(banManager));
-        getCommand("tempban").setExecutor(new TempBanCommand(banManager));
+        getCommand("ban").setExecutor(new BanCommand(banManager, this));
+        getCommand("tempban").setExecutor(new TempBanCommand(banManager, this));
         getCommand("checkban").setExecutor(new CheckBanCommand(banManager));
         getCommand("unban").setExecutor(new UnbanCommand(banManager));
 
         // Listeners
         getServer().getPluginManager().registerEvents(new BanListener(banManager), this);
+
+        // CommandSpy
+        CommandSpyListener commandSpyListener = new CommandSpyListener();
+        getServer().getPluginManager().registerEvents(commandSpyListener, this);
+        getCommand("commandspy").setExecutor(new CommandSpyCommand(commandSpyListener));
     }
 
     @Override

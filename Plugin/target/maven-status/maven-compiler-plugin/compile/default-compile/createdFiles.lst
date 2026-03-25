@@ -1,11 +1,13 @@
-dev\leeroy\plugin\commands\Gamemodes$1.class
 dev\leeroy\plugin\Utils\PlayerHealer.class
+dev\leeroy\plugin\commands\CommandSpyCommand.class
 dev\leeroy\plugin\commands\BanCommand.class
-dev\leeroy\plugin\Utils\BanManager.class
-dev\leeroy\plugin\commands\HealCommand.class
+dev\leeroy\plugin\listeners\CommandSpyListener.class
 dev\leeroy\plugin\commands\TempBanCommand.class
-dev\leeroy\plugin\listeners\BanListener.class
 dev\leeroy\plugin\Plugin.class
 dev\leeroy\plugin\commands\Gamemodes.class
 dev\leeroy\plugin\commands\UnbanCommand.class
+dev\leeroy\plugin\commands\Gamemodes$1.class
+dev\leeroy\plugin\Utils\BanManager.class
+dev\leeroy\plugin\commands\HealCommand.class
+dev\leeroy\plugin\listeners\BanListener.class
 dev\leeroy\plugin\commands\CheckBanCommand.class

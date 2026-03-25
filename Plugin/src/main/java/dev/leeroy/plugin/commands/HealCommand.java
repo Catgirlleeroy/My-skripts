@@ -22,7 +22,7 @@ public class HealCommand implements CommandExecutor {
 
             Player player = (Player) sender;
 
-            if (!player.hasPermission("healplugin.heal")) {
+            if (!player.hasPermission("bob.heal")) {
                 player.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
                 return true;
             }
@@ -34,7 +34,7 @@ public class HealCommand implements CommandExecutor {
 
         // One argument — heal another player
         if (args.length == 1) {
-            if (!sender.hasPermission("healplugin.heal.others")) {
+            if (!sender.hasPermission("bob.heal.others")) {
                 sender.sendMessage(ChatColor.RED + "You don't have permission to heal other players.");
                 return true;
             }

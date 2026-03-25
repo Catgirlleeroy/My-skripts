@@ -19,7 +19,7 @@ public class CheckBanCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
-        if (!sender.hasPermission("bansystem.checkban")) {
+        if (!sender.hasPermission("bob.checkban")) {
             sender.sendMessage(ChatColor.RED + "You don't have permission to check bans.");
             return true;
         }

@@ -9,62 +9,103 @@ commands:
   heal:
     description: Heals a player to full HP, hunger, and saturation.
     usage: /heal [player]
-    permission: healplugin.heal
+    permission: bob.heal
   gm0:
     description: Sets gamemode to Survival.
     usage: /gm0 [player]
-    permission: gamemodes.self
+    permission: bob.gamemode.self
   gm1:
     description: Sets gamemode to Creative.
     usage: /gm1 [player]
-    permission: gamemodes.self
+    permission: bob.gamemode.self
   gm2:
     description: Sets gamemode to Adventure.
     usage: /gm2 [player]
-    permission: gamemodes.self
+    permission: bob.gamemode.self
   gm3:
     description: Sets gamemode to Spectator.
     usage: /gm3 [player]
-    permission: gamemodes.self
+    permission: bob.gamemode.self
   ban:
     description: Permanently bans a player.
     usage: /ban <player> [reason]
-    permission: bansystem.ban
+    permission: bob.ban
   tempban:
     description: Temporarily bans a player.
     usage: /tempban <player> <duration> [reason]
-    permission: bansystem.tempban
+    permission: bob.tempban
   checkban:
     description: Checks the ban status of a player.
     usage: /checkban <player>
-    permission: bansystem.checkban
+    permission: bob.checkban
   unban:
     description: Unbans a player.
     usage: /unban <player>
-    permission: bansystem.unban
+    permission: bob.unban
+  commandspy:
+    description: Toggles CommandSpy to see commands run by other players.
+    usage: /commandspy
+    permission: bob.commandspy
 
 permissions:
-  healplugin.heal:
+  bob.heal:
     description: Allows the player to heal themselves.
     default: op
-  healplugin.heal.others:
+  bob.heal.others:
     description: Allows the player to heal other players.
     default: op
-  gamemodes.self:
-    description: Allows the player to change their own gamemode.
+  bob.gamemode.self:
+    description: Allows changing your own gamemode (any mode).
     default: op
-  gamemodes.others:
-    description: Allows the player to change other players' gamemode.
+    children:
+      bob.gamemode.self.survival: true
+      bob.gamemode.self.creative: true
+      bob.gamemode.self.adventure: true
+      bob.gamemode.self.spectator: true
+  bob.gamemode.self.survival:
+    description: Allows changing your own gamemode to Survival.
     default: op
-  bansystem.ban:
+  bob.gamemode.self.creative:
+    description: Allows changing your own gamemode to Creative.
+    default: op
+  bob.gamemode.self.adventure:
+    description: Allows changing your own gamemode to Adventure.
+    default: op
+  bob.gamemode.self.spectator:
+    description: Allows changing your own gamemode to Spectator.
+    default: op
+  bob.gamemode.others:
+    description: Allows changing other players' gamemode (any mode).
+    default: op
+    children:
+      bob.gamemode.others.survival: true
+      bob.gamemode.others.creative: true
+      bob.gamemode.others.adventure: true
+      bob.gamemode.others.spectator: true
+  bob.gamemode.others.survival:
+    description: Allows changing other players' gamemode to Survival.
+    default: op
+  bob.gamemode.others.creative:
+    description: Allows changing other players' gamemode to Creative.
+    default: op
+  bob.gamemode.others.adventure:
+    description: Allows changing other players' gamemode to Adventure.
+    default: op
+  bob.gamemode.others.spectator:
+    description: Allows changing other players' gamemode to Spectator.
+    default: op
+  bob.ban:
     description: Allows the player to permanently ban others.
     default: op
-  bansystem.tempban:
+  bob.tempban:
     description: Allows the player to temporarily ban others.
     default: op
-  bansystem.checkban:
+  bob.checkban:
     description: Allows the player to check ban info.
     default: op
-  bansystem.unban:
+  bob.unban:
     description: Allows the player to unban others.
+    default: op
+  bob.commandspy:
+    description: Allows the player to toggle CommandSpy.
     default: op
