@@ -48,7 +48,7 @@ public class BanCommand implements CommandExecutor {
         if (target != null) {
             target.getWorld().strikeLightning(target.getLocation());
             Bukkit.getOnlinePlayers().forEach(p ->
-                    p.playSound(p.getLocation(), Sound.ENTITY_WITHER_DEATH, 1.0f, 1.0f)
+                    p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f)
             );
 
             final String finalReason = reason;

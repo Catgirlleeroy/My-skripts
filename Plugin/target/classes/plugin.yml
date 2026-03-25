@@ -42,12 +42,50 @@ commands:
     description: Unbans a player.
     usage: /unban <player>
     permission: bob.unban
+  ipban:
+    description: Permanently IP bans a player.
+    usage: /ipban <player> [reason]
+    permission: bob.ipban
+  iptempban:
+    description: Temporarily IP bans a player.
+    usage: /iptempban <player> <duration> [reason]
+    permission: bob.iptempban
+  ipunban:
+    description: Unbans an IP.
+    usage: /ipunban <ip>
+    permission: bob.ipunban
+  checkipban:
+    description: Checks the IP ban status of a player or IP.
+    usage: /checkipban <player|ip>
+    permission: bob.checkipban
   commandspy:
     description: Toggles CommandSpy to see commands run by other players.
     usage: /commandspy
     permission: bob.commandspy
+  bobreload:
+    description: Reloads config.yml, bans.yml and ipbans.yml from disk.
+    usage: /bobreload
+    permission: bob.reload
+  tp:
+    description: Teleport to a player or coordinates.
+    usage: /tp <player> | /tp <x> <y> <z> | /tp <player1> <player2>
+    permission: bob.tp.self
+  tpa:
+    description: Send a teleport request to a player.
+    usage: /tpa <player>
+    permission: bob.tpa
+  tpaccept:
+    description: Accept a pending teleport request.
+    usage: /tpaccept
+    permission: bob.tpa
+  tpdeny:
+    description: Deny a pending teleport request.
+    usage: /tpdeny
 
 permissions:
+  bob.staff:
+    description: Receives notifications when banned players try to join.
+    default: op
   bob.heal:
     description: Allows the player to heal themselves.
     default: op
@@ -106,6 +144,33 @@ permissions:
   bob.unban:
     description: Allows the player to unban others.
     default: op
+  bob.ipban:
+    description: Allows the player to permanently IP ban others.
+    default: op
+  bob.iptempban:
+    description: Allows the player to temporarily IP ban others.
+    default: op
+  bob.ipunban:
+    description: Allows the player to unban IPs.
+    default: op
+  bob.checkipban:
+    description: Allows the player to check IP ban info.
+    default: op
   bob.commandspy:
     description: Allows the player to toggle CommandSpy.
     default: op
+  bob.reload:
+    description: Allows the player to reload Bob's config and ban files.
+    default: op
+  bob.tp.self:
+    description: Allows the player to teleport themselves to a player or coords.
+    default: op
+  bob.tp.others:
+    description: Allows the player to teleport other players.
+    default: op
+  bob.tp.coords:
+    description: Allows the player to teleport to coordinates.
+    default: op
+  bob.tpa:
+    description: Allows the player to send and receive teleport requests.
+    default: true

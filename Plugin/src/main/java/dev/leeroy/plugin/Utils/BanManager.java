@@ -30,6 +30,11 @@ public class BanManager {
         config = YamlConfiguration.loadConfiguration(banFile);
     }
 
+    /** Reloads bans.yml from disk, discarding any cached state. */
+    public void reload() {
+        load();
+    }
+
     private void save() {
         try { config.save(banFile); } catch (IOException e) { e.printStackTrace(); }
     }

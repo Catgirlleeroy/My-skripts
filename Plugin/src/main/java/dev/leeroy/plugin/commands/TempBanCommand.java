@@ -61,7 +61,7 @@ public class TempBanCommand implements CommandExecutor {
             // Lightning and sound immediately
             target.getWorld().strikeLightning(target.getLocation());
             Bukkit.getOnlinePlayers().forEach(p ->
-                    p.playSound(p.getLocation(), Sound.ENTITY_WITHER_DEATH, 1.0f, 1.0f)
+                    p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f)
             );
 
             // Kick after 10 ticks so the lightning renders first
