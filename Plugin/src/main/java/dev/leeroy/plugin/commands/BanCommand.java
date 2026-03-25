@@ -44,17 +44,13 @@ public class BanCommand implements CommandExecutor {
         }
 
         banManager.ban(targetName, reason, sender.getName());
-
-        // Effects & kick if online
         Player target = Bukkit.getPlayerExact(targetName);
         if (target != null) {
-            // Lightning and sound immediately
             target.getWorld().strikeLightning(target.getLocation());
             Bukkit.getOnlinePlayers().forEach(p ->
                     p.playSound(p.getLocation(), Sound.ENTITY_WITHER_DEATH, 1.0f, 1.0f)
             );
 
-            // Kick after 10 ticks so the lightning renders first
             final String finalReason = reason;
             Bukkit.getScheduler().runTaskLater(plugin, () ->
                     target.kickPlayer(
@@ -63,7 +59,6 @@ public class BanCommand implements CommandExecutor {
                     ), 10L);
         }
 
-        // Public broadcast to all players
         Bukkit.broadcastMessage(
                 ChatColor.RED + "[BAN] " +
                         ChatColor.YELLOW + targetName +
