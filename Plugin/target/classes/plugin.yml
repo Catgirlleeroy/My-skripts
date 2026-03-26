@@ -36,11 +36,11 @@ commands:
     permission: bob.tempban
   checkban:
     description: Checks the ban status of a player.
-    usage: /checkban <player>
+    usage: /checkban <player|uuid>
     permission: bob.checkban
   unban:
     description: Unbans a player.
-    usage: /unban <player>
+    usage: /unban <player|uuid>
     permission: bob.unban
   ipban:
     description: Permanently IP bans a player.
@@ -52,12 +52,36 @@ commands:
     permission: bob.iptempban
   ipunban:
     description: Unbans an IP.
-    usage: /ipunban <ip>
+    usage: /ipunban <player|uuid|ip>
     permission: bob.ipunban
   checkipban:
     description: Checks the IP ban status of a player or IP.
     usage: /checkipban <player|ip>
     permission: bob.checkipban
+  mute:
+    description: Permanently mutes a player.
+    usage: /mute <player> [reason]
+    permission: bob.mute
+  tempmute:
+    description: Temporarily mutes a player.
+    usage: /tempmute <player> <duration> [reason]
+    permission: bob.tempmute
+  unmute:
+    description: Unmutes a player.
+    usage: /unmute <player|uuid>
+    permission: bob.unmute
+  chatmute:
+    description: Toggles server-wide chat mute.
+    usage: /chatmute
+    permission: bob.chatmute
+  chatclear:
+    description: Clears chat for all players.
+    usage: /chatclear
+    permission: bob.chatclear
+  kick:
+    description: Kicks a player from the server.
+    usage: /kick <player> [reason]
+    permission: bob.kick
   commandspy:
     description: Toggles CommandSpy to see commands run by other players.
     usage: /commandspy
@@ -155,6 +179,27 @@ permissions:
     default: op
   bob.checkipban:
     description: Allows the player to check IP ban info.
+    default: op
+  bob.mute:
+    description: Allows the player to permanently mute others.
+    default: op
+  bob.tempmute:
+    description: Allows the player to temporarily mute others.
+    default: op
+  bob.unmute:
+    description: Allows the player to unmute others.
+    default: op
+  bob.chatmute:
+    description: Allows the player to toggle server-wide chat mute.
+    default: op
+  bob.chatmute.bypass:
+    description: Allows the player to chat even when chat is muted.
+    default: op
+  bob.chatclear:
+    description: Allows the player to clear chat.
+    default: op
+  bob.kick:
+    description: Allows the player to kick others.
     default: op
   bob.commandspy:
     description: Allows the player to toggle CommandSpy.
