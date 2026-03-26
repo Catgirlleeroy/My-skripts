@@ -1,17 +1,24 @@
 package dev.leeroy.plugin.commands;
 
 import dev.leeroy.plugin.Utils.BanManager;
+import dev.leeroy.plugin.Utils.PlayerCache;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class UnbanCommand implements CommandExecutor {
 
     private final BanManager banManager;
+    private final PlayerCache playerCache;
 
-    public UnbanCommand(BanManager banManager) {
+    public UnbanCommand(BanManager banManager, PlayerCache playerCache) {
         this.banManager = banManager;
+        this.playerCache = playerCache;
     }
 
     @Override
@@ -23,19 +30,37 @@ public class UnbanCommand implements CommandExecutor {
         }
 
         if (args.length < 1) {
-            sender.sendMessage(ChatColor.YELLOW + "Usage: /unban <player>");
+            sender.sendMessage(ChatColor.YELLOW + "Usage: /unban <player|uuid>");
             return true;
         }
 
-        String targetName = args[0];
+        UUID uuid = resolveUUID(args[0]);
 
-        if (!banManager.isBanned(targetName)) {
-            sender.sendMessage(ChatColor.RED + targetName + " is not currently banned.");
+        if (uuid == null) {
+            sender.sendMessage(ChatColor.RED + "Could not find '" + args[0] + "'. Use their UUID or make sure their name is in the cache.");
             return true;
         }
 
-        banManager.unban(targetName);
-        sender.sendMessage(ChatColor.GREEN + targetName + " has been unbanned.");
+        if (!banManager.isBanned(uuid)) {
+            sender.sendMessage(ChatColor.RED + args[0] + " is not currently banned.");
+            return true;
+        }
+
+        banManager.unban(uuid);
+        String name = playerCache.getName(uuid);
+        sender.sendMessage(ChatColor.GREEN + (name != null ? name : uuid.toString()) + " has been unbanned.");
         return true;
+    }
+
+    private UUID resolveUUID(String input) {
+        // Online player by name
+        Player online = Bukkit.getPlayerExact(input);
+        if (online != null) return online.getUniqueId();
+
+        // Raw UUID string
+        try { return UUID.fromString(input); } catch (IllegalArgumentException ignored) {}
+
+        // Offline lookup via cache by name
+        return playerCache.getUUID(input);
     }
 }

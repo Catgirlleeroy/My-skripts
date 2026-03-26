@@ -2,24 +2,28 @@ package dev.leeroy.plugin;
 
 import dev.leeroy.plugin.Utils.BanManager;
 import dev.leeroy.plugin.Utils.IPBanManager;
+import dev.leeroy.plugin.Utils.PlayerCache;
 import dev.leeroy.plugin.commands.*;
 import dev.leeroy.plugin.listeners.BanListener;
 import dev.leeroy.plugin.listeners.CommandSpyListener;
+import dev.leeroy.plugin.listeners.PlayerCacheListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Plugin extends JavaPlugin {
 
     private BanManager banManager;
     private IPBanManager ipBanManager;
+    private PlayerCache playerCache;
 
     @Override
     public void onEnable() {
         // Save default config.yml if it doesn't exist
         saveDefaultConfig();
 
-        // Ban systems
+        // Systems
         banManager   = new BanManager(this);
         ipBanManager = new IPBanManager(this);
+        playerCache  = new PlayerCache(this);
 
         // Heal command
         getCommand("heal").setExecutor(new HealCommand());
@@ -34,8 +38,8 @@ public final class Plugin extends JavaPlugin {
         // Ban commands
         getCommand("ban").setExecutor(new BanCommand(banManager, this));
         getCommand("tempban").setExecutor(new TempBanCommand(banManager, this));
-        getCommand("checkban").setExecutor(new CheckBanCommand(banManager));
-        getCommand("unban").setExecutor(new UnbanCommand(banManager));
+        getCommand("checkban").setExecutor(new CheckBanCommand(banManager, playerCache));
+        getCommand("unban").setExecutor(new UnbanCommand(banManager, playerCache));
 
         // IP Ban commands
         getCommand("ipban").setExecutor(new IPBanCommand(ipBanManager, this));
@@ -56,6 +60,7 @@ public final class Plugin extends JavaPlugin {
 
         // Listeners
         getServer().getPluginManager().registerEvents(new BanListener(banManager, ipBanManager), this);
+        getServer().getPluginManager().registerEvents(new PlayerCacheListener(playerCache), this);
 
         // CommandSpy
         CommandSpyListener commandSpyListener = new CommandSpyListener();

@@ -32,11 +32,16 @@ public class TempBanCommand implements CommandExecutor {
 
         if (args.length < 2) {
             sender.sendMessage(ChatColor.YELLOW + "Usage: /tempban <player> <duration> [reason]");
-            sender.sendMessage(ChatColor.GRAY  + "Duration examples: 30m, 2h, 1d, 1d12h");
+            sender.sendMessage(ChatColor.GRAY + "Duration examples: 30m, 2h, 1d, 1d12h");
             return true;
         }
 
-        String targetName  = args[0];
+        Player target = Bukkit.getPlayerExact(args[0]);
+        if (target == null) {
+            sender.sendMessage(ChatColor.RED + "Player '" + args[0] + "' not found or is offline.");
+            return true;
+        }
+
         String durationStr = args[1];
         String reason = args.length > 2
                 ? String.join(" ", Arrays.copyOfRange(args, 2, args.length))
@@ -48,37 +53,31 @@ public class TempBanCommand implements CommandExecutor {
             return true;
         }
 
-        if (banManager.isBanned(targetName)) {
-            sender.sendMessage(ChatColor.RED + targetName + " is already banned.");
+        if (banManager.isBanned(target.getUniqueId())) {
+            sender.sendMessage(ChatColor.RED + target.getName() + " is already banned.");
             return true;
         }
 
-        banManager.tempBan(targetName, reason, sender.getName(), durationMs);
+        banManager.tempBan(target.getUniqueId(), target.getName(), reason, sender.getName(), durationMs);
 
-        // Effects & kick if online
-        Player target = Bukkit.getPlayerExact(targetName);
-        if (target != null) {
-            // Lightning and sound immediately
-            target.getWorld().strikeLightning(target.getLocation());
-            Bukkit.getOnlinePlayers().forEach(p ->
-                    p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f)
-            );
+        // Effects
+        target.getWorld().strikeLightning(target.getLocation());
+        Bukkit.getOnlinePlayers().forEach(p ->
+                p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f)
+        );
 
-            // Kick after 10 ticks so the lightning renders first
-            final String finalReason = reason;
-            final long finalDurationMs = durationMs;
-            Bukkit.getScheduler().runTaskLater(plugin, () ->
-                    target.kickPlayer(
-                            ChatColor.RED + "You have been temporarily banned.\n" +
-                                    ChatColor.WHITE + "Duration: " + BanManager.formatRemaining(System.currentTimeMillis() + finalDurationMs) + "\n" +
-                                    ChatColor.WHITE + "Reason: " + finalReason
-                    ), 10L);
-        }
+        final String finalReason = reason;
+        final long finalDurationMs = durationMs;
+        Bukkit.getScheduler().runTaskLater(plugin, () ->
+                target.kickPlayer(
+                        ChatColor.RED + "You have been temporarily banned.\n" +
+                                ChatColor.WHITE + "Duration: " + BanManager.formatRemaining(System.currentTimeMillis() + finalDurationMs) + "\n" +
+                                ChatColor.WHITE + "Reason: " + finalReason
+                ), 10L);
 
-        // Public broadcast to all players
         Bukkit.broadcastMessage(
                 ChatColor.RED + "[TEMPBAN] " +
-                        ChatColor.YELLOW + targetName +
+                        ChatColor.YELLOW + target.getName() +
                         ChatColor.RED + " has been temporarily banned! " +
                         ChatColor.GRAY + "Duration: " + durationStr + " | Reason: " + reason
         );

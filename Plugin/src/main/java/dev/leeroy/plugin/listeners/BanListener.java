@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class BanListener implements Listener {
 
@@ -23,19 +24,20 @@ public class BanListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerLogin(PlayerLoginEvent event) {
+        UUID uuid = event.getPlayer().getUniqueId();
         String name = event.getPlayer().getName();
         String ip   = event.getAddress().getHostAddress();
 
-        // Check name ban
-        if (banManager.isBanned(name)) {
-            Map<String, Object> details = banManager.getBanDetails(name);
+        // Check UUID ban
+        if (banManager.isBanned(uuid)) {
+            Map<String, Object> details = banManager.getBanDetails(uuid);
             if (details != null) {
                 String type     = (String) details.get("type");
                 String reason   = (String) details.get("reason");
                 String bannedBy = (String) details.get("bannedBy");
                 long   expiry   = (long)   details.get("expiry");
 
-                notifyStaff(name, ip, "NAME BAN", type, reason, bannedBy, expiry);
+                notifyStaff(name, ip, "BAN", type, reason, bannedBy, expiry);
                 event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
                         buildKickMessage("banned", type, reason, bannedBy, expiry));
                 return;

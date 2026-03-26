@@ -33,35 +33,41 @@ public class BanCommand implements CommandExecutor {
             return true;
         }
 
-        String targetName = args[0];
+        // Player must be online to get their UUID
+        Player target = Bukkit.getPlayerExact(args[0]);
+        if (target == null) {
+            sender.sendMessage(ChatColor.RED + "Player '" + args[0] + "' not found or is offline.");
+            return true;
+        }
+
         String reason = args.length > 1
                 ? String.join(" ", java.util.Arrays.copyOfRange(args, 1, args.length))
                 : "You have been banned.";
 
-        if (banManager.isBanned(targetName)) {
-            sender.sendMessage(ChatColor.RED + targetName + " is already banned.");
+        if (banManager.isBanned(target.getUniqueId())) {
+            sender.sendMessage(ChatColor.RED + target.getName() + " is already banned.");
             return true;
         }
 
-        banManager.ban(targetName, reason, sender.getName());
-        Player target = Bukkit.getPlayerExact(targetName);
-        if (target != null) {
-            target.getWorld().strikeLightning(target.getLocation());
-            Bukkit.getOnlinePlayers().forEach(p ->
-                    p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f)
-            );
+        banManager.ban(target.getUniqueId(), target.getName(), reason, sender.getName());
 
-            final String finalReason = reason;
-            Bukkit.getScheduler().runTaskLater(plugin, () ->
-                    target.kickPlayer(
-                            ChatColor.RED + "You have been permanently banned.\n" +
-                                    ChatColor.WHITE + "Reason: " + finalReason
-                    ), 10L);
-        }
+        // Effects
+        target.getWorld().strikeLightning(target.getLocation());
+        Bukkit.getOnlinePlayers().forEach(p ->
+                p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f)
+        );
+
+        // Kick after 10 ticks
+        final String finalReason = reason;
+        Bukkit.getScheduler().runTaskLater(plugin, () ->
+                target.kickPlayer(
+                        ChatColor.RED + "You have been permanently banned.\n" +
+                                ChatColor.WHITE + "Reason: " + finalReason
+                ), 10L);
 
         Bukkit.broadcastMessage(
                 ChatColor.RED + "[BAN] " +
-                        ChatColor.YELLOW + targetName +
+                        ChatColor.YELLOW + target.getName() +
                         ChatColor.RED + " has been permanently banned! " +
                         ChatColor.GRAY + "Reason: " + reason
         );

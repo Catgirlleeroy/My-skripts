@@ -14,7 +14,9 @@ C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugi
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\UnbanCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\BanListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\CommandSpyListener.java
+C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\PlayerCacheListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\Plugin.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\Utils\BanManager.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\Utils\IPBanManager.java
+C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\Utils\PlayerCache.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\Utils\PlayerHealer.java

@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class BanManager {
 
@@ -30,44 +31,31 @@ public class BanManager {
         config = YamlConfiguration.loadConfiguration(banFile);
     }
 
+    private void save() {
+        try { config.save(banFile); } catch (IOException e) { e.printStackTrace(); }
+    }
+
     /** Reloads bans.yml from disk, discarding any cached state. */
     public void reload() {
         load();
     }
 
-    private void save() {
-        try { config.save(banFile); } catch (IOException e) { e.printStackTrace(); }
-    }
-
     // ── Public API ───────────────────────────────────────────────────────────
 
-    /**
-     * Permanently bans a player.
-     *
-     * @param name    player name (case-insensitive key stored lowercase)
-     * @param reason  ban reason
-     * @param bannedBy who issued the ban
-     */
-    public void ban(String name, String reason, String bannedBy) {
-        String key = name.toLowerCase();
+    public void ban(UUID uuid, String name, String reason, String bannedBy) {
+        String key = uuid.toString();
+        config.set(key + ".name",     name);
         config.set(key + ".type",     "permanent");
         config.set(key + ".reason",   reason);
         config.set(key + ".bannedBy", bannedBy);
-        config.set(key + ".expiry",   -1L);      // -1 = never
+        config.set(key + ".expiry",   -1L);
         save();
     }
 
-    /**
-     * Temporarily bans a player.
-     *
-     * @param name      player name
-     * @param reason    ban reason
-     * @param bannedBy  who issued the ban
-     * @param durationMs ban duration in milliseconds
-     */
-    public void tempBan(String name, String reason, String bannedBy, long durationMs) {
-        String key = name.toLowerCase();
+    public void tempBan(UUID uuid, String name, String reason, String bannedBy, long durationMs) {
+        String key = uuid.toString();
         long expiry = System.currentTimeMillis() + durationMs;
+        config.set(key + ".name",     name);
         config.set(key + ".type",     "temp");
         config.set(key + ".reason",   reason);
         config.set(key + ".bannedBy", bannedBy);
@@ -75,39 +63,29 @@ public class BanManager {
         save();
     }
 
-    /**
-     * Unbans a player.
-     */
-    public void unban(String name) {
-        config.set(name.toLowerCase(), null);
+    public void unban(UUID uuid) {
+        config.set(uuid.toString(), null);
         save();
     }
 
-    /**
-     * Returns true if the player is currently banned (and not expired).
-     * Automatically removes expired tempbans.
-     */
-    public boolean isBanned(String name) {
-        String key = name.toLowerCase();
+    public boolean isBanned(UUID uuid) {
+        String key = uuid.toString();
         if (!config.contains(key)) return false;
 
         long expiry = config.getLong(key + ".expiry", -1L);
         if (expiry != -1L && System.currentTimeMillis() > expiry) {
-            unban(name);   // auto-remove expired ban
+            unban(uuid);
             return false;
         }
         return true;
     }
 
-    /**
-     * Returns a map of ban details for a player, or null if not banned.
-     * Keys: type, reason, bannedBy, expiry
-     */
-    public Map<String, Object> getBanDetails(String name) {
-        String key = name.toLowerCase();
-        if (!isBanned(name)) return null;
+    public Map<String, Object> getBanDetails(UUID uuid) {
+        String key = uuid.toString();
+        if (!isBanned(uuid)) return null;
 
         Map<String, Object> details = new HashMap<>();
+        details.put("name",     config.getString(key + ".name"));
         details.put("type",     config.getString(key + ".type"));
         details.put("reason",   config.getString(key + ".reason"));
         details.put("bannedBy", config.getString(key + ".bannedBy"));
@@ -117,11 +95,6 @@ public class BanManager {
 
     // ── Duration parser ──────────────────────────────────────────────────────
 
-    /**
-     * Parses a duration string like "1d", "2h", "30m", "10s" into milliseconds.
-     * Supports combinations e.g. "1d12h".
-     * Returns -1 if parsing fails.
-     */
     public static long parseDuration(String input) {
         long total = 0;
         StringBuilder num = new StringBuilder();
@@ -137,17 +110,13 @@ public class BanManager {
                 else if (c == 'h') total += value * 3_600_000L;
                 else if (c == 'm') total += value * 60_000L;
                 else if (c == 's') total += value * 1_000L;
-                else return -1; // unknown unit
+                else return -1;
             }
         }
 
         return total > 0 ? total : -1;
     }
 
-    /**
-     * Formats a future timestamp as a human-readable remaining duration.
-     * e.g. "2d 3h 15m 4s"
-     */
     public static String formatRemaining(long expiryMs) {
         long remaining = expiryMs - System.currentTimeMillis();
         if (remaining <= 0) return "Expired";
