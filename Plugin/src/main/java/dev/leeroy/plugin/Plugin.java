@@ -6,6 +6,7 @@ import dev.leeroy.plugin.Utils.MuteManager;
 import dev.leeroy.plugin.Utils.PlayerCache;
 import dev.leeroy.plugin.commands.*;
 import dev.leeroy.plugin.listeners.BanListener;
+import dev.leeroy.plugin.listeners.ChatColorListener;
 import dev.leeroy.plugin.listeners.CommandSpyListener;
 import dev.leeroy.plugin.listeners.MuteListener;
 import dev.leeroy.plugin.listeners.PlayerCacheListener;
@@ -61,6 +62,10 @@ public final class Plugin extends JavaPlugin {
 
         // Kick
         getCommand("kick").setExecutor(new KickCommand());
+
+        // Chat Color
+        getCommand("chatcolor").setExecutor(new ChatColorCommand());
+        getServer().getPluginManager().registerEvents(new ChatColorListener(), this);
 
         // Reload
         getCommand("bobreload").setExecutor(new ReloadCommand(this, banManager, ipBanManager));

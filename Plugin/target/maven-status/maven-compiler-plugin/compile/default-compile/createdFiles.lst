@@ -6,6 +6,7 @@ dev\leeroy\plugin\listeners\PlayerCacheListener.class
 dev\leeroy\plugin\commands\TPACommand.class
 dev\leeroy\plugin\commands\TempBanCommand.class
 dev\leeroy\plugin\commands\UnmuteCommand.class
+dev\leeroy\plugin\listeners\ChatColorListener.class
 dev\leeroy\plugin\commands\IPUnbanCommand.class
 dev\leeroy\plugin\Utils\PlayerCache.class
 dev\leeroy\plugin\commands\HealCommand.class
@@ -22,7 +23,9 @@ dev\leeroy\plugin\commands\UnbanCommand.class
 dev\leeroy\plugin\commands\ReloadCommand.class
 dev\leeroy\plugin\commands\TPCommand.class
 dev\leeroy\plugin\commands\Gamemodes$1.class
+dev\leeroy\plugin\listeners\ChatColorListener$1.class
 dev\leeroy\plugin\Utils\BanManager.class
+dev\leeroy\plugin\commands\ChatColorCommand.class
 dev\leeroy\plugin\commands\IPBanCommand.class
 dev\leeroy\plugin\listeners\BanListener.class
 dev\leeroy\plugin\commands\ChatMuteCommand.class

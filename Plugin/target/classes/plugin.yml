@@ -82,6 +82,10 @@ commands:
     description: Kicks a player from the server.
     usage: /kick <player> [reason]
     permission: bob.kick
+  chatcolor:
+    description: Opens the chat color selector GUI.
+    usage: /chatcolor
+    permission: bob.chatcolor
   commandspy:
     description: Toggles CommandSpy to see commands run by other players.
     usage: /commandspy
@@ -201,6 +205,9 @@ permissions:
   bob.kick:
     description: Allows the player to kick others.
     default: op
+  bob.chatcolor:
+    description: Allows the player to use the chat color GUI.
+    default: true
   bob.commandspy:
     description: Allows the player to toggle CommandSpy.
     default: op

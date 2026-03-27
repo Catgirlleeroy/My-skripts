@@ -1,5 +1,6 @@
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\BanCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\ChatClearCommand.java
+C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\ChatColorCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\ChatMuteCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\CheckBanCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\CheckIPBanCommand.java
@@ -19,6 +20,7 @@ C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugi
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\UnbanCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\UnmuteCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\BanListener.java
+C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\ChatColorListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\CommandSpyListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\MuteListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\PlayerCacheListener.java
