@@ -4,6 +4,7 @@ import dev.leeroy.plugin.Utils.BanManager;
 import dev.leeroy.plugin.Utils.IPBanManager;
 import dev.leeroy.plugin.Utils.MuteManager;
 import dev.leeroy.plugin.Utils.PlayerCache;
+import dev.leeroy.plugin.Utils.PunishConfig;
 import dev.leeroy.plugin.commands.*;
 import dev.leeroy.plugin.listeners.BanListener;
 import dev.leeroy.plugin.listeners.ChatColorListener;
@@ -11,6 +12,7 @@ import dev.leeroy.plugin.listeners.CommandSpyListener;
 import dev.leeroy.plugin.listeners.GlowListener;
 import dev.leeroy.plugin.listeners.MuteListener;
 import dev.leeroy.plugin.listeners.PlayerCacheListener;
+import dev.leeroy.plugin.listeners.PunishListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Plugin extends JavaPlugin {
@@ -19,6 +21,7 @@ public final class Plugin extends JavaPlugin {
     private IPBanManager ipBanManager;
     private MuteManager muteManager;
     private PlayerCache playerCache;
+    private PunishConfig punishConfig;
 
     @Override
     public void onEnable() {
@@ -29,6 +32,7 @@ public final class Plugin extends JavaPlugin {
         ipBanManager = new IPBanManager(this);
         muteManager  = new MuteManager(this);
         playerCache  = new PlayerCache(this);
+        punishConfig = new PunishConfig(this);
 
         // Heal
         getCommand("heal").setExecutor(new HealCommand());
@@ -49,7 +53,7 @@ public final class Plugin extends JavaPlugin {
         // IP Ban
         getCommand("ipban").setExecutor(new IPBanCommand(ipBanManager, this));
         getCommand("iptempban").setExecutor(new IPTempBanCommand(ipBanManager, this));
-        getCommand("ipunban").setExecutor(new IPUnbanCommand(ipBanManager));
+        getCommand("ipunban").setExecutor(new IPUnbanCommand(ipBanManager, playerCache));
         getCommand("checkipban").setExecutor(new CheckIPBanCommand(ipBanManager));
 
         // Mute
@@ -64,6 +68,11 @@ public final class Plugin extends JavaPlugin {
         // Kick
         getCommand("kick").setExecutor(new KickCommand());
 
+        // Punish GUI
+        getCommand("punish").setExecutor(new PunishCommand(this, punishConfig));
+        getServer().getPluginManager().registerEvents(
+                new PunishListener(this, banManager, ipBanManager, muteManager, punishConfig), this);
+
         // Chat Color
         getCommand("chatcolor").setExecutor(new ChatColorCommand());
         getServer().getPluginManager().registerEvents(new ChatColorListener(), this);
@@ -73,7 +82,7 @@ public final class Plugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new GlowListener(this), this);
 
         // Reload
-        getCommand("bobreload").setExecutor(new ReloadCommand(this, banManager, ipBanManager));
+        getCommand("bobreload").setExecutor(new ReloadCommand(this, banManager, ipBanManager, punishConfig));
 
         // TP
         getCommand("tp").setExecutor(new TPCommand());

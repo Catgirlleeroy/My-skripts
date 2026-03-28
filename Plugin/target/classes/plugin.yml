@@ -82,6 +82,10 @@ commands:
     description: Kicks a player from the server.
     usage: /kick <player> [reason]
     permission: bob.kick
+  punish:
+    description: Opens the punishment GUI for a player.
+    usage: /punish <player>
+    permission: bob.punish
   chatcolor:
     description: Opens the chat color selector GUI.
     usage: /chatcolor
@@ -208,6 +212,9 @@ permissions:
     default: op
   bob.kick:
     description: Allows the player to kick others.
+    default: op
+  bob.punish:
+    description: Allows the player to use the punishment GUI.
     default: op
   bob.chatcolor:
     description: Allows the player to open the chat color GUI.

@@ -58,7 +58,7 @@ public class GlowCommand implements CommandExecutor {
         addSlot(inv, player, 16, Material.BLACK_WOOL,       ChatColor.BLACK        + "Black",        "black");
 
         // Rainbow
-        addSlot(inv, player, 23, Material.DIAMOND,
+        addSlot(inv, player, 22, Material.DIAMOND,
                 "" + ChatColor.RED + "R" + ChatColor.GOLD + "a" + ChatColor.YELLOW + "i"
                         + ChatColor.GREEN + "n" + ChatColor.AQUA + "b" + ChatColor.BLUE + "o"
                         + ChatColor.LIGHT_PURPLE + "w",

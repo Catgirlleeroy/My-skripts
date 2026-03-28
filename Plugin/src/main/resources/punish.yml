@@ -1,0 +1,36 @@
+# Bob Punishment GUI Configuration
+
+# GUI title — supports color codes with &
+# {player} is replaced with the target's name
+gui-title: "&8» Punish &c{player} &8«"
+
+# Which actions are enabled in the GUI
+actions:
+  ban: true
+  tempban: true
+  mute: true
+  tempmute: true
+  kick: true
+  ipban: true
+
+# Preset reasons shown in the reason selection GUI
+reasons:
+  - "Hacking"
+  - "Spam"
+  - "Inappropriate Language"
+  - "Griefing"
+  - "Advertising"
+  - "Disrespecting Staff"
+  - "Exploiting Bugs"
+  - "Other"
+
+# Preset durations shown for tempban/tempmute
+durations:
+  - "30m"
+  - "1h"
+  - "6h"
+  - "12h"
+  - "1d"
+  - "3d"
+  - "7d"
+  - "30d"

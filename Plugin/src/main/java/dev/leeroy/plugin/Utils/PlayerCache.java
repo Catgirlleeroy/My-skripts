@@ -36,6 +36,24 @@ public class PlayerCache {
         save();
     }
 
+    /** Store a UUID → IP mapping when a player joins. */
+    public void storeIP(UUID uuid, String ip) {
+        config.set("ips." + uuid.toString(), ip);
+        save();
+    }
+
+    /** Get a player's last known IP by UUID. */
+    public String getIP(UUID uuid) {
+        return config.getString("ips." + uuid.toString(), null);
+    }
+
+    /** Get a player's last known IP by their name. */
+    public String getIPByName(String name) {
+        UUID uuid = getUUID(name);
+        if (uuid == null) return null;
+        return getIP(uuid);
+    }
+
     /** Get a player's last known name by UUID. */
     public String getName(UUID uuid) {
         return config.getString(uuid.toString(), null);

@@ -15,7 +15,7 @@ public class PlayerCacheListener implements Listener {
 
     @EventHandler
     public void onPlayerLogin(PlayerLoginEvent event) {
-        // Cache every player that attempts to join, even if they get banned
         playerCache.store(event.getPlayer().getUniqueId(), event.getPlayer().getName());
+        playerCache.storeIP(event.getPlayer().getUniqueId(), event.getAddress().getHostAddress());
     }
 }
