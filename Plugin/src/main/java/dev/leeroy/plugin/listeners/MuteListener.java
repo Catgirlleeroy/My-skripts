@@ -3,6 +3,7 @@ package dev.leeroy.plugin.listeners;
 import dev.leeroy.plugin.Utils.BanManager;
 import dev.leeroy.plugin.Utils.MuteManager;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -33,6 +34,7 @@ public class MuteListener implements Listener {
         // Server-wide chat mute — bypass for players with permission
         if (chatMuted && !event.getPlayer().hasPermission("bob.chatmute.bypass")) {
             event.getPlayer().sendMessage(ChatColor.RED + "Chat is currently muted.");
+            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_ANVIL_LAND, 1.0f, 2.0f);
             event.setCancelled(true);
             return;
         }
@@ -52,6 +54,7 @@ public class MuteListener implements Listener {
                             .append(ChatColor.WHITE).append(BanManager.formatRemaining(expiry));
                 }
                 event.getPlayer().sendMessage(msg.toString());
+                event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_ANVIL_LAND, 1.0f, 2.0f);
             }
             event.setCancelled(true);
         }
