@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>dev.leeroy</groupId>
-    <artifactId>Bob</artifactId>
-    <version>1.0</version>
+    <artifactId>Bob-BETA</artifactId>
+    <version>1.1</version>
     <packaging>jar</packaging>
 
-    <name>Bob</name>
+    <name>Bob BETA</name>
 
     <properties>
         <java.version>21</java.version>

@@ -8,9 +8,6 @@ import org.bukkit.command.CommandSender;
 
 public class ChatClearCommand implements CommandExecutor {
 
-    // Blank lines to push old chat off screen
-    private static final String BLANK_LINES = "\n".repeat(100);
-
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
@@ -19,7 +16,11 @@ public class ChatClearCommand implements CommandExecutor {
             return true;
         }
 
-        Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(BLANK_LINES));
+        Bukkit.getOnlinePlayers().forEach(p -> {
+            for (int i = 0; i < 100; i++) {
+                p.sendMessage(" ");
+            }
+        });
         Bukkit.broadcastMessage(ChatColor.YELLOW + "[CHAT] Chat was cleared by " + sender.getName() + ".");
         return true;
     }

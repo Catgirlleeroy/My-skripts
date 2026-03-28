@@ -15,7 +15,12 @@ import java.util.UUID;
 
 public class ChatColorListener implements Listener {
 
-    // Stores each player's chosen chat color/format
+    private static final ChatColor[] RAINBOW = {
+            ChatColor.RED, ChatColor.GOLD, ChatColor.YELLOW,
+            ChatColor.GREEN, ChatColor.AQUA, ChatColor.BLUE, ChatColor.LIGHT_PURPLE
+    };
+
+    // Stores color code string, or "rainbow" for rainbow mode
     private final Map<UUID, String> chatColors = new HashMap<>();
 
     @EventHandler
@@ -24,34 +29,93 @@ public class ChatColorListener implements Listener {
         if (!event.getView().getTitle().equals(ChatColorCommand.GUI_TITLE)) return;
 
         event.setCancelled(true);
-
         if (event.getCurrentItem() == null) return;
+
         Material mat = event.getCurrentItem().getType();
-
-        String colorCode = resolveColor(mat);
-        if (colorCode == null) return;
-
-        if (mat == Material.BARRIER) {
-            // Reset
-            chatColors.remove(player.getUniqueId());
-            player.sendMessage(ChatColor.GRAY + "✦ Your chat color has been " + ChatColor.WHITE + "reset" + ChatColor.GRAY + ".");
-        } else {
-            chatColors.put(player.getUniqueId(), colorCode);
-            player.sendMessage(ChatColor.GRAY + "✦ Chat color set to: " + colorCode + "This color!");
+        if (mat == Material.GRAY_STAINED_GLASS_PANE) {
+            player.sendMessage(ChatColor.RED + "You don't have permission for that color.");
+            return;
         }
 
+        String permKey = resolvePermKey(mat);
+        if (permKey == null) return;
+
+        if (permKey.equals("reset")) {
+            chatColors.remove(player.getUniqueId());
+            player.sendMessage(ChatColor.GRAY + "✦ Your chat color has been " + ChatColor.WHITE + "reset" + ChatColor.GRAY + ".");
+            player.closeInventory();
+            return;
+        }
+
+        if (!player.hasPermission("bob.chatcolor." + permKey)) {
+            player.sendMessage(ChatColor.RED + "You don't have permission for that color.");
+            return;
+        }
+
+        String colorCode = resolveColorCode(mat);
+        chatColors.put(player.getUniqueId(), colorCode);
+
+        String preview = colorCode.equals("rainbow") ? buildRainbow("This color!") : colorCode + "This color!";
+        player.sendMessage(ChatColor.GRAY + "✦ Chat color set to: " + preview);
         player.closeInventory();
     }
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         String color = chatColors.get(event.getPlayer().getUniqueId());
-        if (color != null) {
+        if (color == null) return;
+
+        if (color.equals("rainbow")) {
+            event.setMessage(buildRainbow(event.getMessage()));
+        } else {
             event.setMessage(color + event.getMessage());
         }
     }
 
-    private String resolveColor(Material mat) {
+    // ── Rainbow builder — cycles color per character ─────────────────────────
+
+    private String buildRainbow(String message) {
+        StringBuilder sb = new StringBuilder();
+        int colorIndex = 0;
+        for (char c : message.toCharArray()) {
+            if (c == ' ') {
+                sb.append(' ');
+            } else {
+                sb.append(RAINBOW[colorIndex % RAINBOW.length]).append(c);
+                colorIndex++;
+            }
+        }
+        return sb.toString();
+    }
+
+    // ── Resolvers ─────────────────────────────────────────────────────────────
+
+    private String resolvePermKey(Material mat) {
+        return switch (mat) {
+            case WHITE_WOOL       -> "white";
+            case YELLOW_WOOL      -> "yellow";
+            case GOLD_BLOCK       -> "gold";
+            case ORANGE_WOOL      -> "red";
+            case MAGENTA_WOOL     -> "light_purple";
+            case PURPLE_WOOL      -> "dark_purple";
+            case BLUE_WOOL        -> "blue";
+            case CYAN_WOOL        -> "aqua";
+            case LIGHT_BLUE_WOOL  -> "dark_aqua";
+            case LIME_WOOL        -> "green";
+            case GREEN_WOOL       -> "dark_green";
+            case GRAY_WOOL        -> "gray";
+            case LIGHT_GRAY_WOOL  -> "dark_gray";
+            case BLACK_WOOL       -> "black";
+            case NETHER_STAR      -> "bold";
+            case BOOK             -> "italic";
+            case NAME_TAG         -> "underline";
+            case DIAMOND          -> "rainbow";
+            case BARRIER          -> "reset";
+            default               -> null;
+        };
+    }
+
+    private String resolveColorCode(Material mat) {
         return switch (mat) {
             case WHITE_WOOL       -> ChatColor.WHITE.toString();
             case YELLOW_WOOL      -> ChatColor.YELLOW.toString();
@@ -70,7 +134,7 @@ public class ChatColorListener implements Listener {
             case NETHER_STAR      -> ChatColor.BOLD.toString();
             case BOOK             -> ChatColor.ITALIC.toString();
             case NAME_TAG         -> ChatColor.UNDERLINE.toString();
-            case BARRIER          -> "reset";
+            case DIAMOND          -> "rainbow";
             default               -> null;
         };
     }

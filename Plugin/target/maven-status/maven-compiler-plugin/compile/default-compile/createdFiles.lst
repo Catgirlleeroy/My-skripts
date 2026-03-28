@@ -5,10 +5,12 @@ dev\leeroy\plugin\commands\ChatClearCommand.class
 dev\leeroy\plugin\listeners\PlayerCacheListener.class
 dev\leeroy\plugin\commands\TPACommand.class
 dev\leeroy\plugin\commands\TempBanCommand.class
+dev\leeroy\plugin\listeners\GlowListener.class
 dev\leeroy\plugin\commands\UnmuteCommand.class
 dev\leeroy\plugin\listeners\ChatColorListener.class
 dev\leeroy\plugin\commands\IPUnbanCommand.class
 dev\leeroy\plugin\Utils\PlayerCache.class
+dev\leeroy\plugin\listeners\GlowListener$1.class
 dev\leeroy\plugin\commands\HealCommand.class
 dev\leeroy\plugin\Utils\MuteManager.class
 dev\leeroy\plugin\Utils\IPBanManager.class
@@ -29,6 +31,7 @@ dev\leeroy\plugin\commands\ChatColorCommand.class
 dev\leeroy\plugin\commands\IPBanCommand.class
 dev\leeroy\plugin\listeners\BanListener.class
 dev\leeroy\plugin\commands\ChatMuteCommand.class
+dev\leeroy\plugin\commands\GlowCommand.class
 dev\leeroy\plugin\commands\MuteCommand.class
 dev\leeroy\plugin\commands\TempMuteCommand.class
 dev\leeroy\plugin\commands\CheckBanCommand.class

@@ -86,6 +86,10 @@ commands:
     description: Opens the chat color selector GUI.
     usage: /chatcolor
     permission: bob.chatcolor
+  glow:
+    description: Opens the glow color selector GUI.
+    usage: /glow
+    permission: bob.glow
   commandspy:
     description: Toggles CommandSpy to see commands run by other players.
     usage: /commandspy
@@ -206,8 +210,110 @@ permissions:
     description: Allows the player to kick others.
     default: op
   bob.chatcolor:
-    description: Allows the player to use the chat color GUI.
+    description: Allows the player to open the chat color GUI.
     default: true
+  bob.chatcolor.white:
+    description: White chat color.
+    default: true
+  bob.chatcolor.yellow:
+    description: Yellow chat color.
+    default: true
+  bob.chatcolor.gold:
+    description: Gold chat color.
+    default: true
+  bob.chatcolor.red:
+    description: Red chat color.
+    default: true
+  bob.chatcolor.light_purple:
+    description: Light purple chat color.
+    default: true
+  bob.chatcolor.dark_purple:
+    description: Dark purple chat color.
+    default: true
+  bob.chatcolor.blue:
+    description: Blue chat color.
+    default: true
+  bob.chatcolor.aqua:
+    description: Aqua chat color.
+    default: true
+  bob.chatcolor.dark_aqua:
+    description: Dark aqua chat color.
+    default: true
+  bob.chatcolor.green:
+    description: Green chat color.
+    default: true
+  bob.chatcolor.dark_green:
+    description: Dark green chat color.
+    default: true
+  bob.chatcolor.gray:
+    description: Gray chat color.
+    default: true
+  bob.chatcolor.dark_gray:
+    description: Dark gray chat color.
+    default: true
+  bob.chatcolor.black:
+    description: Black chat color.
+    default: op
+  bob.chatcolor.bold:
+    description: Bold chat format.
+    default: true
+  bob.chatcolor.italic:
+    description: Italic chat format.
+    default: true
+  bob.chatcolor.underline:
+    description: Underline chat format.
+    default: true
+  bob.chatcolor.rainbow:
+    description: Rainbow chat color.
+    default: op
+  bob.glow:
+    description: Allows the player to open the glow color GUI.
+    default: true
+  bob.glow.white:
+    description: White glow color.
+    default: true
+  bob.glow.yellow:
+    description: Yellow glow color.
+    default: true
+  bob.glow.gold:
+    description: Gold glow color.
+    default: true
+  bob.glow.red:
+    description: Red glow color.
+    default: true
+  bob.glow.light_purple:
+    description: Light purple glow color.
+    default: true
+  bob.glow.dark_purple:
+    description: Dark purple glow color.
+    default: true
+  bob.glow.blue:
+    description: Blue glow color.
+    default: true
+  bob.glow.aqua:
+    description: Aqua glow color.
+    default: true
+  bob.glow.dark_aqua:
+    description: Dark aqua glow color.
+    default: true
+  bob.glow.green:
+    description: Green glow color.
+    default: true
+  bob.glow.dark_green:
+    description: Dark green glow color.
+    default: true
+  bob.glow.gray:
+    description: Gray glow color.
+    default: true
+  bob.glow.dark_gray:
+    description: Dark gray glow color.
+    default: true
+  bob.glow.black:
+    description: Black glow color.
+    default: op
+  bob.glow.rainbow:
+    description: Rainbow glow color.
+    default: op
   bob.commandspy:
     description: Allows the player to toggle CommandSpy.
     default: op

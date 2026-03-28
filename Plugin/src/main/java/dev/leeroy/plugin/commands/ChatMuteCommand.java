@@ -27,8 +27,16 @@ public class ChatMuteCommand implements CommandExecutor {
 
         if (isNowMuted) {
             Bukkit.broadcastMessage(ChatColor.RED + "[CHAT] " + ChatColor.WHITE + "Chat has been muted by " + sender.getName() + ".");
+            // High pitch anvil slam for mute
+            Bukkit.getOnlinePlayers().forEach(p ->
+                    p.playSound(p.getLocation(), org.bukkit.Sound.BLOCK_ANVIL_LAND, 1.0f, 2.0f)
+            );
         } else {
             Bukkit.broadcastMessage(ChatColor.GREEN + "[CHAT] " + ChatColor.WHITE + "Chat has been unmuted by " + sender.getName() + ".");
+            // Evoker prepare summon sound for unmute
+            Bukkit.getOnlinePlayers().forEach(p ->
+                    p.playSound(p.getLocation(), org.bukkit.Sound.ENTITY_EVOKER_PREPARE_SUMMON, 1.0f, 1.0f)
+            );
         }
 
         return true;

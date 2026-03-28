@@ -8,6 +8,7 @@ import dev.leeroy.plugin.commands.*;
 import dev.leeroy.plugin.listeners.BanListener;
 import dev.leeroy.plugin.listeners.ChatColorListener;
 import dev.leeroy.plugin.listeners.CommandSpyListener;
+import dev.leeroy.plugin.listeners.GlowListener;
 import dev.leeroy.plugin.listeners.MuteListener;
 import dev.leeroy.plugin.listeners.PlayerCacheListener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -66,6 +67,10 @@ public final class Plugin extends JavaPlugin {
         // Chat Color
         getCommand("chatcolor").setExecutor(new ChatColorCommand());
         getServer().getPluginManager().registerEvents(new ChatColorListener(), this);
+
+        // Glow
+        getCommand("glow").setExecutor(new GlowCommand());
+        getServer().getPluginManager().registerEvents(new GlowListener(this), this);
 
         // Reload
         getCommand("bobreload").setExecutor(new ReloadCommand(this, banManager, ipBanManager));
