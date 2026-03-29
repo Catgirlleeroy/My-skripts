@@ -108,7 +108,7 @@ public final class Plugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(tpaCommand, this);
 
         // Listeners
-        getServer().getPluginManager().registerEvents(new BanListener(banManager, ipBanManager), this);
+        getServer().getPluginManager().registerEvents(new BanListener(banManager, ipBanManager, playerCache), this);
         getServer().getPluginManager().registerEvents(new PlayerCacheListener(playerCache), this);
 
         // CommandSpy

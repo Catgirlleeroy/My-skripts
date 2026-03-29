@@ -93,6 +93,18 @@ public class BanManager {
         return details;
     }
 
+    /** Returns all currently banned UUIDs. */
+    public java.util.Set<UUID> getAllBannedUUIDs() {
+        java.util.Set<UUID> uuids = new java.util.HashSet<>();
+        for (String key : config.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                if (isBanned(uuid)) uuids.add(uuid);
+            } catch (IllegalArgumentException ignored) {}
+        }
+        return uuids;
+    }
+
     // ── Duration parser ──────────────────────────────────────────────────────
 
     public static long parseDuration(String input) {

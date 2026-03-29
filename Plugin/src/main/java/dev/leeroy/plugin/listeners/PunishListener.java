@@ -230,9 +230,19 @@ public class PunishListener implements Listener {
                 String ip = target.getAddress().getAddress().getHostAddress();
                 if (ipBanManager.isBanned(ip)) { staff.sendMessage(ChatColor.RED + targetName + "'s IP is already banned."); return; }
                 ipBanManager.ban(ip, reason, staff.getName());
-                strikeFX(target);
-                Bukkit.getScheduler().runTaskLater(plugin, () ->
-                        target.kickPlayer(ChatColor.RED + "You have been permanently IP banned.\n" + ChatColor.WHITE + "Reason: " + reason), 10L);
+                final String finalIp = ip;
+                for (Player online : Bukkit.getOnlinePlayers()) {
+                    if (online.getAddress().getAddress().getHostAddress().equals(finalIp)) {
+                        strikeFX(online);
+                    }
+                }
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    for (Player online : Bukkit.getOnlinePlayers()) {
+                        if (online.getAddress().getAddress().getHostAddress().equals(finalIp)) {
+                            online.kickPlayer(ChatColor.RED + "You have been permanently IP banned.\n" + ChatColor.WHITE + "Reason: " + reason);
+                        }
+                    }
+                }, 10L);
                 Bukkit.broadcastMessage(ChatColor.RED + "[IP-BAN] " + ChatColor.YELLOW + targetName + ChatColor.RED + " has been permanently IP banned! " + ChatColor.GRAY + "Reason: " + reason);
             }
         }
