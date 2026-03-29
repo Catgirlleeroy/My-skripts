@@ -8,15 +8,7 @@ import dev.leeroy.plugin.Utils.PunishConfig;
 import dev.leeroy.plugin.Utils.ReportManager;
 import dev.leeroy.plugin.Utils.VanishManager;
 import dev.leeroy.plugin.commands.*;
-import dev.leeroy.plugin.listeners.BanListener;
-import dev.leeroy.plugin.listeners.ChatColorListener;
-import dev.leeroy.plugin.listeners.CommandSpyListener;
-import dev.leeroy.plugin.listeners.GlowListener;
-import dev.leeroy.plugin.listeners.JoinLeaveListener;
-import dev.leeroy.plugin.listeners.MuteListener;
-import dev.leeroy.plugin.listeners.PlayerCacheListener;
-import dev.leeroy.plugin.listeners.PunishListener;
-import dev.leeroy.plugin.listeners.VanishListener;
+import dev.leeroy.plugin.listeners.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Plugin extends JavaPlugin {

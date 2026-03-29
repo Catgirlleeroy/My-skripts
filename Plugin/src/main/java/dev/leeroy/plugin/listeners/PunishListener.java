@@ -7,14 +7,13 @@ import dev.leeroy.plugin.Utils.PunishConfig;
 import dev.leeroy.plugin.gui.PunishGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -31,8 +30,6 @@ public class PunishListener implements Listener {
     private final MuteManager muteManager;
     private final PunishConfig punishConfig;
 
-    // stage 1: "action:targetName"
-    // stage 2: "action:targetName:reason"
     private final Map<UUID, String> guiState = new HashMap<>();
 
     public PunishListener(JavaPlugin plugin, BanManager banManager,
@@ -45,7 +42,7 @@ public class PunishListener implements Listener {
         this.punishConfig = punishConfig;
     }
 
-    // ── Sneak + hit to open GUI ───────────────────────────────────────────────
+    // ── Sneak + hit ───────────────────────────────────────────────────────────
 
     @EventHandler
     public void onPlayerHit(EntityDamageByEntityEvent event) {
@@ -58,16 +55,14 @@ public class PunishListener implements Listener {
         PunishGUI.openActionGUI(staff, target, punishConfig.get());
     }
 
-    // ── Inventory click handler ───────────────────────────────────────────────
+    // ── Inventory click ───────────────────────────────────────────────────────
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player staff)) return;
 
-        String rawTitle = event.getView().getTitle();
-        String title = ChatColor.stripColor(rawTitle);
+        String title = ChatColor.stripColor(event.getView().getTitle());
 
-        // Only handle our GUIs
         if (!title.contains("Punish") && !title.contains("Reason:") && !title.contains("Duration:")) return;
 
         event.setCancelled(true);
@@ -77,27 +72,25 @@ public class PunishListener implements Listener {
         if (event.getClickedInventory() == null) return;
         if (!event.getClickedInventory().equals(event.getView().getTopInventory())) return;
 
-        ItemStack clicked = event.getCurrentItem();
-        String itemName = ChatColor.stripColor(clicked.getItemMeta().getDisplayName());
+        String itemName = ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName());
 
         if (title.contains("Reason:")) {
             handleReasonClick(staff, itemName);
         } else if (title.contains("Duration:")) {
             handleDurationClick(staff, itemName);
         } else if (title.contains("Punish")) {
-            handleActionClick(staff, title, clicked, itemName);
+            handleActionClick(staff, title, event.getCurrentItem(), itemName);
         }
     }
 
     // ── Stage 1: Action ───────────────────────────────────────────────────────
 
-    private void handleActionClick(Player staff, String title, ItemStack clicked, String itemName) {
-        if (itemName.equals("Close")) {
-            staff.closeInventory();
-            return;
-        }
+    private void handleActionClick(Player staff, String title, org.bukkit.inventory.ItemStack clicked, String itemName) {
+        String closeName = ChatColor.stripColor(PunishGUI.color(
+                punishConfig.get().getString("close-button.name", "&7Close")));
+        if (itemName.equals(closeName)) { staff.closeInventory(); return; }
 
-        // Check if this is a no-permission barrier by reading its lore
+        // Check no-permission lore
         ItemMeta meta = clicked.getItemMeta();
         if (meta != null && meta.hasLore()) {
             List<String> lore = meta.getLore();
@@ -109,7 +102,7 @@ public class PunishListener implements Listener {
             }
         }
 
-        // Extract target name from title e.g. "» Punish CatgirlLeeroy «"
+        // Extract target name from title
         String targetName = title
                 .replaceAll(".*Punish\\s+", "")
                 .replaceAll("\\s*[«»].*", "")
@@ -117,15 +110,8 @@ public class PunishListener implements Listener {
 
         Player target = Bukkit.getPlayerExact(targetName);
 
-        String action = switch (itemName) {
-            case "Ban"      -> "ban";
-            case "Tempban"  -> "tempban";
-            case "Mute"     -> "mute";
-            case "Tempmute" -> "tempmute";
-            case "Kick"     -> "kick";
-            case "IP Ban"   -> "ipban";
-            default         -> null;
-        };
+        // Match item name to action key by comparing config names
+        String action = resolveActionFromName(itemName);
 
         if (action == null) return;
 
@@ -149,7 +135,7 @@ public class PunishListener implements Listener {
         String action     = parts[0];
         String targetName = parts[1];
 
-        if (action.equals("tempban") || action.equals("tempmute")) {
+        if (action.equals("tempban") || action.equals("tempmute") || action.equals("tempipban")) {
             guiState.put(staff.getUniqueId(), action + ":" + targetName + ":" + reason);
             PunishGUI.openDurationGUI(staff, targetName, action, reason, punishConfig.get());
         } else {
@@ -164,7 +150,7 @@ public class PunishListener implements Listener {
         String state = guiState.get(staff.getUniqueId());
         if (state == null) { staff.closeInventory(); return; }
 
-        String[] parts = state.split(":", 3);
+        String[] parts    = state.split(":", 3);
         String action     = parts[0];
         String targetName = parts[1];
         String reason     = parts[2];
@@ -178,7 +164,12 @@ public class PunishListener implements Listener {
     private void executePunishment(Player staff, String targetName, String action,
                                    String reason, String duration) {
         Player target = Bukkit.getPlayerExact(targetName);
+        YamlConfiguration cfg = punishConfig.get();
         staff.closeInventory();
+
+        String broadcastPath = "actions." + action + ".messages.broadcast";
+        String kickPath      = "actions." + action + ".messages.kick";
+        String selfPath      = "actions." + action + ".messages.notify-self";
 
         switch (action) {
             case "ban" -> {
@@ -186,9 +177,9 @@ public class PunishListener implements Listener {
                 if (banManager.isBanned(target.getUniqueId())) { staff.sendMessage(ChatColor.RED + targetName + " is already banned."); return; }
                 banManager.ban(target.getUniqueId(), target.getName(), reason, staff.getName());
                 strikeFX(target);
-                Bukkit.getScheduler().runTaskLater(plugin, () ->
-                        target.kickPlayer(ChatColor.RED + "You have been permanently banned.\n" + ChatColor.WHITE + "Reason: " + reason), 10L);
-                Bukkit.broadcastMessage(ChatColor.RED + "[BAN] " + ChatColor.YELLOW + targetName + ChatColor.RED + " has been permanently banned! " + ChatColor.GRAY + "Reason: " + reason);
+                String kickMsg = PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, null);
+                Bukkit.getScheduler().runTaskLater(plugin, () -> target.kickPlayer(kickMsg), 10L);
+                Bukkit.broadcastMessage(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, null));
             }
             case "tempban" -> {
                 if (target == null) { staff.sendMessage(ChatColor.RED + targetName + " is no longer online."); return; }
@@ -197,19 +188,17 @@ public class PunishListener implements Listener {
                 if (banManager.isBanned(target.getUniqueId())) { staff.sendMessage(ChatColor.RED + targetName + " is already banned."); return; }
                 banManager.tempBan(target.getUniqueId(), target.getName(), reason, staff.getName(), ms);
                 strikeFX(target);
-                final long fMs = ms;
-                Bukkit.getScheduler().runTaskLater(plugin, () ->
-                        target.kickPlayer(ChatColor.RED + "You have been temporarily banned.\n"
-                                + ChatColor.WHITE + "Duration: " + BanManager.formatRemaining(System.currentTimeMillis() + fMs) + "\n"
-                                + ChatColor.WHITE + "Reason: " + reason), 10L);
-                Bukkit.broadcastMessage(ChatColor.RED + "[TEMPBAN] " + ChatColor.YELLOW + targetName + ChatColor.RED + " has been temporarily banned! " + ChatColor.GRAY + "Duration: " + duration + " | Reason: " + reason);
+                String remaining = BanManager.formatRemaining(System.currentTimeMillis() + ms);
+                String kickMsg = PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, remaining);
+                Bukkit.getScheduler().runTaskLater(plugin, () -> target.kickPlayer(kickMsg), 10L);
+                Bukkit.broadcastMessage(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, duration));
             }
             case "mute" -> {
                 if (target == null) { staff.sendMessage(ChatColor.RED + targetName + " is no longer online."); return; }
                 if (muteManager.isMuted(target.getUniqueId())) { staff.sendMessage(ChatColor.RED + targetName + " is already muted."); return; }
                 muteManager.mute(target.getUniqueId(), target.getName(), reason, staff.getName());
-                target.sendMessage(ChatColor.RED + "You have been permanently muted. Reason: " + reason);
-                Bukkit.broadcastMessage(ChatColor.RED + "[MUTE] " + ChatColor.YELLOW + targetName + ChatColor.RED + " has been muted! " + ChatColor.GRAY + "Reason: " + reason);
+                target.sendMessage(PunishGUI.formatMessage(cfg, selfPath, targetName, staff.getName(), reason, null));
+                Bukkit.broadcastMessage(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, null));
             }
             case "tempmute" -> {
                 if (target == null) { staff.sendMessage(ChatColor.RED + targetName + " is no longer online."); return; }
@@ -217,33 +206,37 @@ public class PunishListener implements Listener {
                 if (ms == -1) { staff.sendMessage(ChatColor.RED + "Invalid duration."); return; }
                 if (muteManager.isMuted(target.getUniqueId())) { staff.sendMessage(ChatColor.RED + targetName + " is already muted."); return; }
                 muteManager.tempMute(target.getUniqueId(), target.getName(), reason, staff.getName(), ms);
-                target.sendMessage(ChatColor.RED + "You have been muted for " + duration + ". Reason: " + reason);
-                Bukkit.broadcastMessage(ChatColor.RED + "[TEMPMUTE] " + ChatColor.YELLOW + targetName + ChatColor.RED + " has been muted! " + ChatColor.GRAY + "Duration: " + duration + " | Reason: " + reason);
+                target.sendMessage(PunishGUI.formatMessage(cfg, selfPath, targetName, staff.getName(), reason, duration));
+                Bukkit.broadcastMessage(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, duration));
             }
             case "kick" -> {
                 if (target == null) { staff.sendMessage(ChatColor.RED + targetName + " is no longer online."); return; }
-                target.kickPlayer(ChatColor.RED + "You have been kicked.\n" + ChatColor.WHITE + "Reason: " + reason);
-                Bukkit.broadcastMessage(ChatColor.RED + "[KICK] " + ChatColor.YELLOW + targetName + ChatColor.RED + " has been kicked! " + ChatColor.GRAY + "Reason: " + reason);
+                String kickMsg = PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, null);
+                target.kickPlayer(kickMsg);
+                Bukkit.broadcastMessage(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, null));
             }
             case "ipban" -> {
                 if (target == null) { staff.sendMessage(ChatColor.RED + targetName + " is no longer online."); return; }
                 String ip = target.getAddress().getAddress().getHostAddress();
                 if (ipBanManager.isBanned(ip)) { staff.sendMessage(ChatColor.RED + targetName + "'s IP is already banned."); return; }
                 ipBanManager.ban(ip, reason, staff.getName());
-                final String finalIp = ip;
-                for (Player online : Bukkit.getOnlinePlayers()) {
-                    if (online.getAddress().getAddress().getHostAddress().equals(finalIp)) {
-                        strikeFX(online);
-                    }
-                }
-                Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                    for (Player online : Bukkit.getOnlinePlayers()) {
-                        if (online.getAddress().getAddress().getHostAddress().equals(finalIp)) {
-                            online.kickPlayer(ChatColor.RED + "You have been permanently IP banned.\n" + ChatColor.WHITE + "Reason: " + reason);
-                        }
-                    }
-                }, 10L);
-                Bukkit.broadcastMessage(ChatColor.RED + "[IP-BAN] " + ChatColor.YELLOW + targetName + ChatColor.RED + " has been permanently IP banned! " + ChatColor.GRAY + "Reason: " + reason);
+                strikeFX(target);
+                String kickMsg = PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, null);
+                Bukkit.getScheduler().runTaskLater(plugin, () -> target.kickPlayer(kickMsg), 10L);
+                Bukkit.broadcastMessage(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, null));
+            }
+            case "tempipban" -> {
+                if (target == null) { staff.sendMessage(ChatColor.RED + targetName + " is no longer online."); return; }
+                long ms = BanManager.parseDuration(duration);
+                if (ms == -1) { staff.sendMessage(ChatColor.RED + "Invalid duration."); return; }
+                String ip = target.getAddress().getAddress().getHostAddress();
+                if (ipBanManager.isBanned(ip)) { staff.sendMessage(ChatColor.RED + targetName + "'s IP is already banned."); return; }
+                ipBanManager.tempBan(ip, reason, staff.getName(), ms);
+                strikeFX(target);
+                String remaining = BanManager.formatRemaining(System.currentTimeMillis() + ms);
+                String kickMsg = PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, remaining);
+                Bukkit.getScheduler().runTaskLater(plugin, () -> target.kickPlayer(kickMsg), 10L);
+                Bukkit.broadcastMessage(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, duration));
             }
         }
 
@@ -253,8 +246,22 @@ public class PunishListener implements Listener {
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
+    /**
+     * Matches a clicked item's display name back to its action key
+     * by comparing against config names.
+     */
+    private String resolveActionFromName(String strippedName) {
+        YamlConfiguration cfg = punishConfig.get();
+        for (String action : List.of("ban", "tempban", "mute", "tempmute", "kick", "ipban", "tempipban")) {
+            String configName = ChatColor.stripColor(
+                    PunishGUI.color(cfg.getString("actions." + action + ".name", "")));
+            if (configName.equalsIgnoreCase(strippedName)) return action;
+        }
+        return null;
+    }
+
     private void strikeFX(Player target) {
-        target.getWorld().strikeLightning(target.getLocation());
+        target.getWorld().strikeLightningEffect(target.getLocation());
         Bukkit.getOnlinePlayers().forEach(p ->
                 p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f)
         );

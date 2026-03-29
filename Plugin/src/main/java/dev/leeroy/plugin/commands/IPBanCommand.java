@@ -54,19 +54,30 @@ public class IPBanCommand implements CommandExecutor {
 
         ipBanManager.ban(ip, reason, sender.getName());
 
-        // Effects
-        target.getWorld().strikeLightning(target.getLocation());
+        // Find ALL online players sharing this IP and kick them all
+        final String finalReason = reason;
+        final String finalIp = ip;
+
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            if (online.getAddress().getAddress().getHostAddress().equals(finalIp)) {
+                online.getWorld().strikeLightningEffect(online.getLocation());
+            }
+        }
+
         Bukkit.getOnlinePlayers().forEach(p ->
                 p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f)
         );
 
-        // Kick after 10 ticks
-        final String finalReason = reason;
-        Bukkit.getScheduler().runTaskLater(plugin, () ->
-                target.kickPlayer(
-                        ChatColor.RED + "You have been permanently IP banned.\n" +
-                                ChatColor.WHITE + "Reason: " + finalReason
-                ), 10L);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                if (online.getAddress().getAddress().getHostAddress().equals(finalIp)) {
+                    online.kickPlayer(
+                            ChatColor.RED + "You have been permanently IP banned.\n" +
+                                    ChatColor.WHITE + "Reason: " + finalReason
+                    );
+                }
+            }
+        }, 10L);
 
         // Broadcast
         Bukkit.broadcastMessage(

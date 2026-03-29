@@ -138,6 +138,31 @@ actions:
       - "CSAM"
       - "Other"
 
+  tempipban:
+    enabled: true
+    item: NETHER_BRICK_WALL
+    name: "&cTemp IP Ban"
+    lore:
+      - "&7Temporarily IP ban {player}."
+      - "&eClick to select!"
+    messages:
+      broadcast: "&c[TEMP IP-BAN] &e{player} &chas been temporarily IP banned! &7Duration: {duration} | Reason: {reason}"
+      kick: "&cYou have been temporarily IP banned.\n&fDuration: {duration}\n&fReason: {reason}\n&fBanned by: {staff}"
+    reasons:
+      - "Ban Evasion"
+      - "Hacking"
+      - "Griefing"
+      - "Threats"
+      - "Other"
+    durations:
+      - "1h"
+      - "6h"
+      - "12h"
+      - "1d"
+      - "3d"
+      - "7d"
+      - "30d"
+
 # ── No permission item ────────────────────────────────────────────────────────
 no-permission:
   item: BARRIER

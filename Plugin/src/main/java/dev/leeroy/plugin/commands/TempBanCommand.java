@@ -61,7 +61,7 @@ public class TempBanCommand implements CommandExecutor {
         banManager.tempBan(target.getUniqueId(), target.getName(), reason, sender.getName(), durationMs);
 
         // Effects
-        target.getWorld().strikeLightning(target.getLocation());
+        target.getWorld().strikeLightningEffect(target.getLocation());
         Bukkit.getOnlinePlayers().forEach(p ->
                 p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f)
         );

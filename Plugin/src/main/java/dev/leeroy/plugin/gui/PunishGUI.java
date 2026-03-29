@@ -25,7 +25,7 @@ public class PunishGUI {
         String rawTitle = config.getString("gui-title", "&8» Punish &c{player} &8«");
         String title = color(rawTitle.replace("{player}", target.getName()));
 
-        Inventory inv = Bukkit.createInventory(null, 27, title);
+        Inventory inv = Bukkit.createInventory(null, 36, title);
 
         // Player head
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
@@ -37,8 +37,8 @@ public class PunishGUI {
         inv.setItem(4, head);
 
         // Action slots
-        String[] actions  = {"ban", "tempban", "mute", "tempmute", "kick", "ipban"};
-        int[]    slots    = {10, 11, 12, 13, 14, 15};
+        String[] actions  = {"ban", "tempban", "mute", "tempmute", "kick", "ipban", "tempipban"};
+        int[]    slots    = {10, 11, 12, 13, 14, 15, 16};
 
         for (int i = 0; i < actions.length; i++) {
             String action = actions[i];
@@ -49,7 +49,7 @@ public class PunishGUI {
         // Close button
         String closeMat  = config.getString("close-button.item", "DARK_OAK_DOOR");
         String closeName = color(config.getString("close-button.name", "&7Close"));
-        inv.setItem(26, makeItem(parseMaterial(closeMat, Material.DARK_OAK_DOOR), closeName, List.of()));
+        inv.setItem(35, makeItem(parseMaterial(closeMat, Material.DARK_OAK_DOOR), closeName, List.of()));
 
         staff.openInventory(inv);
     }
@@ -99,9 +99,11 @@ public class PunishGUI {
 
     private static ItemStack makeActionItem(Player staff, String action,
                                             String targetName, YamlConfiguration config) {
-        String path    = "actions." + action + ".";
-        String perm    = "bob." + action.replace("ipban", "ipban");
-        boolean hasPerm = staff.hasPermission("bob." + action);
+        String path = "actions." + action + ".";
+        String perm = "bob." + action;
+        // tempipban maps to bob.iptempban permission
+        if (action.equals("tempipban")) perm = "bob.iptempban";
+        boolean hasPerm = staff.hasPermission(perm);
 
         if (!hasPerm) {
             // No permission — show barrier with config lore

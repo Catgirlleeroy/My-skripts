@@ -69,7 +69,7 @@ public class IPTempBanCommand implements CommandExecutor {
 
         for (Player online : Bukkit.getOnlinePlayers()) {
             if (online.getAddress().getAddress().getHostAddress().equals(finalIp)) {
-                online.getWorld().strikeLightning(online.getLocation());
+                online.getWorld().strikeLightningEffect(online.getLocation());
             }
         }
 

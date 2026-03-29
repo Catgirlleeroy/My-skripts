@@ -198,6 +198,9 @@ permissions:
   bob.iptempban:
     description: Allows the player to temporarily IP ban others.
     default: op
+  bob.iptempban:
+    description: Allows the player to temporarily IP ban others.
+    default: op
   bob.ipunban:
     description: Allows the player to unban IPs.
     default: op
