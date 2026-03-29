@@ -1,36 +1,161 @@
 # Bob Punishment GUI Configuration
+# Supports & color codes everywhere
+# Placeholders: {player} = target name, {reason} = reason, {duration} = duration, {staff} = staff name
 
-# GUI title — supports color codes with &
-# {player} is replaced with the target's name
+# Main GUI title — {player} = target name
 gui-title: "&8» Punish &c{player} &8«"
 
-# Which actions are enabled in the GUI
+# ── Per-action reasons and durations ─────────────────────────────────────────
+
 actions:
-  ban: true
-  tempban: true
-  mute: true
-  tempmute: true
-  kick: true
-  ipban: true
 
-# Preset reasons shown in the reason selection GUI
-reasons:
-  - "Hacking"
-  - "Spam"
-  - "Inappropriate Language"
-  - "Griefing"
-  - "Advertising"
-  - "Disrespecting Staff"
-  - "Exploiting Bugs"
-  - "Other"
+  ban:
+    enabled: true
+    item: BARRIER
+    name: "&cBan"
+    lore:
+      - "&7Permanently ban {player}."
+      - "&eClick to select!"
+    messages:
+      broadcast: "&c[BAN] &e{player} &chas been permanently banned! &7Reason: {reason}"
+      kick: "&cYou have been permanently banned.\n&fReason: {reason}\n&fBanned by: {staff}"
+    reasons:
+      - "Hacking"
+      - "Bug Abuse"
+      - "Exploiting"
+      - "Cheating"
+      - "Doxxing"
+      - "Threats"
+      - "Ban Evasion"
+      - "Other"
 
-# Preset durations shown for tempban/tempmute
-durations:
-  - "30m"
-  - "1h"
-  - "6h"
-  - "12h"
-  - "1d"
-  - "3d"
-  - "7d"
-  - "30d"
+  tempban:
+    enabled: true
+    item: IRON_BARS
+    name: "&6Tempban"
+    lore:
+      - "&7Temporarily ban {player}."
+      - "&eClick to select!"
+    messages:
+      broadcast: "&c[TEMPBAN] &e{player} &chas been temporarily banned! &7Duration: {duration} | Reason: {reason}"
+      kick: "&cYou have been temporarily banned.\n&fDuration: {duration}\n&fReason: {reason}\n&fBanned by: {staff}"
+    reasons:
+      - "Hacking"
+      - "Bug Abuse"
+      - "Griefing"
+      - "Toxicity"
+      - "Spam"
+      - "Advertising"
+      - "Other"
+    durations:
+      - "1h"
+      - "6h"
+      - "12h"
+      - "1d"
+      - "3d"
+      - "7d"
+      - "30d"
+
+  mute:
+    enabled: true
+    item: STRING
+    name: "&eMute"
+    lore:
+      - "&7Permanently mute {player}."
+      - "&eClick to select!"
+    messages:
+      broadcast: "&c[MUTE] &e{player} &chas been muted! &7Reason: {reason}"
+      notify-self: "&cYou have been permanently muted. &7Reason: {reason}"
+    reasons:
+      - "Swearing"
+      - "Spam"
+      - "Death Threats"
+      - "Hate Speech"
+      - "Advertising"
+      - "Disrespecting Staff"
+      - "Other"
+
+  tempmute:
+    enabled: true
+    item: LEAD
+    name: "&aTempmute"
+    lore:
+      - "&7Temporarily mute {player}."
+      - "&eClick to select!"
+    messages:
+      broadcast: "&c[TEMPMUTE] &e{player} &chas been muted! &7Duration: {duration} | Reason: {reason}"
+      notify-self: "&cYou have been muted for {duration}. &7Reason: {reason}"
+    reasons:
+      - "Swearing"
+      - "Spam"
+      - "Caps Abuse"
+      - "Advertising"
+      - "Disrespecting Staff"
+      - "Inappropriate Language"
+      - "Other"
+    durations:
+      - "10m"
+      - "30m"
+      - "1h"
+      - "6h"
+      - "12h"
+      - "1d"
+      - "3d"
+
+  kick:
+    enabled: true
+    item: LEATHER_BOOTS
+    name: "&bKick"
+    lore:
+      - "&7Kick {player} from the server."
+      - "&eClick to select!"
+    messages:
+      broadcast: "&c[KICK] &e{player} &chas been kicked! &7Reason: {reason}"
+      kick: "&cYou have been kicked.\n&fReason: {reason}\n&fKicked by: {staff}"
+    reasons:
+      - "AFK"
+      - "Spamming"
+      - "Inappropriate Skin"
+      - "Inappropriate Name"
+      - "Staff Request"
+      - "Other"
+
+  ipban:
+    enabled: true
+    item: NETHER_BRICK
+    name: "&4IP Ban"
+    lore:
+      - "&7Permanently IP ban {player}."
+      - "&eClick to select!"
+    messages:
+      broadcast: "&c[IP-BAN] &e{player} &chas been permanently IP banned! &7Reason: {reason}"
+      kick: "&cYou have been permanently IP banned.\n&fReason: {reason}\n&fBanned by: {staff}"
+    reasons:
+      - "Ban Evasion"
+      - "Hacking"
+      - "Doxxing"
+      - "Severe Threats"
+      - "CSAM"
+      - "Other"
+
+# ── No permission item ────────────────────────────────────────────────────────
+no-permission:
+  item: BARRIER
+  lore:
+    - "&cYou do not have permission to perform this action."
+    - "&8Missing: {permission}"
+
+# ── Close button ──────────────────────────────────────────────────────────────
+close-button:
+  item: DARK_OAK_DOOR
+  name: "&7Close"
+
+# ── Reason selection GUI ──────────────────────────────────────────────────────
+reason-gui:
+  title: "&8» Reason: &c{action}"
+  item: PAPER
+
+# ── Duration selection GUI ────────────────────────────────────────────────────
+duration-gui:
+  title: "&8» Duration: &6{action}"
+  item: CLOCK
