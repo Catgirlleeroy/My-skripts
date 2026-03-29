@@ -1,6 +1,7 @@
 package dev.leeroy.plugin.Utils;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -32,11 +33,14 @@ public class IPBanManager {
 
     /** Reloads ipbans.yml from disk, discarding any cached state. */
     public void reload() {
-        load();
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, this::load);
     }
 
     private void save() {
-        try { config.save(ipBanFile); } catch (IOException e) { e.printStackTrace(); }
+        final YamlConfiguration snapshot = config;
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try { snapshot.save(ipBanFile); } catch (IOException e) { e.printStackTrace(); }
+        });
     }
 
     // ── Key helper — dots in IPs break YAML keys so we replace them ──────────

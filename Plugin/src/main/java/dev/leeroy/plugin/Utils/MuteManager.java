@@ -1,6 +1,7 @@
 package dev.leeroy.plugin.Utils;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -30,11 +31,14 @@ public class MuteManager {
     }
 
     private void save() {
-        try { config.save(muteFile); } catch (IOException e) { e.printStackTrace(); }
+        final YamlConfiguration snapshot = config;
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try { snapshot.save(muteFile); } catch (IOException e) { e.printStackTrace(); }
+        });
     }
 
     public void reload() {
-        load();
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, this::load);
     }
 
     public void mute(UUID uuid, String name, String reason, String mutedBy) {

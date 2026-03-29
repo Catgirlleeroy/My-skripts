@@ -1,6 +1,7 @@
 package dev.leeroy.plugin.Utils;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -33,10 +34,15 @@ public class ReportManager {
     }
 
     private void save() {
-        try { config.save(reportFile); } catch (IOException e) { e.printStackTrace(); }
+        final YamlConfiguration snapshot = config;
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try { snapshot.save(reportFile); } catch (IOException e) { e.printStackTrace(); }
+        });
     }
 
-    public void reload() { load(); }
+    public void reload() {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, this::load);
+    }
 
     /**
      * Adds a new report. Returns the report ID.

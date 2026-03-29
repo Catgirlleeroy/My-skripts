@@ -12,6 +12,7 @@ import dev.leeroy.plugin.listeners.BanListener;
 import dev.leeroy.plugin.listeners.ChatColorListener;
 import dev.leeroy.plugin.listeners.CommandSpyListener;
 import dev.leeroy.plugin.listeners.GlowListener;
+import dev.leeroy.plugin.listeners.JoinLeaveListener;
 import dev.leeroy.plugin.listeners.MuteListener;
 import dev.leeroy.plugin.listeners.PlayerCacheListener;
 import dev.leeroy.plugin.listeners.PunishListener;
@@ -88,8 +89,8 @@ public final class Plugin extends JavaPlugin {
         getCommand("glow").setExecutor(new GlowCommand());
         getServer().getPluginManager().registerEvents(new GlowListener(this), this);
 
-        // Vanish
-        getCommand("vanish").setExecutor(new VanishCommand(vanishManager));
+        // Join/Leave messages
+        getServer().getPluginManager().registerEvents(new JoinLeaveListener(this), this);
         getServer().getPluginManager().registerEvents(new VanishListener(vanishManager), this);
 
         // Report

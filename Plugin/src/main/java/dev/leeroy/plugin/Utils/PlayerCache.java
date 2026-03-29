@@ -1,6 +1,7 @@
 package dev.leeroy.plugin.Utils;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -9,10 +10,12 @@ import java.util.UUID;
 
 public class PlayerCache {
 
+    private final JavaPlugin plugin;
     private final File cacheFile;
     private YamlConfiguration config;
 
     public PlayerCache(JavaPlugin plugin) {
+        this.plugin = plugin;
         this.cacheFile = new File(plugin.getDataFolder(), "playercache.yml");
         load();
     }
@@ -25,7 +28,10 @@ public class PlayerCache {
     }
 
     private void save() {
-        try { config.save(cacheFile); } catch (IOException e) { e.printStackTrace(); }
+        final YamlConfiguration snapshot = config;
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try { snapshot.save(cacheFile); } catch (IOException e) { e.printStackTrace(); }
+        });
     }
 
     /** Store a UUID → name mapping when a player joins. */

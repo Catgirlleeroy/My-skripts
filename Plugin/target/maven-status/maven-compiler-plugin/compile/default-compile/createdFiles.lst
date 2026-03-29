@@ -25,6 +25,7 @@ dev\leeroy\plugin\listeners\PlayerCacheListener.class
 dev\leeroy\plugin\gui\PunishGUI.class
 dev\leeroy\plugin\listeners\ChatColorListener.class
 dev\leeroy\plugin\commands\IPUnbanCommand.class
+dev\leeroy\plugin\listeners\JoinLeaveListener.class
 dev\leeroy\plugin\Utils\PlayerCache.class
 dev\leeroy\plugin\commands\HealCommand.class
 dev\leeroy\plugin\Utils\MuteManager.class
