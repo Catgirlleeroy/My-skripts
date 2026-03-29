@@ -94,12 +94,24 @@ commands:
     description: Opens the glow color selector GUI.
     usage: /glow
     permission: bob.glow
+  vanish:
+    description: Toggle vanish.
+    usage: /vanish
+    permission: bob.vanish
+  report:
+    description: Report a player.
+    usage: /report <player> <reason>
+    permission: bob.report
+  reports:
+    description: View and manage reports.
+    usage: /reports [delete <id>]
+    permission: bob.reports
   commandspy:
-    description: Toggles CommandSpy to see commands run by other players.
+    description: Toggles CommandSpy.
     usage: /commandspy
     permission: bob.commandspy
   bobreload:
-    description: Reloads config.yml, bans.yml and ipbans.yml from disk.
+    description: Reloads config files from disk.
     usage: /bobreload
     permission: bob.reload
   tp:
@@ -149,7 +161,7 @@ permissions:
     description: Allows changing your own gamemode to Spectator.
     default: op
   bob.gamemode.others:
-    description: Allows changing other players' gamemode (any mode).
+    description: Allows changing other players gamemode (any mode).
     default: op
     children:
       bob.gamemode.others.survival: true
@@ -157,16 +169,16 @@ permissions:
       bob.gamemode.others.adventure: true
       bob.gamemode.others.spectator: true
   bob.gamemode.others.survival:
-    description: Allows changing other players' gamemode to Survival.
+    description: Allows changing other players gamemode to Survival.
     default: op
   bob.gamemode.others.creative:
-    description: Allows changing other players' gamemode to Creative.
+    description: Allows changing other players gamemode to Creative.
     default: op
   bob.gamemode.others.adventure:
-    description: Allows changing other players' gamemode to Adventure.
+    description: Allows changing other players gamemode to Adventure.
     default: op
   bob.gamemode.others.spectator:
-    description: Allows changing other players' gamemode to Spectator.
+    description: Allows changing other players gamemode to Spectator.
     default: op
   bob.ban:
     description: Allows the player to permanently ban others.
@@ -321,14 +333,26 @@ permissions:
   bob.glow.rainbow:
     description: Rainbow glow color.
     default: op
+  bob.vanish:
+    description: Allows the player to vanish.
+    default: op
+  bob.vanish.see:
+    description: Allows the player to see vanished players.
+    default: op
+  bob.report:
+    description: Allows the player to report others.
+    default: true
+  bob.reports:
+    description: Allows the player to view and manage reports.
+    default: op
   bob.commandspy:
     description: Allows the player to toggle CommandSpy.
     default: op
   bob.reload:
-    description: Allows the player to reload Bob's config and ban files.
+    description: Allows the player to reload Bobs config and ban files.
     default: op
   bob.tp.self:
-    description: Allows the player to teleport themselves to a player or coords.
+    description: Allows the player to teleport themselves.
     default: op
   bob.tp.others:
     description: Allows the player to teleport other players.

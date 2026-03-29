@@ -36,19 +36,31 @@ public class PunishGUI {
         head.setItemMeta(skullMeta);
         inv.setItem(4, head);
 
-        // Actions — only show if enabled in config
+        // Actions — only show if enabled in config, show barrier if no permission
         if (config.getBoolean("actions.ban", true))
-            inv.setItem(10, makeItem(Material.BARRIER,        ChatColor.RED           + "Ban",     List.of(ChatColor.GRAY + "Permanently ban " + target.getName())));
+            inv.setItem(10, makeActionItem(staff, "bob.ban", Material.BARRIER,
+                    ChatColor.RED + "Ban", "ban",
+                    ChatColor.GRAY + "Permanently ban " + target.getName()));
         if (config.getBoolean("actions.tempban", true))
-            inv.setItem(11, makeItem(Material.IRON_BARS,      ChatColor.GOLD          + "Tempban", List.of(ChatColor.GRAY + "Temporarily ban " + target.getName())));
+            inv.setItem(11, makeActionItem(staff, "bob.tempban", Material.IRON_BARS,
+                    ChatColor.GOLD + "Tempban", "tempban",
+                    ChatColor.GRAY + "Temporarily ban " + target.getName()));
         if (config.getBoolean("actions.mute", true))
-            inv.setItem(12, makeItem(Material.STRING,         ChatColor.YELLOW        + "Mute",    List.of(ChatColor.GRAY + "Permanently mute " + target.getName())));
+            inv.setItem(12, makeActionItem(staff, "bob.mute", Material.STRING,
+                    ChatColor.YELLOW + "Mute", "mute",
+                    ChatColor.GRAY + "Permanently mute " + target.getName()));
         if (config.getBoolean("actions.tempmute", true))
-            inv.setItem(13, makeItem(Material.LEAD,           ChatColor.GREEN         + "Tempmute",List.of(ChatColor.GRAY + "Temporarily mute " + target.getName())));
+            inv.setItem(13, makeActionItem(staff, "bob.tempmute", Material.LEAD,
+                    ChatColor.GREEN + "Tempmute", "tempmute",
+                    ChatColor.GRAY + "Temporarily mute " + target.getName()));
         if (config.getBoolean("actions.kick", true))
-            inv.setItem(14, makeItem(Material.LEATHER_BOOTS,  ChatColor.AQUA          + "Kick",    List.of(ChatColor.GRAY + "Kick " + target.getName())));
+            inv.setItem(14, makeActionItem(staff, "bob.kick", Material.LEATHER_BOOTS,
+                    ChatColor.AQUA + "Kick", "kick",
+                    ChatColor.GRAY + "Kick " + target.getName()));
         if (config.getBoolean("actions.ipban", true))
-            inv.setItem(15, makeItem(Material.NETHER_BRICK,   ChatColor.DARK_RED      + "IP Ban",  List.of(ChatColor.GRAY + "IP ban " + target.getName())));
+            inv.setItem(15, makeActionItem(staff, "bob.ipban", Material.NETHER_BRICK,
+                    ChatColor.DARK_RED + "IP Ban", "ip-ban",
+                    ChatColor.GRAY + "IP ban " + target.getName()));
 
         // Close button
         inv.setItem(26, makeItem(Material.DARK_OAK_DOOR, ChatColor.GRAY + "Close", List.of()));
@@ -115,5 +127,17 @@ public class PunishGUI {
         meta.setLore(lore);
         item.setItemMeta(meta);
         return item;
+    }
+
+    private static ItemStack makeActionItem(Player staff, String permission, Material mat,
+                                            String name, String permLabel, String description) {
+        if (staff.hasPermission(permission)) {
+            return makeItem(mat, name, List.of(description, ChatColor.YELLOW + "Click to select!"));
+        } else {
+            return makeItem(Material.BARRIER, name, List.of(
+                    ChatColor.RED + "You do not have permission to perform this action.",
+                    ChatColor.DARK_GRAY + "Missing: " + permLabel
+            ));
+        }
     }
 }

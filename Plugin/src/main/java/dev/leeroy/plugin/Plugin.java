@@ -5,6 +5,8 @@ import dev.leeroy.plugin.Utils.IPBanManager;
 import dev.leeroy.plugin.Utils.MuteManager;
 import dev.leeroy.plugin.Utils.PlayerCache;
 import dev.leeroy.plugin.Utils.PunishConfig;
+import dev.leeroy.plugin.Utils.ReportManager;
+import dev.leeroy.plugin.Utils.VanishManager;
 import dev.leeroy.plugin.commands.*;
 import dev.leeroy.plugin.listeners.BanListener;
 import dev.leeroy.plugin.listeners.ChatColorListener;
@@ -13,6 +15,7 @@ import dev.leeroy.plugin.listeners.GlowListener;
 import dev.leeroy.plugin.listeners.MuteListener;
 import dev.leeroy.plugin.listeners.PlayerCacheListener;
 import dev.leeroy.plugin.listeners.PunishListener;
+import dev.leeroy.plugin.listeners.VanishListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Plugin extends JavaPlugin {
@@ -22,17 +25,21 @@ public final class Plugin extends JavaPlugin {
     private MuteManager muteManager;
     private PlayerCache playerCache;
     private PunishConfig punishConfig;
+    private VanishManager vanishManager;
+    private ReportManager reportManager;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
 
         // Systems
-        banManager   = new BanManager(this);
-        ipBanManager = new IPBanManager(this);
-        muteManager  = new MuteManager(this);
-        playerCache  = new PlayerCache(this);
-        punishConfig = new PunishConfig(this);
+        banManager    = new BanManager(this);
+        ipBanManager  = new IPBanManager(this);
+        muteManager   = new MuteManager(this);
+        playerCache   = new PlayerCache(this);
+        punishConfig  = new PunishConfig(this);
+        vanishManager = new VanishManager();
+        reportManager = new ReportManager(this);
 
         // Heal
         getCommand("heal").setExecutor(new HealCommand());
@@ -80,6 +87,14 @@ public final class Plugin extends JavaPlugin {
         // Glow
         getCommand("glow").setExecutor(new GlowCommand());
         getServer().getPluginManager().registerEvents(new GlowListener(this), this);
+
+        // Vanish
+        getCommand("vanish").setExecutor(new VanishCommand(vanishManager));
+        getServer().getPluginManager().registerEvents(new VanishListener(vanishManager), this);
+
+        // Report
+        getCommand("report").setExecutor(new ReportCommand(reportManager, vanishManager));
+        getCommand("reports").setExecutor(new ReportsCommand(reportManager));
 
         // Reload
         getCommand("bobreload").setExecutor(new ReloadCommand(this, banManager, ipBanManager, punishConfig));

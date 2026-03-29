@@ -7,15 +7,19 @@ import dev.leeroy.plugin.Utils.PunishConfig;
 import dev.leeroy.plugin.gui.PunishGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -60,7 +64,6 @@ public class PunishListener implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player staff)) return;
 
-        // Strip color from raw title for matching
         String rawTitle = event.getView().getTitle();
         String title = ChatColor.stripColor(rawTitle);
 
@@ -74,27 +77,42 @@ public class PunishListener implements Listener {
         if (event.getClickedInventory() == null) return;
         if (!event.getClickedInventory().equals(event.getView().getTopInventory())) return;
 
-        String itemName = ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName());
+        ItemStack clicked = event.getCurrentItem();
+        String itemName = ChatColor.stripColor(clicked.getItemMeta().getDisplayName());
 
         if (title.contains("Reason:")) {
             handleReasonClick(staff, itemName);
         } else if (title.contains("Duration:")) {
             handleDurationClick(staff, itemName);
         } else if (title.contains("Punish")) {
-            handleActionClick(staff, title, itemName);
+            handleActionClick(staff, title, clicked, itemName);
         }
     }
 
     // ── Stage 1: Action ───────────────────────────────────────────────────────
 
-    private void handleActionClick(Player staff, String title, String itemName) {
-        if (itemName.equals("Close")) { staff.closeInventory(); return; }
+    private void handleActionClick(Player staff, String title, ItemStack clicked, String itemName) {
+        if (itemName.equals("Close")) {
+            staff.closeInventory();
+            return;
+        }
 
-        // Extract target name — title format is "» Punish PlayerName «" after strip
-        // Remove leading/trailing symbols and "Punish" keyword
+        // Check if this is a no-permission barrier by reading its lore
+        ItemMeta meta = clicked.getItemMeta();
+        if (meta != null && meta.hasLore()) {
+            List<String> lore = meta.getLore();
+            for (String line : lore) {
+                if (ChatColor.stripColor(line).contains("You do not have permission")) {
+                    staff.sendMessage(ChatColor.RED + "You don't have permission to perform that action.");
+                    return;
+                }
+            }
+        }
+
+        // Extract target name from title e.g. "» Punish CatgirlLeeroy «"
         String targetName = title
-                .replaceAll(".*Punish\\s+", "")  // remove everything up to and including "Punish "
-                .replaceAll("\\s*[«»].*", "")     // remove trailing « and anything after
+                .replaceAll(".*Punish\\s+", "")
+                .replaceAll("\\s*[«»].*", "")
                 .trim();
 
         Player target = Bukkit.getPlayerExact(targetName);
@@ -230,9 +248,5 @@ public class PunishListener implements Listener {
         Bukkit.getOnlinePlayers().forEach(p ->
                 p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f)
         );
-    }
-
-    private boolean isActionTitle(String title) {
-        return title.contains("» Punish") && !title.contains("» Reason") && !title.contains("» Duration");
     }
 }
