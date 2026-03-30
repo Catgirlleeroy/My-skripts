@@ -1,7 +1,7 @@
 package dev.leeroy.plugin.Utils;
 
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -34,40 +34,47 @@ public class PlayerCache {
         });
     }
 
-    /** Store a UUID → name mapping when a player joins. */
+    public void reload() {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, this::load);
+    }
+
+    /**
+     * Store a player entry. Structure:
+     *
+     * players:
+     *   <uuid>:
+     *     name: PlayerName
+     *     ip: 192.168.1.1
+     */
     public void store(UUID uuid, String name) {
-        config.set(uuid.toString(), name);
-        // Also store name → UUID for reverse lookup
-        config.set("names." + name.toLowerCase(), uuid.toString());
+        String key = "players." + uuid.toString();
+        config.set(key + ".name", name);
+        // Also keep a name → uuid index for fast reverse lookup
+        config.set("index." + name.toLowerCase(), uuid.toString());
         save();
     }
 
-    /** Store a UUID → IP mapping when a player joins. */
     public void storeIP(UUID uuid, String ip) {
-        config.set("ips." + uuid.toString(), ip);
+        config.set("players." + uuid.toString() + ".ip", ip);
         save();
     }
 
-    /** Get a player's last known IP by UUID. */
-    public String getIP(UUID uuid) {
-        return config.getString("ips." + uuid.toString(), null);
+    public String getName(UUID uuid) {
+        return config.getString("players." + uuid.toString() + ".name", null);
     }
 
-    /** Get a player's last known IP by their name. */
+    public String getIP(UUID uuid) {
+        return config.getString("players." + uuid.toString() + ".ip", null);
+    }
+
     public String getIPByName(String name) {
         UUID uuid = getUUID(name);
         if (uuid == null) return null;
         return getIP(uuid);
     }
 
-    /** Get a player's last known name by UUID. */
-    public String getName(UUID uuid) {
-        return config.getString(uuid.toString(), null);
-    }
-
-    /** Get a player's UUID by their last known name. */
     public UUID getUUID(String name) {
-        String raw = config.getString("names." + name.toLowerCase(), null);
+        String raw = config.getString("index." + name.toLowerCase(), null);
         if (raw == null) return null;
         try { return UUID.fromString(raw); } catch (IllegalArgumentException e) { return null; }
     }
