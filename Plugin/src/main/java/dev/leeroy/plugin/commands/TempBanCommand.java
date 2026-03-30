@@ -1,6 +1,7 @@
 package dev.leeroy.plugin.commands;
 
 import dev.leeroy.plugin.Utils.BanManager;
+import dev.leeroy.plugin.Utils.PlayerCache;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -11,15 +12,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 public class TempBanCommand implements CommandExecutor {
 
     private final BanManager banManager;
+    private final PlayerCache playerCache;
     private final JavaPlugin plugin;
 
-    public TempBanCommand(BanManager banManager, JavaPlugin plugin) {
-        this.banManager = banManager;
-        this.plugin = plugin;
+    public TempBanCommand(BanManager banManager, PlayerCache playerCache, JavaPlugin plugin) {
+        this.banManager  = banManager;
+        this.playerCache = playerCache;
+        this.plugin      = plugin;
     }
 
     @Override
@@ -31,17 +35,12 @@ public class TempBanCommand implements CommandExecutor {
         }
 
         if (args.length < 2) {
-            sender.sendMessage(ChatColor.YELLOW + "Usage: /tempban <player> <duration> [reason]");
+            sender.sendMessage(ChatColor.YELLOW + "Usage: /tempban <player|uuid> <duration> [reason]");
             sender.sendMessage(ChatColor.GRAY + "Duration examples: 30m, 2h, 1d, 1d12h");
             return true;
         }
 
-        Player target = Bukkit.getPlayerExact(args[0]);
-        if (target == null) {
-            sender.sendMessage(ChatColor.RED + "Player '" + args[0] + "' not found or is offline.");
-            return true;
-        }
-
+        String input       = args[0];
         String durationStr = args[1];
         String reason = args.length > 2
                 ? String.join(" ", Arrays.copyOfRange(args, 2, args.length))
@@ -53,35 +52,60 @@ public class TempBanCommand implements CommandExecutor {
             return true;
         }
 
-        if (banManager.isBanned(target.getUniqueId())) {
-            sender.sendMessage(ChatColor.RED + target.getName() + " is already banned.");
+        // Resolve UUID and name
+        UUID   uuid;
+        String targetName;
+        Player onlineTarget = Bukkit.getPlayerExact(input);
+
+        if (onlineTarget != null) {
+            uuid       = onlineTarget.getUniqueId();
+            targetName = onlineTarget.getName();
+        } else {
+            uuid = tryParseUUID(input);
+            if (uuid == null) uuid = playerCache.getUUID(input);
+            if (uuid == null) {
+                sender.sendMessage(ChatColor.RED + "Player '" + input + "' not found. They must have joined before, or provide a UUID.");
+                return true;
+            }
+            String cached = playerCache.getName(uuid);
+            targetName = cached != null ? cached : uuid.toString();
+        }
+
+        if (banManager.isBanned(uuid)) {
+            sender.sendMessage(ChatColor.RED + targetName + " is already banned.");
             return true;
         }
 
-        banManager.tempBan(target.getUniqueId(), target.getName(), reason, sender.getName(), durationMs);
+        banManager.tempBan(uuid, targetName, reason, sender.getName(), durationMs);
 
-        // Effects
-        target.getWorld().strikeLightningEffect(target.getLocation());
-        Bukkit.getOnlinePlayers().forEach(p ->
-                p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f)
-        );
-
-        final String finalReason = reason;
-        final long finalDurationMs = durationMs;
-        Bukkit.getScheduler().runTaskLater(plugin, () ->
-                target.kickPlayer(
-                        ChatColor.RED + "You have been temporarily banned.\n" +
-                                ChatColor.WHITE + "Duration: " + BanManager.formatRemaining(System.currentTimeMillis() + finalDurationMs) + "\n" +
-                                ChatColor.WHITE + "Reason: " + finalReason
-                ), 10L);
+        // Effects and kick if online
+        if (onlineTarget != null) {
+            onlineTarget.getWorld().strikeLightningEffect(onlineTarget.getLocation());
+            Bukkit.getOnlinePlayers().forEach(p ->
+                    p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f)
+            );
+            final String finalReason   = reason;
+            final long   finalDuration = durationMs;
+            Bukkit.getScheduler().runTaskLater(plugin, () ->
+                    onlineTarget.kickPlayer(
+                            ChatColor.RED + "You have been temporarily banned.\n" +
+                                    ChatColor.WHITE + "Duration: " + BanManager.formatRemaining(System.currentTimeMillis() + finalDuration) + "\n" +
+                                    ChatColor.WHITE + "Reason: " + finalReason
+                    ), 10L);
+        }
 
         Bukkit.broadcastMessage(
                 ChatColor.RED + "[TEMPBAN] " +
-                        ChatColor.YELLOW + target.getName() +
+                        ChatColor.YELLOW + targetName +
                         ChatColor.RED + " has been temporarily banned! " +
                         ChatColor.GRAY + "Duration: " + durationStr + " | Reason: " + reason
         );
 
+        sender.sendMessage(ChatColor.GREEN + "Tempbanned " + targetName + " for " + durationStr + ". Reason: " + reason);
         return true;
+    }
+
+    private UUID tryParseUUID(String input) {
+        try { return UUID.fromString(input); } catch (IllegalArgumentException e) { return null; }
     }
 }

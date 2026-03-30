@@ -8,7 +8,15 @@ import dev.leeroy.plugin.Utils.PunishConfig;
 import dev.leeroy.plugin.Utils.ReportManager;
 import dev.leeroy.plugin.Utils.VanishManager;
 import dev.leeroy.plugin.commands.*;
-import dev.leeroy.plugin.listeners.*;
+import dev.leeroy.plugin.listeners.BanListener;
+import dev.leeroy.plugin.listeners.ChatColorListener;
+import dev.leeroy.plugin.listeners.CommandSpyListener;
+import dev.leeroy.plugin.listeners.GlowListener;
+import dev.leeroy.plugin.listeners.JoinLeaveListener;
+import dev.leeroy.plugin.listeners.MuteListener;
+import dev.leeroy.plugin.listeners.PlayerCacheListener;
+import dev.leeroy.plugin.listeners.PunishListener;
+import dev.leeroy.plugin.listeners.VanishListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Plugin extends JavaPlugin {
@@ -45,8 +53,8 @@ public final class Plugin extends JavaPlugin {
         getCommand("gm3").setExecutor(gamemodesExecutor);
 
         // Ban
-        getCommand("ban").setExecutor(new BanCommand(banManager, this));
-        getCommand("tempban").setExecutor(new TempBanCommand(banManager, this));
+        getCommand("ban").setExecutor(new BanCommand(banManager, playerCache, this));
+        getCommand("tempban").setExecutor(new TempBanCommand(banManager, playerCache, this));
         getCommand("checkban").setExecutor(new CheckBanCommand(banManager, playerCache));
         getCommand("unban").setExecutor(new UnbanCommand(banManager, playerCache));
 
