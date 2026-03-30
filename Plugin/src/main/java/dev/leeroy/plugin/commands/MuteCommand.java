@@ -39,6 +39,13 @@ public class MuteCommand implements CommandExecutor {
                 ? String.join(" ", java.util.Arrays.copyOfRange(args, 1, args.length))
                 : "You have been muted.";
 
+
+        // Check if target is exempt from this punishment
+        if (target != null && (target.hasPermission("bob.exempt") || target.hasPermission("bob.exempt.mute"))) {
+            sender.sendMessage(ChatColor.RED + target.getName() + " is exempt from this punishment.");
+            return true;
+        }
+
         if (muteManager.isMuted(target.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + target.getName() + " is already muted.");
             return true;

@@ -47,6 +47,12 @@ public class IPBanCommand implements CommandExecutor {
                 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length))
                 : "You have been IP banned.";
 
+        // Check if target is exempt
+        if (target.hasPermission("bob.exempt") || target.hasPermission("bob.exempt.ipban")) {
+            sender.sendMessage(ChatColor.RED + target.getName() + " is exempt from this punishment.");
+            return true;
+        }
+
         if (ipBanManager.isBanned(ip)) {
             sender.sendMessage(ChatColor.RED + target.getName() + "'s IP is already banned.");
             return true;

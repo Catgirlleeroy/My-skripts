@@ -1,186 +1,389 @@
-# Bob Punishment GUI Configuration
-# Supports & color codes everywhere
-# Placeholders: {player} = target name, {reason} = reason, {duration} = duration, {staff} = staff name
+name: Bob
+author: Bob
+website: bob.org
+version: '1.0'
+main: dev.leeroy.plugin.Plugin
+api-version: '1.21'
 
-# Main GUI title — {player} = target name
-gui-title: "&8» Punish &c{player} &8«"
-
-# ── Per-action reasons and durations ─────────────────────────────────────────
-
-actions:
-
+commands:
+  heal:
+    description: Heals a player to full HP, hunger, and saturation.
+    usage: /heal [player]
+    permission: bob.heal
+  gm0:
+    description: Sets gamemode to Survival.
+    usage: /gm0 [player]
+    permission: bob.gamemode.self
+  gm1:
+    description: Sets gamemode to Creative.
+    usage: /gm1 [player]
+    permission: bob.gamemode.self
+  gm2:
+    description: Sets gamemode to Adventure.
+    usage: /gm2 [player]
+    permission: bob.gamemode.self
+  gm3:
+    description: Sets gamemode to Spectator.
+    usage: /gm3 [player]
+    permission: bob.gamemode.self
   ban:
-    enabled: true
-    item: BARRIER
-    name: "&cBan"
-    lore:
-      - "&7Permanently ban {player}."
-      - "&eClick to select!"
-    messages:
-      broadcast: "&c[BAN] &e{player} &chas been permanently banned! &7Reason: {reason}"
-      kick: "&cYou have been permanently banned.\n&fReason: {reason}\n&fBanned by: {staff}"
-    reasons:
-      - "Hacking"
-      - "Bug Abuse"
-      - "Exploiting"
-      - "Cheating"
-      - "Doxxing"
-      - "Threats"
-      - "Ban Evasion"
-      - "Other"
-
+    description: Permanently bans a player.
+    usage: /ban <player> [reason]
+    permission: bob.ban
   tempban:
-    enabled: true
-    item: IRON_BARS
-    name: "&6Tempban"
-    lore:
-      - "&7Temporarily ban {player}."
-      - "&eClick to select!"
-    messages:
-      broadcast: "&c[TEMPBAN] &e{player} &chas been temporarily banned! &7Duration: {duration} | Reason: {reason}"
-      kick: "&cYou have been temporarily banned.\n&fDuration: {duration}\n&fReason: {reason}\n&fBanned by: {staff}"
-    reasons:
-      - "Hacking"
-      - "Bug Abuse"
-      - "Griefing"
-      - "Toxicity"
-      - "Spam"
-      - "Advertising"
-      - "Other"
-    durations:
-      - "1h"
-      - "6h"
-      - "12h"
-      - "1d"
-      - "3d"
-      - "7d"
-      - "30d"
-
-  mute:
-    enabled: true
-    item: STRING
-    name: "&eMute"
-    lore:
-      - "&7Permanently mute {player}."
-      - "&eClick to select!"
-    messages:
-      broadcast: "&c[MUTE] &e{player} &chas been muted! &7Reason: {reason}"
-      notify-self: "&cYou have been permanently muted. &7Reason: {reason}"
-    reasons:
-      - "Swearing"
-      - "Spam"
-      - "Death Threats"
-      - "Hate Speech"
-      - "Advertising"
-      - "Disrespecting Staff"
-      - "Other"
-
-  tempmute:
-    enabled: true
-    item: LEAD
-    name: "&aTempmute"
-    lore:
-      - "&7Temporarily mute {player}."
-      - "&eClick to select!"
-    messages:
-      broadcast: "&c[TEMPMUTE] &e{player} &chas been muted! &7Duration: {duration} | Reason: {reason}"
-      notify-self: "&cYou have been muted for {duration}. &7Reason: {reason}"
-    reasons:
-      - "Swearing"
-      - "Spam"
-      - "Caps Abuse"
-      - "Advertising"
-      - "Disrespecting Staff"
-      - "Inappropriate Language"
-      - "Other"
-    durations:
-      - "10m"
-      - "30m"
-      - "1h"
-      - "6h"
-      - "12h"
-      - "1d"
-      - "3d"
-
-  kick:
-    enabled: true
-    item: LEATHER_BOOTS
-    name: "&bKick"
-    lore:
-      - "&7Kick {player} from the server."
-      - "&eClick to select!"
-    messages:
-      broadcast: "&c[KICK] &e{player} &chas been kicked! &7Reason: {reason}"
-      kick: "&cYou have been kicked.\n&fReason: {reason}\n&fKicked by: {staff}"
-    reasons:
-      - "AFK"
-      - "Spamming"
-      - "Inappropriate Skin"
-      - "Inappropriate Name"
-      - "Staff Request"
-      - "Other"
-
+    description: Temporarily bans a player.
+    usage: /tempban <player> <duration> [reason]
+    permission: bob.tempban
+  checkban:
+    description: Checks the ban status of a player.
+    usage: /checkban <player|uuid>
+    permission: bob.checkban
+  unban:
+    description: Unbans a player.
+    usage: /unban <player|uuid>
+    permission: bob.unban
   ipban:
-    enabled: true
-    item: NETHER_BRICK
-    name: "&4IP Ban"
-    lore:
-      - "&7Permanently IP ban {player}."
-      - "&eClick to select!"
-    messages:
-      broadcast: "&c[IP-BAN] &e{player} &chas been permanently IP banned! &7Reason: {reason}"
-      kick: "&cYou have been permanently IP banned.\n&fReason: {reason}\n&fBanned by: {staff}"
-    reasons:
-      - "Ban Evasion"
-      - "Hacking"
-      - "Doxxing"
-      - "Severe Threats"
-      - "CSAM"
-      - "Other"
+    description: Permanently IP bans a player.
+    usage: /ipban <player> [reason]
+    permission: bob.ipban
+  iptempban:
+    description: Temporarily IP bans a player.
+    usage: /iptempban <player> <duration> [reason]
+    permission: bob.iptempban
+  ipunban:
+    description: Unbans an IP.
+    usage: /ipunban <player|uuid|ip>
+    permission: bob.ipunban
+  checkipban:
+    description: Checks the IP ban status of a player or IP.
+    usage: /checkipban <player|ip>
+    permission: bob.checkipban
+  mute:
+    description: Permanently mutes a player.
+    usage: /mute <player> [reason]
+    permission: bob.mute
+  tempmute:
+    description: Temporarily mutes a player.
+    usage: /tempmute <player> <duration> [reason]
+    permission: bob.tempmute
+  unmute:
+    description: Unmutes a player.
+    usage: /unmute <player|uuid>
+    permission: bob.unmute
+  chatmute:
+    description: Toggles server-wide chat mute.
+    usage: /chatmute
+    permission: bob.chatmute
+  chatclear:
+    description: Clears chat for all players.
+    usage: /chatclear
+    permission: bob.chatclear
+  kick:
+    description: Kicks a player from the server.
+    usage: /kick <player> [reason]
+    permission: bob.kick
+  punish:
+    description: Opens the punishment GUI for a player.
+    usage: /punish <player>
+    permission: bob.punish
+  chatcolor:
+    description: Opens the chat color selector GUI.
+    usage: /chatcolor
+    permission: bob.chatcolor
+  glow:
+    description: Opens the glow color selector GUI.
+    usage: /glow
+    permission: bob.glow
+  vanish:
+    description: Toggle vanish.
+    usage: /vanish
+    permission: bob.vanish
+  report:
+    description: Report a player.
+    usage: /report <player> <reason>
+    permission: bob.report
+  reports:
+    description: View and manage reports.
+    usage: /reports [delete <id>]
+    permission: bob.reports
+  commandspy:
+    description: Toggles CommandSpy.
+    usage: /commandspy
+    permission: bob.commandspy
+  bobreload:
+    description: Reloads config files from disk.
+    usage: /bobreload
+    permission: bob.reload
+  tp:
+    description: Teleport to a player or coordinates.
+    usage: /tp <player> | /tp <x> <y> <z> | /tp <player1> <player2>
+    permission: bob.tp.self
+  tpa:
+    description: Send a teleport request to a player.
+    usage: /tpa <player>
+    permission: bob.tpa
+  tpaccept:
+    description: Accept a pending teleport request.
+    usage: /tpaccept
+    permission: bob.tpa
+  tpdeny:
+    description: Deny a pending teleport request.
+    usage: /tpdeny
 
-  tempipban:
-    enabled: true
-    item: NETHER_BRICK_WALL
-    name: "&cTemp IP Ban"
-    lore:
-      - "&7Temporarily IP ban {player}."
-      - "&eClick to select!"
-    messages:
-      broadcast: "&c[TEMP IP-BAN] &e{player} &chas been temporarily IP banned! &7Duration: {duration} | Reason: {reason}"
-      kick: "&cYou have been temporarily IP banned.\n&fDuration: {duration}\n&fReason: {reason}\n&fBanned by: {staff}"
-    reasons:
-      - "Ban Evasion"
-      - "Hacking"
-      - "Griefing"
-      - "Threats"
-      - "Other"
-    durations:
-      - "1h"
-      - "6h"
-      - "12h"
-      - "1d"
-      - "3d"
-      - "7d"
-      - "30d"
-
-# ── No permission item ────────────────────────────────────────────────────────
-no-permission:
-  item: BARRIER
-  lore:
-    - "&cYou do not have permission to perform this action."
-    - "&8Missing: {permission}"
-
-# ── Close button ──────────────────────────────────────────────────────────────
-close-button:
-  item: DARK_OAK_DOOR
-  name: "&7Close"
-
-# ── Reason selection GUI ──────────────────────────────────────────────────────
-reason-gui:
-  title: "&8» Reason: &c{action}"
-  item: PAPER
-
-# ── Duration selection GUI ────────────────────────────────────────────────────
-duration-gui:
-  title: "&8» Duration: &6{action}"
-  item: CLOCK
+permissions:
+  bob.staff:
+    description: Receives notifications when banned players try to join.
+    default: op
+  bob.heal:
+    description: Allows the player to heal themselves.
+    default: op
+  bob.heal.others:
+    description: Allows the player to heal other players.
+    default: op
+  bob.gamemode.self:
+    description: Allows changing your own gamemode (any mode).
+    default: op
+    children:
+      bob.gamemode.self.survival: true
+      bob.gamemode.self.creative: true
+      bob.gamemode.self.adventure: true
+      bob.gamemode.self.spectator: true
+  bob.gamemode.self.survival:
+    description: Allows changing your own gamemode to Survival.
+    default: op
+  bob.gamemode.self.creative:
+    description: Allows changing your own gamemode to Creative.
+    default: op
+  bob.gamemode.self.adventure:
+    description: Allows changing your own gamemode to Adventure.
+    default: op
+  bob.gamemode.self.spectator:
+    description: Allows changing your own gamemode to Spectator.
+    default: op
+  bob.gamemode.others:
+    description: Allows changing other players gamemode (any mode).
+    default: op
+    children:
+      bob.gamemode.others.survival: true
+      bob.gamemode.others.creative: true
+      bob.gamemode.others.adventure: true
+      bob.gamemode.others.spectator: true
+  bob.gamemode.others.survival:
+    description: Allows changing other players gamemode to Survival.
+    default: op
+  bob.gamemode.others.creative:
+    description: Allows changing other players gamemode to Creative.
+    default: op
+  bob.gamemode.others.adventure:
+    description: Allows changing other players gamemode to Adventure.
+    default: op
+  bob.gamemode.others.spectator:
+    description: Allows changing other players gamemode to Spectator.
+    default: op
+  bob.ban:
+    description: Allows the player to permanently ban others.
+    default: op
+  bob.tempban:
+    description: Allows the player to temporarily ban others.
+    default: op
+  bob.checkban:
+    description: Allows the player to check ban info.
+    default: op
+  bob.unban:
+    description: Allows the player to unban others.
+    default: op
+  bob.ipban:
+    description: Allows the player to permanently IP ban others.
+    default: op
+  bob.iptempban:
+    description: Allows the player to temporarily IP ban others.
+    default: op
+  bob.ipunban:
+    description: Allows the player to unban IPs.
+    default: op
+  bob.checkipban:
+    description: Allows the player to check IP ban info.
+    default: op
+  bob.mute:
+    description: Allows the player to permanently mute others.
+    default: op
+  bob.tempmute:
+    description: Allows the player to temporarily mute others.
+    default: op
+  bob.unmute:
+    description: Allows the player to unmute others.
+    default: op
+  bob.chatmute:
+    description: Allows the player to toggle server-wide chat mute.
+    default: op
+  bob.chatmute.bypass:
+    description: Allows the player to chat even when chat is muted.
+    default: op
+  bob.chatclear:
+    description: Allows the player to clear chat.
+    default: op
+  bob.kick:
+    description: Allows the player to kick others.
+    default: op
+  bob.punish:
+    description: Allows the player to use the punishment GUI.
+    default: op
+  bob.chatcolor:
+    description: Allows the player to open the chat color GUI.
+    default: true
+  bob.chatcolor.white:
+    description: White chat color.
+    default: true
+  bob.chatcolor.yellow:
+    description: Yellow chat color.
+    default: true
+  bob.chatcolor.gold:
+    description: Gold chat color.
+    default: true
+  bob.chatcolor.red:
+    description: Red chat color.
+    default: true
+  bob.chatcolor.light_purple:
+    description: Light purple chat color.
+    default: true
+  bob.chatcolor.dark_purple:
+    description: Dark purple chat color.
+    default: true
+  bob.chatcolor.blue:
+    description: Blue chat color.
+    default: true
+  bob.chatcolor.aqua:
+    description: Aqua chat color.
+    default: true
+  bob.chatcolor.dark_aqua:
+    description: Dark aqua chat color.
+    default: true
+  bob.chatcolor.green:
+    description: Green chat color.
+    default: true
+  bob.chatcolor.dark_green:
+    description: Dark green chat color.
+    default: true
+  bob.chatcolor.gray:
+    description: Gray chat color.
+    default: true
+  bob.chatcolor.dark_gray:
+    description: Dark gray chat color.
+    default: true
+  bob.chatcolor.black:
+    description: Black chat color.
+    default: op
+  bob.chatcolor.bold:
+    description: Bold chat format.
+    default: true
+  bob.chatcolor.italic:
+    description: Italic chat format.
+    default: true
+  bob.chatcolor.underline:
+    description: Underline chat format.
+    default: true
+  bob.chatcolor.rainbow:
+    description: Rainbow chat color.
+    default: op
+  bob.glow:
+    description: Allows the player to open the glow color GUI.
+    default: true
+  bob.glow.white:
+    description: White glow color.
+    default: true
+  bob.glow.yellow:
+    description: Yellow glow color.
+    default: true
+  bob.glow.gold:
+    description: Gold glow color.
+    default: true
+  bob.glow.red:
+    description: Red glow color.
+    default: true
+  bob.glow.light_purple:
+    description: Light purple glow color.
+    default: true
+  bob.glow.dark_purple:
+    description: Dark purple glow color.
+    default: true
+  bob.glow.blue:
+    description: Blue glow color.
+    default: true
+  bob.glow.aqua:
+    description: Aqua glow color.
+    default: true
+  bob.glow.dark_aqua:
+    description: Dark aqua glow color.
+    default: true
+  bob.glow.green:
+    description: Green glow color.
+    default: true
+  bob.glow.dark_green:
+    description: Dark green glow color.
+    default: true
+  bob.glow.gray:
+    description: Gray glow color.
+    default: true
+  bob.glow.dark_gray:
+    description: Dark gray glow color.
+    default: true
+  bob.glow.black:
+    description: Black glow color.
+    default: op
+  bob.glow.rainbow:
+    description: Rainbow glow color.
+    default: op
+  bob.vanish:
+    description: Allows the player to vanish.
+    default: op
+  bob.vanish.see:
+    description: Allows the player to see vanished players.
+    default: op
+  bob.report:
+    description: Allows the player to report others.
+    default: true
+  bob.reports:
+    description: Allows the player to view and manage reports.
+    default: op
+  bob.commandspy:
+    description: Allows the player to toggle CommandSpy.
+    default: op
+  bob.reload:
+    description: Allows the player to reload Bobs config and ban files.
+    default: op
+  bob.exempt:
+    description: Exempts the player from all punishments.
+    default: false
+  bob.exempt.ban:
+    description: Exempts the player from bans.
+    default: false
+  bob.exempt.tempban:
+    description: Exempts the player from tempbans.
+    default: false
+  bob.exempt.mute:
+    description: Exempts the player from mutes.
+    default: false
+  bob.exempt.tempmute:
+    description: Exempts the player from tempmutes.
+    default: false
+  bob.exempt.kick:
+    description: Exempts the player from kicks.
+    default: false
+  bob.exempt.ipban:
+    description: Exempts the player from IP bans.
+    default: false
+  bob.exempt.iptempban:
+    description: Exempts the player from temporary IP bans.
+    default: false
+  bob.tp.self:
+    description: Allows the player to teleport themselves.
+    default: op
+  bob.tp.others:
+    description: Allows the player to teleport other players.
+    default: op
+  bob.tp.coords:
+    description: Allows the player to teleport to coordinates.
+    default: op
+  bob.tpa:
+    description: Allows the player to send and receive teleport requests.
+    default: true

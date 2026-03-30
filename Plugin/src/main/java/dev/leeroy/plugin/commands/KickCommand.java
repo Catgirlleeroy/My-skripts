@@ -28,6 +28,13 @@ public class KickCommand implements CommandExecutor {
             return true;
         }
 
+
+        // Check if target is exempt from this punishment
+        if (target != null && (target.hasPermission("bob.exempt") || target.hasPermission("bob.exempt.kick"))) {
+            sender.sendMessage(ChatColor.RED + target.getName() + " is exempt from this punishment.");
+            return true;
+        }
+
         String reason = args.length > 1
                 ? String.join(" ", java.util.Arrays.copyOfRange(args, 1, args.length))
                 : "You have been kicked.";

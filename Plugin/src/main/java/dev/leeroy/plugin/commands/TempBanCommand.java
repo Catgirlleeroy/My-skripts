@@ -71,6 +71,13 @@ public class TempBanCommand implements CommandExecutor {
             targetName = cached != null ? cached : uuid.toString();
         }
 
+
+        // Check if target is exempt from this punishment
+        if (onlineTarget != null && (onlineTarget.hasPermission("bob.exempt") || onlineTarget.hasPermission("bob.exempt.tempban"))) {
+            sender.sendMessage(ChatColor.RED + onlineTarget.getName() + " is exempt from this punishment.");
+            return true;
+        }
+
         if (banManager.isBanned(uuid)) {
             sender.sendMessage(ChatColor.RED + targetName + " is already banned.");
             return true;

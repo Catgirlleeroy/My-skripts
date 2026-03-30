@@ -167,6 +167,12 @@ public class PunishListener implements Listener {
         YamlConfiguration cfg = punishConfig.get();
         staff.closeInventory();
 
+        // Check if target is exempt
+        if (target != null && (target.hasPermission("bob.exempt") || target.hasPermission("bob.exempt." + action))) {
+            staff.sendMessage(ChatColor.RED + targetName + " is exempt from this punishment.");
+            return;
+        }
+
         String broadcastPath = "actions." + action + ".messages.broadcast";
         String kickPath      = "actions." + action + ".messages.kick";
         String selfPath      = "actions." + action + ".messages.notify-self";

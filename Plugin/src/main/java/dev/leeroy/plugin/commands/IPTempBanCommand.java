@@ -49,6 +49,12 @@ public class IPTempBanCommand implements CommandExecutor {
                 ? String.join(" ", Arrays.copyOfRange(args, 2, args.length))
                 : "You have been temporarily IP banned.";
 
+        // Check if target is exempt
+        if (target.hasPermission("bob.exempt") || target.hasPermission("bob.exempt.iptempban")) {
+            sender.sendMessage(ChatColor.RED + target.getName() + " is exempt from this punishment.");
+            return true;
+        }
+
         long durationMs = BanManager.parseDuration(durationStr);
         if (durationMs == -1) {
             sender.sendMessage(ChatColor.RED + "Invalid duration '" + durationStr + "'. Use formats like 30m, 2h, 1d.");
