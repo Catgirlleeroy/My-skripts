@@ -102,6 +102,11 @@ commands:
     description: Toggle tempfly or manage fly time.
     usage: /fly [time|give|set|remove|perm|bypass] [player] [time]
     permission: bob.fly
+  chatgame:
+    description: Manage the chat reaction game.
+    usage: /chatgame [now|add|remove|list|help]
+    aliases: [cg]
+    permission: bob.chatgame
   report:
     description: Report a player.
     usage: /report <player> <reason>
@@ -364,6 +369,9 @@ permissions:
   bob.fly.bonus.mvp:
     description: Daily fly bonus for MVPs.
     default: false
+  bob.chatgame:
+    description: Allows managing the chat reaction game.
+    default: op
   bob.report:
     description: Allows the player to report others.
     default: true

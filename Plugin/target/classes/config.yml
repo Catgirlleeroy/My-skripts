@@ -73,9 +73,9 @@ fly:
       # Daily login bonus per permission group
       # Permission: bob.fly.bonus.<group>
       daily-login:
-        member: 0
-        vip: 0
-        mvp: 0
+        member: 300
+        vip: 600
+        mvp: 1800
 
     combat:
       attack-player: true
@@ -135,3 +135,46 @@ fly:
     no-permission: "&cYou don't have permission to do that."
     player-not-found: "&cPlayer &f{player} &cnot found."
     invalid-time: "&c'{time}' is not a valid duration. Use formats like 30m, 2h, 1d."
+
+# ── Auto Messages ─────────────────────────────────────────────────────────────
+auto-messages:
+  # Interval in seconds between broadcasts
+  cooldown: 300
+  # Top and bottom border line
+  prefix: "&8&m               &c&l FemSkyNet&8&m               &c"
+  # Sound played when message broadcasts (leave empty to disable)
+  sound: "ENTITY_PLAYER_LEVELUP"
+  # Messages — use & for color codes, leave empty string "" to skip a message
+  messages:
+    - "&6Do /Buy to gain boosts!"
+    - "Do /discord for updates and give aways"
+    - "Do /report if you see a hacker or someone abusing their permissions as staff"
+    - "Want to apply for staff? Do /apply!"
+
+# ── Chat Games ────────────────────────────────────────────────────────────────
+chat-games:
+  enabled: true
+  # Interval in minutes between automatic games
+  interval: 5
+  # Seconds before the game expires if nobody answers
+  timeout: 40
+  # Prefix shown in broadcasts
+  announce-prefix: "&6&lFem&5S&lky&6&lNet"
+  # Commands run as console when a player wins — {player} = winner name
+  rewards:
+    - "excellentcrates key give {player} chatgame 1"
+  # Broadcast messages — supports & color codes and {word}, {player}, {time} placeholders
+  messages:
+    start: "&7&l| &cA chat game has started! Type &4{word} &cto gain rewards!"
+    win: "&7&l| &4{player} &chas gotten &4{word} &cin &4{time}&c!"
+    timeout: "&7&l| &fNo one was able to answer &4{word} &fin 40 seconds!"
+  # Words used in the reaction game
+  words:
+    - "Creeper"
+    - "Enderman"
+    - "Skeleton"
+    - "Blaze"
+    - "Wither"
+    - "Dragon"
+    - "Phantom"
+    - "Piglin"

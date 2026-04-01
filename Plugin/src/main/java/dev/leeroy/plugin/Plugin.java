@@ -1,6 +1,8 @@
 package dev.leeroy.plugin;
 
+import dev.leeroy.plugin.Utils.AutoMessageManager;
 import dev.leeroy.plugin.Utils.BanManager;
+import dev.leeroy.plugin.Utils.ChatGameManager;
 import dev.leeroy.plugin.Utils.FlyConfig;
 import dev.leeroy.plugin.Utils.FlyDataManager;
 import dev.leeroy.plugin.Utils.FlyManager;
@@ -13,6 +15,7 @@ import dev.leeroy.plugin.Utils.VanishManager;
 import dev.leeroy.plugin.commands.*;
 import dev.leeroy.plugin.listeners.BanListener;
 import dev.leeroy.plugin.listeners.ChatColorListener;
+import dev.leeroy.plugin.listeners.ChatGameListener;
 import dev.leeroy.plugin.listeners.CommandSpyListener;
 import dev.leeroy.plugin.listeners.FlyListener;
 import dev.leeroy.plugin.listeners.GlowListener;
@@ -35,6 +38,8 @@ public final class Plugin extends JavaPlugin {
     private FlyDataManager flyDataManager;
     private FlyConfig flyConfig;
     private FlyManager flyManager;
+    private AutoMessageManager autoMessageManager;
+    private ChatGameManager chatGameManager;
 
     @Override
     public void onEnable() {
@@ -51,6 +56,8 @@ public final class Plugin extends JavaPlugin {
         flyDataManager = new FlyDataManager(this);
         flyConfig      = new FlyConfig(this);
         flyManager     = new FlyManager(this, flyDataManager, flyConfig);
+        autoMessageManager = new AutoMessageManager(this);
+        chatGameManager    = new ChatGameManager(this);
 
         // Heal
         getCommand("heal").setExecutor(new HealCommand());
@@ -112,7 +119,11 @@ public final class Plugin extends JavaPlugin {
         getCommand("reports").setExecutor(new ReportsCommand(reportManager));
 
         // Reload
-        getCommand("bobreload").setExecutor(new ReloadCommand(this, banManager, ipBanManager, punishConfig));
+        getCommand("bobreload").setExecutor(new ReloadCommand(this, banManager, ipBanManager, punishConfig, autoMessageManager, chatGameManager));
+
+        // Chat Game
+        getCommand("chatgame").setExecutor(new ChatGameCommand(chatGameManager, this));
+        getServer().getPluginManager().registerEvents(new ChatGameListener(chatGameManager), this);
 
         // TP
         getCommand("tp").setExecutor(new TPCommand());

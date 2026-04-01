@@ -1,6 +1,8 @@
 package dev.leeroy.plugin.commands;
 
+import dev.leeroy.plugin.Utils.AutoMessageManager;
 import dev.leeroy.plugin.Utils.BanManager;
+import dev.leeroy.plugin.Utils.ChatGameManager;
 import dev.leeroy.plugin.Utils.IPBanManager;
 import dev.leeroy.plugin.Utils.PunishConfig;
 import org.bukkit.ChatColor;
@@ -15,13 +17,18 @@ public class ReloadCommand implements CommandExecutor {
     private final BanManager banManager;
     private final IPBanManager ipBanManager;
     private final PunishConfig punishConfig;
+    private final AutoMessageManager autoMessageManager;
+    private final ChatGameManager chatGameManager;
 
     public ReloadCommand(JavaPlugin plugin, BanManager banManager,
-                         IPBanManager ipBanManager, PunishConfig punishConfig) {
-        this.plugin       = plugin;
-        this.banManager   = banManager;
-        this.ipBanManager = ipBanManager;
-        this.punishConfig = punishConfig;
+                         IPBanManager ipBanManager, PunishConfig punishConfig,
+                         AutoMessageManager autoMessageManager, ChatGameManager chatGameManager) {
+        this.plugin             = plugin;
+        this.banManager         = banManager;
+        this.ipBanManager       = ipBanManager;
+        this.punishConfig       = punishConfig;
+        this.autoMessageManager = autoMessageManager;
+        this.chatGameManager    = chatGameManager;
     }
 
     @Override
@@ -36,8 +43,10 @@ public class ReloadCommand implements CommandExecutor {
         banManager.reload();
         ipBanManager.reload();
         punishConfig.reload();
+        autoMessageManager.restart();
+        chatGameManager.restart();
 
-        sender.sendMessage(ChatColor.GREEN + "[Bob] Reloaded config.yml, punish.yml, bans.yml and ipbans.yml from disk.");
+        sender.sendMessage(ChatColor.GREEN + "[Bob] Reloaded all config files and restarted tasks.");
         plugin.getLogger().info("Bob reloaded by " + sender.getName());
         return true;
     }
