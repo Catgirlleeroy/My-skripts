@@ -1,6 +1,9 @@
 package dev.leeroy.plugin;
 
 import dev.leeroy.plugin.Utils.BanManager;
+import dev.leeroy.plugin.Utils.FlyConfig;
+import dev.leeroy.plugin.Utils.FlyDataManager;
+import dev.leeroy.plugin.Utils.FlyManager;
 import dev.leeroy.plugin.Utils.IPBanManager;
 import dev.leeroy.plugin.Utils.MuteManager;
 import dev.leeroy.plugin.Utils.PlayerCache;
@@ -11,6 +14,7 @@ import dev.leeroy.plugin.commands.*;
 import dev.leeroy.plugin.listeners.BanListener;
 import dev.leeroy.plugin.listeners.ChatColorListener;
 import dev.leeroy.plugin.listeners.CommandSpyListener;
+import dev.leeroy.plugin.listeners.FlyListener;
 import dev.leeroy.plugin.listeners.GlowListener;
 import dev.leeroy.plugin.listeners.JoinLeaveListener;
 import dev.leeroy.plugin.listeners.MuteListener;
@@ -28,6 +32,9 @@ public final class Plugin extends JavaPlugin {
     private PunishConfig punishConfig;
     private VanishManager vanishManager;
     private ReportManager reportManager;
+    private FlyDataManager flyDataManager;
+    private FlyConfig flyConfig;
+    private FlyManager flyManager;
 
     @Override
     public void onEnable() {
@@ -41,6 +48,9 @@ public final class Plugin extends JavaPlugin {
         punishConfig  = new PunishConfig(this);
         vanishManager = new VanishManager();
         reportManager = new ReportManager(this);
+        flyDataManager = new FlyDataManager(this);
+        flyConfig      = new FlyConfig(this);
+        flyManager     = new FlyManager(this, flyDataManager, flyConfig);
 
         // Heal
         getCommand("heal").setExecutor(new HealCommand());
@@ -88,6 +98,10 @@ public final class Plugin extends JavaPlugin {
         // Glow
         getCommand("glow").setExecutor(new GlowCommand());
         getServer().getPluginManager().registerEvents(new GlowListener(this), this);
+
+        // Fly
+        getCommand("fly").setExecutor(new FlyCommand(flyManager, flyDataManager, flyConfig, playerCache));
+        getServer().getPluginManager().registerEvents(new FlyListener(flyManager, flyDataManager, flyConfig), this);
 
         // Join/Leave messages
         getServer().getPluginManager().registerEvents(new JoinLeaveListener(this), this);

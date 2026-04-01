@@ -11,11 +11,15 @@ dev\leeroy\plugin\listeners\GlowListener$1.class
 dev\leeroy\plugin\listeners\VanishListener.class
 dev\leeroy\plugin\Utils\IPBanManager.class
 dev\leeroy\plugin\commands\KickCommand.class
+dev\leeroy\plugin\listeners\FlyListener.class
+dev\leeroy\plugin\Utils\FlyDataManager.class
 dev\leeroy\plugin\commands\ReportsCommand.class
+dev\leeroy\plugin\Utils\FlyManager.class
 dev\leeroy\plugin\Utils\ReportManager.class
 dev\leeroy\plugin\commands\Gamemodes$1.class
 dev\leeroy\plugin\commands\ChatColorCommand.class
 dev\leeroy\plugin\commands\MuteCommand.class
+dev\leeroy\plugin\commands\FlyCommand.class
 dev\leeroy\plugin\commands\CheckBanCommand.class
 dev\leeroy\plugin\Utils\PunishConfig.class
 dev\leeroy\plugin\Utils\PlayerHealer.class
@@ -46,3 +50,4 @@ dev\leeroy\plugin\listeners\BanListener.class
 dev\leeroy\plugin\commands\ChatMuteCommand.class
 dev\leeroy\plugin\commands\GlowCommand.class
 dev\leeroy\plugin\commands\TempMuteCommand.class
+dev\leeroy\plugin\Utils\FlyConfig.class

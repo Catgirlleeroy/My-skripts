@@ -42,3 +42,96 @@ teleport:
   tpa-cancel-on-move: 1
   # Cancel teleport if player takes damage during warmup
   tpa-cancel-on-damage: true
+
+# ── Fly System ────────────────────────────────────────────────────────────────
+fly:
+
+  general:
+    timer:
+      # Timer counts down even when flight is toggled off
+      constant: false
+      # Timer pauses when standing on the ground
+      ground: false
+      # Creative mode flight also drains time
+      creative: false
+
+    flight:
+      speed:
+        default: 1.0
+      # Maximum Y level before flight is disabled (-1 = no limit)
+      max-height: -1
+      # Auto re-enable flight when restrictions lift
+      auto-enable: true
+
+    time:
+      # Max time in seconds a player can hold (-1 = no limit)
+      max: -1
+
+    bonus:
+      # Seconds given on first ever join (0 = disabled)
+      first-join: 0
+      # Daily login bonus per permission group
+      # Permission: bob.fly.bonus.<group>
+      daily-login:
+        member: 0
+        vip: 0
+        mvp: 0
+
+    combat:
+      attack-player: true
+      attack-mob: false
+      attacked-by-player: true
+      attacked-by-mob: false
+      # Seconds before flight re-enables after combat
+      pvp-tag: 10
+      pve-tag: 5
+
+    damage:
+      on-command: false
+      out-of-time: true
+      combat: true
+
+    idle:
+      # Seconds before considered idle (-1 = disabled)
+      threshold: 300
+      drop-on-idle: false
+
+  aesthetic:
+    action-bar:
+      enabled: true
+      text: "&6✈ Flight&7: &f{time}"
+      no-time-text: "&6✈ Flight&7: &cNo time remaining"
+
+    warning:
+      enabled: true
+      title: "&cWARNING!"
+      subtitle: "&fYou have &e{time} &fof flight remaining!"
+      thresholds:
+        - 60
+        - 30
+        - 10
+        - 5
+
+  messages:
+    prefix: "&8[&dFly&8] "
+    fly-enabled: "&aFlight enabled!"
+    fly-disabled: "&cFlight disabled!"
+    fly-enabled-other: "&aEnabled flight for &f{player}&a."
+    fly-disabled-other: "&cDisabled flight for &f{player}&c."
+    no-time: "&cYou have no flight time remaining!"
+    time-info: "&fYou have &e{time} &fof flight time."
+    time-given: "&aYou received &e{time} &aof flight time!"
+    time-given-other: "&aGave &f{player} &e{time} &aof flight time."
+    time-set: "&aYour flight time was set to &e{time}&a."
+    time-set-other: "&aSet &f{player}&a's flight time to &e{time}&a."
+    time-removed: "&cYou lost &e{time} &cof flight time."
+    time-removed-other: "&cRemoved &e{time} &cof flight time from &f{player}&c."
+    daily-bonus: "&aYou received your daily flight bonus of &e{time}&a!"
+    first-join: "&aWelcome! You received &e{time} &aof free flight time!"
+    combat-tagged: "&cFlight disabled — you are in combat!"
+    combat-untagged: "&aYou are no longer combat tagged!"
+    out-of-time: "&cYou ran out of flight time!"
+    idle-drop: "&cFlight disabled — you went idle!"
+    no-permission: "&cYou don't have permission to do that."
+    player-not-found: "&cPlayer &f{player} &cnot found."
+    invalid-time: "&c'{time}' is not a valid duration. Use formats like 30m, 2h, 1d."

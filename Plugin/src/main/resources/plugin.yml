@@ -98,6 +98,10 @@ commands:
     description: Toggle vanish.
     usage: /vanish
     permission: bob.vanish
+  fly:
+    description: Toggle tempfly or manage fly time.
+    usage: /fly [time|give|set|remove|perm|bypass] [player] [time]
+    permission: bob.fly
   report:
     description: Report a player.
     usage: /report <player> <reason>
@@ -342,6 +346,24 @@ permissions:
   bob.vanish.see:
     description: Allows the player to see vanished players.
     default: op
+  bob.fly:
+    description: Allows the player to use tempfly.
+    default: false
+  bob.fly.admin:
+    description: Allows managing other players fly time.
+    default: op
+  bob.fly.bypass:
+    description: Allows permanent fly bypass (no time drain).
+    default: op
+  bob.fly.bonus.member:
+    description: Daily fly bonus for members.
+    default: false
+  bob.fly.bonus.vip:
+    description: Daily fly bonus for VIPs.
+    default: false
+  bob.fly.bonus.mvp:
+    description: Daily fly bonus for MVPs.
+    default: false
   bob.report:
     description: Allows the player to report others.
     default: true
@@ -354,6 +376,30 @@ permissions:
   bob.reload:
     description: Allows the player to reload Bobs config and ban files.
     default: op
+  bob.exempt:
+    description: Exempts the player from all punishments.
+    default: false
+  bob.exempt.ban:
+    description: Exempts the player from bans.
+    default: false
+  bob.exempt.tempban:
+    description: Exempts the player from tempbans.
+    default: false
+  bob.exempt.mute:
+    description: Exempts the player from mutes.
+    default: false
+  bob.exempt.tempmute:
+    description: Exempts the player from tempmutes.
+    default: false
+  bob.exempt.kick:
+    description: Exempts the player from kicks.
+    default: false
+  bob.exempt.ipban:
+    description: Exempts the player from IP bans.
+    default: false
+  bob.exempt.iptempban:
+    description: Exempts the player from temporary IP bans.
+    default: false
   bob.tp.self:
     description: Allows the player to teleport themselves.
     default: op

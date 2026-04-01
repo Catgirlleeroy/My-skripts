@@ -5,6 +5,7 @@ C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugi
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\CheckBanCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\CheckIPBanCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\CommandSpyCommand.java
+C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\FlyCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\Gamemodes.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\GlowCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\HealCommand.java
@@ -28,6 +29,7 @@ C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugi
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\BanListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\ChatColorListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\CommandSpyListener.java
+C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\FlyListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\GlowListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\JoinLeaveListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\MuteListener.java
@@ -36,6 +38,9 @@ C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugi
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\VanishListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\Plugin.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\Utils\BanManager.java
+C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\Utils\FlyConfig.java
+C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\Utils\FlyDataManager.java
+C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\Utils\FlyManager.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\Utils\IPBanManager.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\Utils\MuteManager.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\Utils\PlayerCache.java
