@@ -3,6 +3,7 @@ package dev.leeroy.plugin;
 import dev.leeroy.plugin.Utils.AutoMessageManager;
 import dev.leeroy.plugin.Utils.BanManager;
 import dev.leeroy.plugin.Utils.ChatGameManager;
+import dev.leeroy.plugin.Utils.CombatManager;
 import dev.leeroy.plugin.Utils.FlyConfig;
 import dev.leeroy.plugin.Utils.FlyDataManager;
 import dev.leeroy.plugin.Utils.FlyManager;
@@ -16,6 +17,7 @@ import dev.leeroy.plugin.commands.*;
 import dev.leeroy.plugin.listeners.BanListener;
 import dev.leeroy.plugin.listeners.ChatColorListener;
 import dev.leeroy.plugin.listeners.ChatGameListener;
+import dev.leeroy.plugin.listeners.CombatListener;
 import dev.leeroy.plugin.listeners.CommandSpyListener;
 import dev.leeroy.plugin.listeners.FlyListener;
 import dev.leeroy.plugin.listeners.GlowListener;
@@ -40,6 +42,7 @@ public final class Plugin extends JavaPlugin {
     private FlyManager flyManager;
     private AutoMessageManager autoMessageManager;
     private ChatGameManager chatGameManager;
+    private CombatManager combatManager;
 
     @Override
     public void onEnable() {
@@ -58,6 +61,8 @@ public final class Plugin extends JavaPlugin {
         flyManager     = new FlyManager(this, flyDataManager, flyConfig);
         autoMessageManager = new AutoMessageManager(this);
         chatGameManager    = new ChatGameManager(this);
+        combatManager      = new CombatManager(this);
+        flyManager.setCombatManager(combatManager);
 
         // Heal
         getCommand("heal").setExecutor(new HealCommand());
@@ -120,6 +125,11 @@ public final class Plugin extends JavaPlugin {
 
         // Reload
         getCommand("bobreload").setExecutor(new ReloadCommand(this, banManager, ipBanManager, punishConfig, autoMessageManager, chatGameManager));
+
+        // Combat Tag
+        getCommand("setcombat").setExecutor(new CombatCommand(combatManager, true));
+        getCommand("removecombat").setExecutor(new CombatCommand(combatManager, false));
+        getServer().getPluginManager().registerEvents(new CombatListener(combatManager, this), this);
 
         // Chat Game
         getCommand("chatgame").setExecutor(new ChatGameCommand(chatGameManager, this));

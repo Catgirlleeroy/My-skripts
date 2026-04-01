@@ -178,3 +178,32 @@ chat-games:
     - "Dragon"
     - "Phantom"
     - "Piglin"
+
+# ── Combat Tag ────────────────────────────────────────────────────────────────
+combat-tag:
+  enabled: true
+  # Seconds before combat tag expires after last hit
+  duration: 20
+  # Prefix for combat tag messages
+  prefix: "&8[&c&lCombatTag&8] &7"
+  # Commands blocked while in combat (partial match)
+  blocked-commands:
+    - "spawn"
+    - "tpa"
+    - "tpaccept"
+    - "home"
+    - "warp"
+  # WorldGuard regions players cannot enter while in combat
+  blocked-regions:
+    - "spawn"
+    - "safezone"
+  # Whether to broadcast when a player combat-logs
+  broadcast-combatlog: true
+  messages:
+    tagged-attacker: "&c&lCombat Tag! &7You may not use blocked commands! You hit {victim}!"
+    tagged-victim: "&c&lCombat Tag! &7You may not use blocked commands! You were hit by {attacker}!"
+    untagged: "&aYou are out of combat! You may now use all commands."
+    combatlog: "&c{player} &7just combat logged!"
+    blocked-command: "&7You may not execute that command while in combat!"
+    blocked-region: "&7You may not enter that region while in combat!"
+    firework-blocked: "&7You cannot use fireworks while in combat!"

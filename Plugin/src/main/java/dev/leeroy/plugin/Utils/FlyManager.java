@@ -12,11 +12,10 @@ public class FlyManager {
     private final JavaPlugin plugin;
     private final FlyDataManager dataManager;
     private final FlyConfig flyConfig;
+    private CombatManager combatManager; // set after construction to avoid circular dependency
 
     // Players currently flying with tempfly
     private final Set<UUID> activeFlyers = new HashSet<>();
-    // Combat tagged players
-    private final Map<UUID, BukkitTask> combatTags = new HashMap<>();
     // Idle tracking — last moved time
     private final Map<UUID, Long> lastMoved = new HashMap<>();
     // The main timer task
@@ -27,6 +26,10 @@ public class FlyManager {
         this.dataManager = dataManager;
         this.flyConfig   = flyConfig;
         startTimer();
+    }
+
+    public void setCombatManager(CombatManager combatManager) {
+        this.combatManager = combatManager;
     }
 
     // ── Timer ─────────────────────────────────────────────────────────────────
@@ -107,7 +110,8 @@ public class FlyManager {
     // ── Flight control ────────────────────────────────────────────────────────
 
     public boolean enableFly(Player p) {
-        if (isCombatTagged(p.getUniqueId())) {
+        // Use CombatManager if available, else skip check
+        if (combatManager != null && combatManager.isTagged(p.getUniqueId())) {
             p.sendMessage(msg("combat-tagged"));
             return false;
         }
@@ -120,7 +124,6 @@ public class FlyManager {
             return false;
         }
 
-        // Check max height
         int maxHeight = flyConfig.get().getInt("general.flight.max-height", -1);
         if (maxHeight > 0 && p.getLocation().getY() > maxHeight) {
             p.sendMessage(FlyConfig.colorize(flyConfig.get().getString("messages.prefix", "") +
@@ -142,7 +145,6 @@ public class FlyManager {
     public void disableFly(Player p, String reason) {
         activeFlyers.remove(p.getUniqueId());
 
-        // Check fall damage settings
         boolean takeDamage = switch (reason) {
             case "out-of-time" -> flyConfig.get().getBoolean("general.damage.out-of-time", true);
             case "combat"      -> flyConfig.get().getBoolean("general.damage.combat", true);
@@ -167,41 +169,14 @@ public class FlyManager {
         lastMoved.put(uuid, System.currentTimeMillis());
     }
 
-    // ── Combat tag ────────────────────────────────────────────────────────────
+    // ── Combat — delegated to CombatManager ──────────────────────────────────
 
-    public void applyCombatTag(Player p, boolean pvp) {
-        UUID uuid = p.getUniqueId();
-        int tagSeconds = pvp
-                ? flyConfig.get().getInt("general.combat.pvp-tag", 10)
-                : flyConfig.get().getInt("general.combat.pve-tag", 5);
-
-        // Cancel existing tag
-        BukkitTask existing = combatTags.remove(uuid);
-        if (existing != null) existing.cancel();
-
-        // Disable fly if active
-        if (isFlying(uuid)) {
+    /** Called by FlyListener when a player takes damage — disables fly if active */
+    public void onCombat(Player p) {
+        if (isFlying(p.getUniqueId())) {
             disableFly(p, "combat");
             p.sendMessage(msg("combat-tagged"));
         }
-
-        BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            combatTags.remove(uuid);
-            Player online = Bukkit.getPlayer(uuid);
-            if (online != null) {
-                online.sendMessage(msg("combat-untagged"));
-                if (flyConfig.get().getBoolean("general.flight.auto-enable", true)
-                        && dataManager.getTime(uuid) > 0) {
-                    enableFly(online);
-                }
-            }
-        }, tagSeconds * 20L);
-
-        combatTags.put(uuid, task);
-    }
-
-    public boolean isCombatTagged(UUID uuid) {
-        return combatTags.containsKey(uuid);
     }
 
     // ── Action bar ────────────────────────────────────────────────────────────
@@ -267,7 +242,5 @@ public class FlyManager {
     public void cleanup(UUID uuid) {
         activeFlyers.remove(uuid);
         lastMoved.remove(uuid);
-        BukkitTask task = combatTags.remove(uuid);
-        if (task != null) task.cancel();
     }
 }

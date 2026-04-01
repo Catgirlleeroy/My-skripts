@@ -1,4 +1,5 @@
 dev\leeroy\plugin\commands\ReportCommand.class
+dev\leeroy\plugin\commands\CombatCommand.class
 dev\leeroy\plugin\commands\PunishCommand.class
 dev\leeroy\plugin\commands\ChatClearCommand.class
 dev\leeroy\plugin\commands\TPACommand.class
@@ -17,6 +18,7 @@ dev\leeroy\plugin\listeners\FlyListener.class
 dev\leeroy\plugin\Utils\FlyDataManager.class
 dev\leeroy\plugin\commands\ReportsCommand.class
 dev\leeroy\plugin\Utils\FlyManager.class
+dev\leeroy\plugin\Utils\CombatManager.class
 dev\leeroy\plugin\Utils\ReportManager.class
 dev\leeroy\plugin\commands\Gamemodes$1.class
 dev\leeroy\plugin\commands\ChatColorCommand.class
@@ -55,3 +57,4 @@ dev\leeroy\plugin\commands\GlowCommand.class
 dev\leeroy\plugin\commands\TempMuteCommand.class
 dev\leeroy\plugin\listeners\ChatGameListener.class
 dev\leeroy\plugin\Utils\FlyConfig.class
+dev\leeroy\plugin\listeners\CombatListener.class

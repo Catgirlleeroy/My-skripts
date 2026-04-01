@@ -98,10 +98,10 @@ public class FlyListener implements Listener {
         // Player attacks another player
         if (event.getDamager() instanceof Player attacker && event.getEntity() instanceof Player victim) {
             if (flyConfig.get().getBoolean("general.combat.attack-player", true)) {
-                flyManager.applyCombatTag(attacker, true);
+                flyManager.onCombat(attacker);
             }
             if (flyConfig.get().getBoolean("general.combat.attacked-by-player", true)) {
-                flyManager.applyCombatTag(victim, true);
+                flyManager.onCombat(victim);
             }
             return;
         }
@@ -109,14 +109,14 @@ public class FlyListener implements Listener {
         // Player attacks a mob
         if (event.getDamager() instanceof Player attacker) {
             if (flyConfig.get().getBoolean("general.combat.attack-mob", false)) {
-                flyManager.applyCombatTag(attacker, false);
+                flyManager.onCombat(attacker);
             }
         }
 
         // Mob attacks a player
         if (event.getEntity() instanceof Player victim) {
             if (flyConfig.get().getBoolean("general.combat.attacked-by-mob", false)) {
-                flyManager.applyCombatTag(victim, false);
+                flyManager.onCombat(victim);
             }
         }
     }

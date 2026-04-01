@@ -4,6 +4,7 @@ website: bob.org
 version: '1.0'
 main: dev.leeroy.plugin.Plugin
 api-version: '1.21'
+softdepend: [WorldGuard]
 
 commands:
   heal:
@@ -107,6 +108,14 @@ commands:
     usage: /chatgame [now|add|remove|list|help]
     aliases: [cg]
     permission: bob.chatgame
+  setcombat:
+    description: Manually combat tag a player.
+    usage: /setcombat [player]
+    permission: bob.combat.admin
+  removecombat:
+    description: Manually remove a player's combat tag.
+    usage: /removecombat [player]
+    permission: bob.combat.admin
   report:
     description: Report a player.
     usage: /report <player> <reason>
@@ -371,6 +380,9 @@ permissions:
     default: false
   bob.chatgame:
     description: Allows managing the chat reaction game.
+    default: op
+  bob.combat.admin:
+    description: Allows manually setting/removing combat tags.
     default: op
   bob.report:
     description: Allows the player to report others.

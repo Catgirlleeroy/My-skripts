@@ -5,6 +5,7 @@ C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugi
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\ChatMuteCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\CheckBanCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\CheckIPBanCommand.java
+C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\CombatCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\CommandSpyCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\FlyCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\Gamemodes.java
@@ -30,6 +31,7 @@ C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugi
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\BanListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\ChatColorListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\ChatGameListener.java
+C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\CombatListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\CommandSpyListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\FlyListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\GlowListener.java
@@ -42,6 +44,7 @@ C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugi
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\Utils\AutoMessageManager.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\Utils\BanManager.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\Utils\ChatGameManager.java
+C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\Utils\CombatManager.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\Utils\FlyConfig.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\Utils\FlyDataManager.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\Utils\FlyManager.java
