@@ -3,7 +3,9 @@ package dev.leeroy.plugin.listeners;
 import dev.leeroy.plugin.Utils.BanManager;
 import dev.leeroy.plugin.Utils.IPBanManager;
 import dev.leeroy.plugin.Utils.MuteManager;
+import dev.leeroy.plugin.Utils.PlayerCache;
 import dev.leeroy.plugin.Utils.PunishConfig;
+import dev.leeroy.plugin.Utils.WarnManager;
 import dev.leeroy.plugin.gui.PunishGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -29,17 +31,22 @@ public class PunishListener implements Listener {
     private final IPBanManager ipBanManager;
     private final MuteManager muteManager;
     private final PunishConfig punishConfig;
+    private final WarnManager warnManager;
+    private final PlayerCache playerCache;
 
     private final Map<UUID, String> guiState = new HashMap<>();
 
     public PunishListener(JavaPlugin plugin, BanManager banManager,
                           IPBanManager ipBanManager, MuteManager muteManager,
-                          PunishConfig punishConfig) {
+                          PunishConfig punishConfig, WarnManager warnManager,
+                          PlayerCache playerCache) {
         this.plugin       = plugin;
         this.banManager   = banManager;
         this.ipBanManager = ipBanManager;
         this.muteManager  = muteManager;
         this.punishConfig = punishConfig;
+        this.warnManager  = warnManager;
+        this.playerCache  = playerCache;
     }
 
     // ── Sneak + hit ───────────────────────────────────────────────────────────
@@ -182,7 +189,8 @@ public class PunishListener implements Listener {
                 if (target == null) { staff.sendMessage(ChatColor.RED + targetName + " is no longer online."); return; }
                 if (banManager.isBanned(target.getUniqueId())) { staff.sendMessage(ChatColor.RED + targetName + " is already banned."); return; }
                 banManager.ban(target.getUniqueId(), target.getName(), reason, staff.getName());
-                strikeFX(target);
+                target.getWorld().strikeLightningEffect(target.getLocation());
+                org.bukkit.Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f));
                 String kickMsg = PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, null);
                 Bukkit.getScheduler().runTaskLater(plugin, () -> target.kickPlayer(kickMsg), 10L);
                 Bukkit.broadcastMessage(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, null));
@@ -193,7 +201,8 @@ public class PunishListener implements Listener {
                 if (ms == -1) { staff.sendMessage(ChatColor.RED + "Invalid duration."); return; }
                 if (banManager.isBanned(target.getUniqueId())) { staff.sendMessage(ChatColor.RED + targetName + " is already banned."); return; }
                 banManager.tempBan(target.getUniqueId(), target.getName(), reason, staff.getName(), ms);
-                strikeFX(target);
+                target.getWorld().strikeLightningEffect(target.getLocation());
+                org.bukkit.Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f));
                 String remaining = BanManager.formatRemaining(System.currentTimeMillis() + ms);
                 String kickMsg = PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, remaining);
                 Bukkit.getScheduler().runTaskLater(plugin, () -> target.kickPlayer(kickMsg), 10L);
@@ -226,7 +235,8 @@ public class PunishListener implements Listener {
                 String ip = target.getAddress().getAddress().getHostAddress();
                 if (ipBanManager.isBanned(ip)) { staff.sendMessage(ChatColor.RED + targetName + "'s IP is already banned."); return; }
                 ipBanManager.ban(ip, reason, staff.getName());
-                strikeFX(target);
+                target.getWorld().strikeLightningEffect(target.getLocation());
+                org.bukkit.Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f));
                 String kickMsg = PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, null);
                 Bukkit.getScheduler().runTaskLater(plugin, () -> target.kickPlayer(kickMsg), 10L);
                 Bukkit.broadcastMessage(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, null));
@@ -238,11 +248,39 @@ public class PunishListener implements Listener {
                 String ip = target.getAddress().getAddress().getHostAddress();
                 if (ipBanManager.isBanned(ip)) { staff.sendMessage(ChatColor.RED + targetName + "'s IP is already banned."); return; }
                 ipBanManager.tempBan(ip, reason, staff.getName(), ms);
-                strikeFX(target);
+                target.getWorld().strikeLightningEffect(target.getLocation());
+                org.bukkit.Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f));
                 String remaining = BanManager.formatRemaining(System.currentTimeMillis() + ms);
                 String kickMsg = PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, remaining);
                 Bukkit.getScheduler().runTaskLater(plugin, () -> target.kickPlayer(kickMsg), 10L);
                 Bukkit.broadcastMessage(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, duration));
+            }
+            case "warn" -> {
+                int max   = plugin.getConfig().getInt("warn.max-warns", 3);
+                int warns = warnManager.addWarn(resolveUUIDFromName(targetName));
+                if (target != null) target.playSound(target.getLocation(), Sound.ENTITY_WARDEN_SONIC_BOOM, 1.0f, 1.0f);
+                String broadcastKey = "actions.warn.messages." + (reason.isEmpty() ? "broadcast-no-reason" : "broadcast");
+                String msg = PunishGUI.formatMessage(cfg, broadcastKey, targetName, staff.getName(), reason, null)
+                        .replace("{warns}", String.valueOf(warns))
+                        .replace("{max}",   String.valueOf(max));
+                Bukkit.broadcastMessage("");
+                Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&4&l                  WARNING!"));
+                Bukkit.broadcastMessage("");
+                Bukkit.broadcastMessage(msg);
+                Bukkit.broadcastMessage("");
+                // Auto-punish at max
+                if (warns >= max) {
+                    UUID warnUUID = resolveUUIDFromName(targetName);
+                    Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                        if (warnManager.getWarns(warnUUID) >= max) {
+                            String punishCmd = plugin.getConfig()
+                                    .getString("warn.max-warn-punishment", "tempban {player} 1d Too many warnings!")
+                                    .replace("{player}", targetName);
+                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), punishCmd);
+                            if (plugin.getConfig().getBoolean("warn.reset-on-max", true)) warnManager.resetWarns(warnUUID);
+                        }
+                    }, 40L);
+                }
             }
         }
 
@@ -258,7 +296,7 @@ public class PunishListener implements Listener {
      */
     private String resolveActionFromName(String strippedName) {
         YamlConfiguration cfg = punishConfig.get();
-        for (String action : List.of("ban", "tempban", "mute", "tempmute", "kick", "ipban", "tempipban")) {
+        for (String action : List.of("ban", "warn", "tempban", "mute", "tempmute", "kick", "ipban", "tempipban")) {
             String configName = ChatColor.stripColor(
                     PunishGUI.color(cfg.getString("actions." + action + ".name", "")));
             if (configName.equalsIgnoreCase(strippedName)) return action;
@@ -266,10 +304,10 @@ public class PunishListener implements Listener {
         return null;
     }
 
-    private void strikeFX(Player target) {
-        target.getWorld().strikeLightningEffect(target.getLocation());
-        Bukkit.getOnlinePlayers().forEach(p ->
-                p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f)
-        );
+    private UUID resolveUUIDFromName(String name) {
+        Player online = Bukkit.getPlayerExact(name);
+        if (online != null) return online.getUniqueId();
+        return playerCache.getUUID(name);
     }
+
 }

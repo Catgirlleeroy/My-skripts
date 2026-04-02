@@ -87,6 +87,17 @@ commands:
     description: Opens the punishment GUI for a player.
     usage: /punish <player>
     permission: bob.punish
+  warn:
+    description: Warn a player.
+    usage: /warn <player> [reason]
+    permission: bob.warn
+  unwarn:
+    description: Remove a warn from a player.
+    usage: /unwarn <player>
+    permission: bob.warn
+  warns:
+    description: Check a player's warns.
+    usage: /warns [player]
   chatcolor:
     description: Opens the chat color selector GUI.
     usage: /chatcolor
@@ -116,6 +127,13 @@ commands:
     description: Manually remove a player's combat tag.
     usage: /removecombat [player]
     permission: bob.combat.admin
+  daily:
+    description: Claim your daily reward.
+    usage: /daily
+  fixdaily:
+    description: Reset all daily reward cooldowns.
+    usage: /fixdaily
+    permission: bob.daily.admin
   report:
     description: Report a player.
     usage: /report <player> <reason>
@@ -216,9 +234,6 @@ permissions:
   bob.iptempban:
     description: Allows the player to temporarily IP ban others.
     default: op
-  bob.iptempban:
-    description: Allows the player to temporarily IP ban others.
-    default: op
   bob.ipunban:
     description: Allows the player to unban IPs.
     default: op
@@ -248,6 +263,9 @@ permissions:
     default: op
   bob.punish:
     description: Allows the player to use the punishment GUI.
+    default: op
+  bob.warn:
+    description: Allows the player to warn/unwarn others.
     default: op
   bob.chatcolor:
     description: Allows the player to open the chat color GUI.
@@ -383,6 +401,9 @@ permissions:
     default: op
   bob.combat.admin:
     description: Allows manually setting/removing combat tags.
+    default: op
+  bob.daily.admin:
+    description: Allows resetting all daily reward cooldowns.
     default: op
   bob.report:
     description: Allows the player to report others.

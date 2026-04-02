@@ -4,6 +4,7 @@ import dev.leeroy.plugin.Utils.AutoMessageManager;
 import dev.leeroy.plugin.Utils.BanManager;
 import dev.leeroy.plugin.Utils.ChatGameManager;
 import dev.leeroy.plugin.Utils.CombatManager;
+import dev.leeroy.plugin.Utils.DailyRewardManager;
 import dev.leeroy.plugin.Utils.FlyConfig;
 import dev.leeroy.plugin.Utils.FlyDataManager;
 import dev.leeroy.plugin.Utils.FlyManager;
@@ -13,13 +14,16 @@ import dev.leeroy.plugin.Utils.PlayerCache;
 import dev.leeroy.plugin.Utils.PunishConfig;
 import dev.leeroy.plugin.Utils.ReportManager;
 import dev.leeroy.plugin.Utils.VanishManager;
+import dev.leeroy.plugin.Utils.WarnManager;
 import dev.leeroy.plugin.commands.*;
 import dev.leeroy.plugin.listeners.BanListener;
 import dev.leeroy.plugin.listeners.ChatColorListener;
 import dev.leeroy.plugin.listeners.ChatGameListener;
 import dev.leeroy.plugin.listeners.CombatListener;
+import dev.leeroy.plugin.listeners.DailyRewardListener;
 import dev.leeroy.plugin.listeners.CommandSpyListener;
 import dev.leeroy.plugin.listeners.FlyListener;
+import dev.leeroy.plugin.listeners.FullInventoryListener;
 import dev.leeroy.plugin.listeners.GlowListener;
 import dev.leeroy.plugin.listeners.JoinLeaveListener;
 import dev.leeroy.plugin.listeners.MuteListener;
@@ -43,6 +47,8 @@ public final class Plugin extends JavaPlugin {
     private AutoMessageManager autoMessageManager;
     private ChatGameManager chatGameManager;
     private CombatManager combatManager;
+    private DailyRewardManager dailyRewardManager;
+    private WarnManager warnManager;
 
     @Override
     public void onEnable() {
@@ -63,6 +69,8 @@ public final class Plugin extends JavaPlugin {
         chatGameManager    = new ChatGameManager(this);
         combatManager      = new CombatManager(this);
         flyManager.setCombatManager(combatManager);
+        dailyRewardManager = new DailyRewardManager(this);
+        warnManager        = new WarnManager(this);
 
         // Heal
         getCommand("heal").setExecutor(new HealCommand());
@@ -101,7 +109,12 @@ public final class Plugin extends JavaPlugin {
         // Punish GUI
         getCommand("punish").setExecutor(new PunishCommand(this, punishConfig));
         getServer().getPluginManager().registerEvents(
-                new PunishListener(this, banManager, ipBanManager, muteManager, punishConfig), this);
+                new PunishListener(this, banManager, ipBanManager, muteManager, punishConfig, warnManager, playerCache), this);
+
+        // Warn
+        getCommand("warn").setExecutor(new WarnCommand(warnManager, playerCache, this, "warn"));
+        getCommand("unwarn").setExecutor(new WarnCommand(warnManager, playerCache, this, "unwarn"));
+        getCommand("warns").setExecutor(new WarnCommand(warnManager, playerCache, this, "warns"));
 
         // Chat Color
         getCommand("chatcolor").setExecutor(new ChatColorCommand());
@@ -115,7 +128,8 @@ public final class Plugin extends JavaPlugin {
         getCommand("fly").setExecutor(new FlyCommand(flyManager, flyDataManager, flyConfig, playerCache));
         getServer().getPluginManager().registerEvents(new FlyListener(flyManager, flyDataManager, flyConfig), this);
 
-        // Join/Leave messages
+        // Full Inventory Warning
+        getServer().getPluginManager().registerEvents(new FullInventoryListener(this), this);
         getServer().getPluginManager().registerEvents(new JoinLeaveListener(this), this);
         getServer().getPluginManager().registerEvents(new VanishListener(vanishManager), this);
 
@@ -125,6 +139,11 @@ public final class Plugin extends JavaPlugin {
 
         // Reload
         getCommand("bobreload").setExecutor(new ReloadCommand(this, banManager, ipBanManager, punishConfig, autoMessageManager, chatGameManager));
+
+        // Daily Reward
+        getCommand("daily").setExecutor(new DailyRewardCommand(dailyRewardManager, false));
+        getCommand("fixdaily").setExecutor(new DailyRewardCommand(dailyRewardManager, true));
+        getServer().getPluginManager().registerEvents(new DailyRewardListener(dailyRewardManager), this);
 
         // Combat Tag
         getCommand("setcombat").setExecutor(new CombatCommand(combatManager, true));

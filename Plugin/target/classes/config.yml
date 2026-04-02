@@ -207,3 +207,26 @@ combat-tag:
     blocked-command: "&7You may not execute that command while in combat!"
     blocked-region: "&7You may not enter that region while in combat!"
     firework-blocked: "&7You cannot use fireworks while in combat!"
+
+# ── Daily Reward ──────────────────────────────────────────────────────────────
+daily-reward:
+  enabled: true
+  # Hours between claims
+  cooldown-hours: 24
+  # Commands run as console when claimed — {player} = player name
+  rewards:
+    - "excellentcrates key give {player} daily 1"
+  messages:
+    claimed: "&eYou claimed your daily reward!"
+    cooldown: "&4&lYou need to wait &e{time} &4&lbefore claiming again."
+    reset-all: "&aReset all daily rewards."
+
+# ── Full Inventory Warning ─────────────────────────────────────────────────────
+full-inventory-warning:
+  enabled: true
+  # Cooldown in seconds between warnings
+  cooldown: 3
+  # Action bar message
+  message: "&c&lWarning! &7Your inventory is full!"
+  # Sound played with the warning (leave empty to disable)
+  sound: "BLOCK_NOTE_BLOCK_PLING"

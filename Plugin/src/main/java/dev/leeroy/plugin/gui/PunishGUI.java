@@ -25,9 +25,21 @@ public class PunishGUI {
         String rawTitle = config.getString("gui-title", "&8» Punish &c{player} &8«");
         String title = color(rawTitle.replace("{player}", target.getName()));
 
-        Inventory inv = Bukkit.createInventory(null, 36, title);
+        Inventory inv = Bukkit.createInventory(null, 54, title);
 
-        // Player head
+        // ── Border — black glass panes ────────────────────────────────────────
+        ItemStack pane = makeItem(Material.BLACK_STAINED_GLASS_PANE, " ", List.of());
+        int[] borderSlots = {
+                0,1,2,3,4,5,6,7,8,          // top row
+                9,17,                         // sides row 2
+                18,26,                        // sides row 3
+                27,35,                        // sides row 4
+                36,37,38,39,40,41,42,43,44,   // row 5
+                45,46,47,48,49,50,51,52,53    // bottom row
+        };
+        for (int slot : borderSlots) inv.setItem(slot, pane);
+
+        // ── Player head — center top ──────────────────────────────────────────
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta skull = (SkullMeta) head.getItemMeta();
         skull.setOwningPlayer(target);
@@ -36,20 +48,27 @@ public class PunishGUI {
         head.setItemMeta(skull);
         inv.setItem(4, head);
 
-        // Action slots
-        String[] actions  = {"ban", "tempban", "mute", "tempmute", "kick", "ipban", "tempipban"};
-        int[]    slots    = {10, 11, 12, 13, 14, 15, 16};
+        // ── Punishment actions ────────────────────────────────────────────────
+        // Row 1 (slots 10-16): ban, tempban, mute, tempmute, kick, ipban, tempipban
+        // Row 2 (slots 19-19): warn — separated on its own row, left side
+        String[] mainActions = {"ban", "tempban", "mute", "tempmute", "kick", "ipban", "tempipban"};
+        int[]    mainSlots   = {10, 11, 12, 13, 14, 15, 16};
 
-        for (int i = 0; i < actions.length; i++) {
-            String action = actions[i];
+        for (int i = 0; i < mainActions.length; i++) {
+            String action = mainActions[i];
             if (!config.getBoolean("actions." + action + ".enabled", true)) continue;
-            inv.setItem(slots[i], makeActionItem(staff, action, target.getName(), config));
+            inv.setItem(mainSlots[i], makeActionItem(staff, action, target.getName(), config));
         }
 
-        // Close button
+        // Warn — bottom left, separated from main punishments
+        if (config.getBoolean("actions.warn.enabled", true)) {
+            inv.setItem(19, makeActionItem(staff, "warn", target.getName(), config));
+        }
+
+        // ── Close button — bottom right ───────────────────────────────────────
         String closeMat  = config.getString("close-button.item", "DARK_OAK_DOOR");
         String closeName = color(config.getString("close-button.name", "&7Close"));
-        inv.setItem(35, makeItem(parseMaterial(closeMat, Material.DARK_OAK_DOOR), closeName, List.of()));
+        inv.setItem(25, makeItem(parseMaterial(closeMat, Material.DARK_OAK_DOOR), closeName, List.of()));
 
         staff.openInventory(inv);
     }

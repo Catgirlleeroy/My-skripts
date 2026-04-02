@@ -1,6 +1,7 @@
 dev\leeroy\plugin\commands\ReportCommand.class
 dev\leeroy\plugin\commands\CombatCommand.class
 dev\leeroy\plugin\commands\PunishCommand.class
+dev\leeroy\plugin\listeners\FullInventoryListener.class
 dev\leeroy\plugin\commands\ChatClearCommand.class
 dev\leeroy\plugin\commands\TPACommand.class
 dev\leeroy\plugin\commands\VanishCommand.class
@@ -17,6 +18,7 @@ dev\leeroy\plugin\Utils\AutoMessageManager.class
 dev\leeroy\plugin\listeners\FlyListener.class
 dev\leeroy\plugin\Utils\FlyDataManager.class
 dev\leeroy\plugin\commands\ReportsCommand.class
+dev\leeroy\plugin\commands\DailyRewardCommand.class
 dev\leeroy\plugin\Utils\FlyManager.class
 dev\leeroy\plugin\Utils\CombatManager.class
 dev\leeroy\plugin\Utils\ReportManager.class
@@ -24,6 +26,7 @@ dev\leeroy\plugin\commands\Gamemodes$1.class
 dev\leeroy\plugin\commands\ChatColorCommand.class
 dev\leeroy\plugin\Utils\ChatGameManager.class
 dev\leeroy\plugin\commands\MuteCommand.class
+dev\leeroy\plugin\commands\WarnCommand.class
 dev\leeroy\plugin\commands\FlyCommand.class
 dev\leeroy\plugin\commands\CheckBanCommand.class
 dev\leeroy\plugin\Utils\PunishConfig.class
@@ -33,7 +36,9 @@ dev\leeroy\plugin\commands\BanCommand.class
 dev\leeroy\plugin\listeners\PlayerCacheListener.class
 dev\leeroy\plugin\gui\PunishGUI.class
 dev\leeroy\plugin\listeners\ChatColorListener.class
+dev\leeroy\plugin\listeners\DailyRewardListener.class
 dev\leeroy\plugin\commands\IPUnbanCommand.class
+dev\leeroy\plugin\Utils\DailyRewardManager.class
 dev\leeroy\plugin\listeners\JoinLeaveListener.class
 dev\leeroy\plugin\Utils\PlayerCache.class
 dev\leeroy\plugin\commands\HealCommand.class
@@ -46,6 +51,7 @@ dev\leeroy\plugin\commands\Gamemodes.class
 dev\leeroy\plugin\commands\CheckIPBanCommand.class
 dev\leeroy\plugin\commands\IPTempBanCommand.class
 dev\leeroy\plugin\commands\UnbanCommand.class
+dev\leeroy\plugin\Utils\WarnManager.class
 dev\leeroy\plugin\commands\ReloadCommand.class
 dev\leeroy\plugin\commands\TPCommand.class
 dev\leeroy\plugin\listeners\ChatColorListener$1.class
