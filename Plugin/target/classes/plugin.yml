@@ -4,7 +4,7 @@ website: bob.org
 version: '1.0'
 main: dev.leeroy.plugin.Plugin
 api-version: '1.21'
-softdepend: [WorldGuard]
+softdepend: [WorldGuard, LuckPerms]
 
 commands:
   heal:

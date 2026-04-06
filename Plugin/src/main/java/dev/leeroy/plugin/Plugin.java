@@ -16,20 +16,7 @@ import dev.leeroy.plugin.Utils.ReportManager;
 import dev.leeroy.plugin.Utils.VanishManager;
 import dev.leeroy.plugin.Utils.WarnManager;
 import dev.leeroy.plugin.commands.*;
-import dev.leeroy.plugin.listeners.BanListener;
-import dev.leeroy.plugin.listeners.ChatColorListener;
-import dev.leeroy.plugin.listeners.ChatGameListener;
-import dev.leeroy.plugin.listeners.CombatListener;
-import dev.leeroy.plugin.listeners.DailyRewardListener;
-import dev.leeroy.plugin.listeners.CommandSpyListener;
-import dev.leeroy.plugin.listeners.FlyListener;
-import dev.leeroy.plugin.listeners.FullInventoryListener;
-import dev.leeroy.plugin.listeners.GlowListener;
-import dev.leeroy.plugin.listeners.JoinLeaveListener;
-import dev.leeroy.plugin.listeners.MuteListener;
-import dev.leeroy.plugin.listeners.PlayerCacheListener;
-import dev.leeroy.plugin.listeners.PunishListener;
-import dev.leeroy.plugin.listeners.VanishListener;
+import dev.leeroy.plugin.listeners.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Plugin extends JavaPlugin {
@@ -55,16 +42,16 @@ public final class Plugin extends JavaPlugin {
         saveDefaultConfig();
 
         // Systems
-        banManager    = new BanManager(this);
-        ipBanManager  = new IPBanManager(this);
-        muteManager   = new MuteManager(this);
-        playerCache   = new PlayerCache(this);
-        punishConfig  = new PunishConfig(this);
-        vanishManager = new VanishManager();
-        reportManager = new ReportManager(this);
-        flyDataManager = new FlyDataManager(this);
-        flyConfig      = new FlyConfig(this);
-        flyManager     = new FlyManager(this, flyDataManager, flyConfig);
+        banManager         = new BanManager(this);
+        ipBanManager       = new IPBanManager(this);
+        muteManager        = new MuteManager(this);
+        playerCache        = new PlayerCache(this);
+        punishConfig       = new PunishConfig(this);
+        vanishManager      = new VanishManager();
+        reportManager      = new ReportManager(this);
+        flyDataManager     = new FlyDataManager(this);
+        flyConfig          = new FlyConfig(this);
+        flyManager         = new FlyManager(this, flyDataManager, flyConfig);
         autoMessageManager = new AutoMessageManager(this);
         chatGameManager    = new ChatGameManager(this);
         combatManager      = new CombatManager(this);
@@ -75,20 +62,18 @@ public final class Plugin extends JavaPlugin {
         // Heal
         getCommand("heal").setExecutor(new HealCommand());
 
-        // Gamemode
+        // Gamemodes
         Gamemodes gamemodesExecutor = new Gamemodes();
         getCommand("gm0").setExecutor(gamemodesExecutor);
         getCommand("gm1").setExecutor(gamemodesExecutor);
         getCommand("gm2").setExecutor(gamemodesExecutor);
         getCommand("gm3").setExecutor(gamemodesExecutor);
 
-        // Ban
+        // Ban / IP Ban
         getCommand("ban").setExecutor(new BanCommand(banManager, playerCache, this));
         getCommand("tempban").setExecutor(new TempBanCommand(banManager, playerCache, this));
-        getCommand("checkban").setExecutor(new CheckBanCommand(banManager, playerCache));
         getCommand("unban").setExecutor(new UnbanCommand(banManager, playerCache));
-
-        // IP Ban
+        getCommand("checkban").setExecutor(new CheckBanCommand(banManager, playerCache));
         getCommand("ipban").setExecutor(new IPBanCommand(ipBanManager, this));
         getCommand("iptempban").setExecutor(new IPTempBanCommand(ipBanManager, this));
         getCommand("ipunban").setExecutor(new IPUnbanCommand(ipBanManager, playerCache));
@@ -109,7 +94,8 @@ public final class Plugin extends JavaPlugin {
         // Punish GUI
         getCommand("punish").setExecutor(new PunishCommand(this, punishConfig));
         getServer().getPluginManager().registerEvents(
-                new PunishListener(this, banManager, ipBanManager, muteManager, punishConfig, warnManager, playerCache), this);
+                new PunishListener(this, banManager, ipBanManager, muteManager,
+                        punishConfig, warnManager, playerCache), this);
 
         // Warn
         getCommand("warn").setExecutor(new WarnCommand(warnManager, playerCache, this, "warn"));
@@ -120,6 +106,9 @@ public final class Plugin extends JavaPlugin {
         getCommand("chatcolor").setExecutor(new ChatColorCommand());
         getServer().getPluginManager().registerEvents(new ChatColorListener(), this);
 
+        // Chat Format (LuckPerms group prefix)
+        getServer().getPluginManager().registerEvents(new ChatFormatListener(this), this);
+
         // Glow
         getCommand("glow").setExecutor(new GlowCommand());
         getServer().getPluginManager().registerEvents(new GlowListener(this), this);
@@ -128,7 +117,7 @@ public final class Plugin extends JavaPlugin {
         getCommand("fly").setExecutor(new FlyCommand(flyManager, flyDataManager, flyConfig, playerCache));
         getServer().getPluginManager().registerEvents(new FlyListener(flyManager, flyDataManager, flyConfig), this);
 
-        // Full Inventory Warning
+        // Misc listeners
         getServer().getPluginManager().registerEvents(new FullInventoryListener(this), this);
         getServer().getPluginManager().registerEvents(new JoinLeaveListener(this), this);
         getServer().getPluginManager().registerEvents(new VanishListener(vanishManager), this);
@@ -138,7 +127,9 @@ public final class Plugin extends JavaPlugin {
         getCommand("reports").setExecutor(new ReportsCommand(reportManager));
 
         // Reload
-        getCommand("bobreload").setExecutor(new ReloadCommand(this, banManager, ipBanManager, punishConfig, autoMessageManager, chatGameManager));
+        getCommand("bobreload").setExecutor(
+                new ReloadCommand(this, banManager, ipBanManager, punishConfig,
+                        autoMessageManager, chatGameManager));
 
         // Daily Reward
         getCommand("daily").setExecutor(new DailyRewardCommand(dailyRewardManager, false));
@@ -162,7 +153,7 @@ public final class Plugin extends JavaPlugin {
         getCommand("tpdeny").setExecutor(tpaCommand);
         getServer().getPluginManager().registerEvents(tpaCommand, this);
 
-        // Listeners
+        // Core listeners
         getServer().getPluginManager().registerEvents(new BanListener(banManager, ipBanManager, playerCache), this);
         getServer().getPluginManager().registerEvents(new PlayerCacheListener(playerCache), this);
 

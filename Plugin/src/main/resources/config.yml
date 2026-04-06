@@ -1,5 +1,20 @@
 # Bob Plugin Configuration
 
+# =============================================================================
+# CHAT FORMAT
+# Requires LuckPerms. If LuckPerms is not installed, chat appears without prefix.
+#
+# Placeholders:
+#   {prefix}  — the LuckPerms prefix for the player's group (e.g. &4[Owner])
+#   {group}   — the raw primary group name (e.g. owner, member)
+#   {player}  — player display name
+#   {name}    — player username
+#   {message} — the chat message
+# =============================================================================
+chat-format:
+  enabled: true
+  format: "{prefix}&f {player}&7: &f{message}"
+
 # Messages shown to players
 messages:
   ban-broadcast: "&c[BAN] &e{player} &chas been permanently banned! &7Reason: {reason}"
@@ -230,3 +245,20 @@ full-inventory-warning:
   message: "&c&lWarning! &7Your inventory is full!"
   # Sound played with the warning (leave empty to disable)
   sound: "BLOCK_NOTE_BLOCK_PLING"
+
+# ── Warn System ───────────────────────────────────────────────────────────────
+warn:
+  enabled: true
+  # Max warns before auto-punishment
+  max-warns: 3
+  # Command run as console when max warns is reached — {player} = player name
+  max-warn-punishment: "tempban {player} 1d You had too many warnings!"
+  # Reset warns after auto-punishment
+  reset-on-max: true
+  messages:
+    warned-broadcast: "&c{player} &7HAS BEEN &4&lWARNED &r&7BY &c{staff} &7for &r{reason} &8(&4{warns}&8/&4{max}&8)"
+    warned-broadcast-no-reason: "&c{player} &7HAS BEEN &4&lWARNED &r&7BY &c{staff} &8(&4{warns}&8/&4{max}&8)"
+    unwarned-broadcast: "&a{player} &7HAS BEEN &2&lUN-WARNED &r&7BY &a{staff}&r! &8(&2{warns}&8/&2{max}&8)"
+    no-warns: "&4{player} &chas no warns."
+    check-self: "&cYou have &4{warns}&8/&4{max} &cwarns."
+    check-other: "&4{player} &chas &4{warns}&8/&4{max} &cwarns."

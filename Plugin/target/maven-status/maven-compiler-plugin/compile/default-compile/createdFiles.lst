@@ -8,6 +8,7 @@ dev\leeroy\plugin\commands\VanishCommand.class
 dev\leeroy\plugin\commands\TempBanCommand.class
 dev\leeroy\plugin\listeners\GlowListener.class
 dev\leeroy\plugin\commands\UnmuteCommand.class
+dev\leeroy\plugin\listeners\ChatFormatListener.class
 dev\leeroy\plugin\commands\ChatGameCommand.class
 dev\leeroy\plugin\Utils\VanishManager.class
 dev\leeroy\plugin\listeners\GlowListener$1.class
