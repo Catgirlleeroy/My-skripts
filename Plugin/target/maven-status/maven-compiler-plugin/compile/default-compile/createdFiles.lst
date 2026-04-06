@@ -40,7 +40,6 @@ dev\leeroy\plugin\listeners\ChatColorListener.class
 dev\leeroy\plugin\listeners\DailyRewardListener.class
 dev\leeroy\plugin\commands\IPUnbanCommand.class
 dev\leeroy\plugin\Utils\DailyRewardManager.class
-dev\leeroy\plugin\listeners\JoinLeaveListener.class
 dev\leeroy\plugin\Utils\PlayerCache.class
 dev\leeroy\plugin\commands\HealCommand.class
 dev\leeroy\plugin\Utils\MuteManager.class

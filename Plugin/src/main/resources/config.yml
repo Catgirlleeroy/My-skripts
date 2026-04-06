@@ -39,16 +39,6 @@ staff:
   notify-on-join-attempt: true
   log-to-console: true
 
-# Join and leave messages
-# Supports color codes with &
-# Placeholders: {player} = player name
-join-leave:
-  join-message: "&a+ &e{player} &ajoined the server!"
-  leave-message: "&c- &e{player} &cleft the server."
-  # Set to false to disable the message entirely
-  join-enabled: true
-  leave-enabled: true
-
 # Teleport settings
 teleport:
   # Delay in seconds before /tpa teleport happens (0 = instant)

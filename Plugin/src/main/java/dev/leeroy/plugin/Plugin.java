@@ -119,7 +119,6 @@ public final class Plugin extends JavaPlugin {
 
         // Misc listeners
         getServer().getPluginManager().registerEvents(new FullInventoryListener(this), this);
-        getServer().getPluginManager().registerEvents(new JoinLeaveListener(this), this);
         getServer().getPluginManager().registerEvents(new VanishListener(vanishManager), this);
 
         // Report
