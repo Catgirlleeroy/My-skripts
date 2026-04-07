@@ -43,6 +43,7 @@ dev\leeroy\plugin\Utils\DailyRewardManager.class
 dev\leeroy\plugin\Utils\PlayerCache.class
 dev\leeroy\plugin\commands\HealCommand.class
 dev\leeroy\plugin\Utils\MuteManager.class
+dev\leeroy\plugin\listeners\LuckPermsHook.class
 dev\leeroy\plugin\commands\CommandSpyCommand.class
 dev\leeroy\plugin\listeners\CommandSpyListener.class
 dev\leeroy\plugin\listeners\PunishListener.class

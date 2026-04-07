@@ -1,15 +1,11 @@
 package dev.leeroy.plugin.listeners;
 
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.model.user.User;
-import net.luckperms.api.cacheddata.CachedMetaData;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.regex.Matcher;
@@ -17,23 +13,19 @@ import java.util.regex.Pattern;
 
 public class ChatFormatListener implements Listener {
 
-    // Matches &#RRGGBB hex color codes
     private static final Pattern HEX_PATTERN = Pattern.compile("&#([A-Fa-f0-9]{6})");
 
     private final JavaPlugin plugin;
-    private LuckPerms luckPerms;
+    private final boolean luckPermsEnabled;
 
     public ChatFormatListener(JavaPlugin plugin) {
         this.plugin = plugin;
+        this.luckPermsEnabled = plugin.getServer().getPluginManager().getPlugin("LuckPerms") != null;
 
-        RegisteredServiceProvider<LuckPerms> provider =
-                plugin.getServer().getServicesManager().getRegistration(LuckPerms.class);
-
-        if (provider != null) {
-            luckPerms = provider.getProvider();
-            plugin.getLogger().info("[Bob] LuckPerms hooked successfully for chat formatting.");
+        if (luckPermsEnabled) {
+            plugin.getLogger().info("[Bob] LuckPerms found — chat prefixes enabled.");
         } else {
-            plugin.getLogger().warning("[Bob] LuckPerms not found — chat will show without group prefix.");
+            plugin.getLogger().info("[Bob] LuckPerms not found — chat will show without group prefix.");
         }
     }
 
@@ -46,19 +38,15 @@ public class ChatFormatListener implements Listener {
         String prefix    = "";
         String groupName = "";
 
-        if (luckPerms != null) {
-            User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-            if (user != null) {
-                CachedMetaData meta = user.getCachedData().getMetaData();
-                String raw = meta.getPrefix();
-                prefix = raw != null ? colorize(raw) : "";
-                groupName = user.getPrimaryGroup();
-            }
+        // Only call into LuckPerms classes if the plugin is actually loaded
+        if (luckPermsEnabled) {
+            prefix    = LuckPermsHook.getPrefix(player);
+            groupName = LuckPermsHook.getGroup(player);
         }
 
         String format = plugin.getConfig().getString(
                 "chat-format.format",
-                "{prefix} &f{player}&7: &f{message}"
+                "{prefix}&f {player}&7: &f{message}"
         );
 
         format = format
@@ -77,11 +65,7 @@ public class ChatFormatListener implements Listener {
         event.setFormat(format);
     }
 
-    /**
-     * Translates both &#RRGGBB hex codes and legacy &x color codes.
-     */
     private String colorize(String input) {
-        // Step 1: translate &#RRGGBB → BungeeCord ChatColor hex
         Matcher matcher = HEX_PATTERN.matcher(input);
         StringBuffer sb = new StringBuffer();
         while (matcher.find()) {
@@ -89,8 +73,6 @@ public class ChatFormatListener implements Listener {
                     ChatColor.of("#" + matcher.group(1)).toString());
         }
         matcher.appendTail(sb);
-
-        // Step 2: translate legacy &x codes
         return ChatColor.translateAlternateColorCodes('&', sb.toString());
     }
 }
