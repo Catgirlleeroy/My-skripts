@@ -1,5 +1,6 @@
 package dev.leeroy.plugin.listeners;
 
+import dev.leeroy.plugin.Utils.BobHooks;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,17 +17,9 @@ public class ChatFormatListener implements Listener {
     private static final Pattern HEX_PATTERN = Pattern.compile("&#([A-Fa-f0-9]{6})");
 
     private final JavaPlugin plugin;
-    private final boolean luckPermsEnabled;
 
     public ChatFormatListener(JavaPlugin plugin) {
         this.plugin = plugin;
-        this.luckPermsEnabled = plugin.getServer().getPluginManager().getPlugin("LuckPerms") != null;
-
-        if (luckPermsEnabled) {
-            plugin.getLogger().info("[Bob] LuckPerms found — chat prefixes enabled.");
-        } else {
-            plugin.getLogger().info("[Bob] LuckPerms not found — chat will show without group prefix.");
-        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -38,8 +31,7 @@ public class ChatFormatListener implements Listener {
         String prefix    = "";
         String groupName = "";
 
-        // Only call into LuckPerms classes if the plugin is actually loaded
-        if (luckPermsEnabled) {
+        if (BobHooks.hasLuckPerms()) {
             prefix    = LuckPermsHook.getPrefix(player);
             groupName = LuckPermsHook.getGroup(player);
         }

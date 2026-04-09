@@ -1,6 +1,7 @@
 package dev.leeroy.plugin;
 
 import dev.leeroy.plugin.Utils.AutoMessageManager;
+import dev.leeroy.plugin.Utils.BobHooks;
 import dev.leeroy.plugin.Utils.BanManager;
 import dev.leeroy.plugin.Utils.ChatGameManager;
 import dev.leeroy.plugin.Utils.CombatManager;
@@ -40,6 +41,20 @@ public final class Plugin extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
+
+        // Startup banner
+        String version = getDescription().getVersion();
+        getLogger().info(" ");
+        getLogger().info(" ██████╗  ██████╗ ██████╗ ");
+        getLogger().info(" ██╔══██╗██╔═══██╗██╔══██╗");
+        getLogger().info(" ██████╔╝██║   ██║██████╔╝");
+        getLogger().info(" ██╔══██╗██║   ██║██╔══██╗");
+        getLogger().info(" ██████╔╝╚██████╔╝██████╔╝");
+        getLogger().info(" ╚═════╝  ╚═════╝ ╚═════╝  v" + version);
+        getLogger().info(" ");
+
+        // Check and log all soft-dependent plugins
+        BobHooks.init(this);
 
         // Systems
         banManager         = new BanManager(this);

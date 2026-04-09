@@ -1,5 +1,6 @@
 package dev.leeroy.plugin.listeners;
 
+import dev.leeroy.plugin.Utils.BobHooks;
 import dev.leeroy.plugin.Utils.CombatManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -122,7 +123,7 @@ public class CombatListener implements Listener {
                 && event.getFrom().getBlockY() == event.getTo().getBlockY()
                 && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) return;
 
-        if (Bukkit.getPluginManager().getPlugin("WorldGuard") == null) return;
+        if (!BobHooks.hasWorldGuard()) return;
 
         List<String> blockedRegions = plugin.getConfig().getStringList("combat-tag.blocked-regions");
         if (blockedRegions.isEmpty()) return;

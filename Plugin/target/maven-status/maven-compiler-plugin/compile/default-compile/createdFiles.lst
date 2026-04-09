@@ -35,6 +35,7 @@ dev\leeroy\plugin\Utils\PlayerHealer.class
 dev\leeroy\plugin\listeners\MuteListener.class
 dev\leeroy\plugin\commands\BanCommand.class
 dev\leeroy\plugin\listeners\PlayerCacheListener.class
+dev\leeroy\plugin\Utils\BobHooks.class
 dev\leeroy\plugin\gui\PunishGUI.class
 dev\leeroy\plugin\listeners\ChatColorListener.class
 dev\leeroy\plugin\listeners\DailyRewardListener.class

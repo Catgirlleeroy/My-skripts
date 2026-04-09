@@ -1,7 +1,7 @@
 name: Bob
 author: Bob
 website: bob.org
-version: '1.0'
+version: '1.1'
 main: dev.leeroy.plugin.Plugin
 api-version: '1.21'
 softdepend: [WorldGuard, LuckPerms]
