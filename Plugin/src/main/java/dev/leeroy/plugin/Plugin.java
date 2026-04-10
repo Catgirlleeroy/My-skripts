@@ -178,5 +178,6 @@ public final class Plugin extends JavaPlugin {
     }
 
     @Override
-    public void onDisable() {}
-}
+    public void onDisable() {
+        playerCache.saveNow();
+    }}
