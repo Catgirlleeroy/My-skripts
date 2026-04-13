@@ -72,8 +72,8 @@
             <url>https://maven.enginehub.org/repo/</url>
         </repository>
         <repository>
-            <id>luckperms-repo</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <id>jitpack</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
@@ -90,11 +90,11 @@
             <version>7.0.11</version>
             <scope>provided</scope>
         </dependency>
-        <!-- LuckPerms API — provided by the server, NOT shaded -->
+        <!-- Vault API — provided by the server, NOT shaded -->
         <dependency>
-            <groupId>net.luckperms</groupId>
-            <artifactId>api</artifactId>
-            <version>5.4</version>
+            <groupId>com.github.MilkBowl</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.7</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

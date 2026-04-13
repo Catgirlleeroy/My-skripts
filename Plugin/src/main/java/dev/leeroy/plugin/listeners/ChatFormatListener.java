@@ -31,9 +31,9 @@ public class ChatFormatListener implements Listener {
         String prefix    = "";
         String groupName = "";
 
-        if (BobHooks.hasLuckPerms()) {
-            prefix    = LuckPermsHook.getPrefix(player);
-            groupName = LuckPermsHook.getGroup(player);
+        if (BobHooks.hasVault()) {
+            prefix    = VaultHook.getPrefix(player);
+            groupName = VaultHook.getGroup(player);
         }
 
         String format = plugin.getConfig().getString(
