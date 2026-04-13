@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -18,6 +19,10 @@ public class BanListener implements Listener {
     private final BanManager banManager;
     private final IPBanManager ipBanManager;
     private final PlayerCache playerCache;
+
+    // Cooldown in milliseconds between ban attempt notifications per player
+    private static final long NOTIFY_COOLDOWN_MS = 10_000L; // 10 seconds
+    private final Map<UUID, Long> lastNotified = new HashMap<>();
 
     public BanListener(BanManager banManager, IPBanManager ipBanManager, PlayerCache playerCache) {
         this.banManager  = banManager;
@@ -104,6 +109,13 @@ public class BanListener implements Listener {
 
     private void notifyStaff(String playerName, String ip, String banType,
                              String type, String reason, String bannedBy, long expiry) {
+
+        // Throttle — only notify once per 10 seconds per player to prevent spam
+        // when a client auto-reconnects rapidly
+        UUID key = UUID.nameUUIDFromBytes(playerName.getBytes());
+        long now = System.currentTimeMillis();
+        if (lastNotified.containsKey(key) && now - lastNotified.get(key) < NOTIFY_COOLDOWN_MS) return;
+        lastNotified.put(key, now);
         String header =
                 ChatColor.RED + "[" + banType + "] " +
                         ChatColor.YELLOW + playerName +
