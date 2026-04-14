@@ -1,23 +1,11 @@
 package dev.leeroy.plugin;
 
-import dev.leeroy.plugin.Utils.AutoMessageManager;
-import dev.leeroy.plugin.Utils.BobHooks;
-import dev.leeroy.plugin.Utils.BanManager;
-import dev.leeroy.plugin.Utils.ChatGameManager;
-import dev.leeroy.plugin.Utils.CombatManager;
-import dev.leeroy.plugin.Utils.DailyRewardManager;
-import dev.leeroy.plugin.Utils.FlyConfig;
-import dev.leeroy.plugin.Utils.FlyDataManager;
-import dev.leeroy.plugin.Utils.FlyManager;
-import dev.leeroy.plugin.Utils.IPBanManager;
-import dev.leeroy.plugin.Utils.MuteManager;
-import dev.leeroy.plugin.Utils.PlayerCache;
-import dev.leeroy.plugin.Utils.PunishConfig;
-import dev.leeroy.plugin.Utils.ReportManager;
-import dev.leeroy.plugin.Utils.VanishManager;
-import dev.leeroy.plugin.Utils.WarnManager;
+import dev.leeroy.plugin.Utils.*;
+import dev.leeroy.plugin.Utils.punishment.*;
 import dev.leeroy.plugin.commands.*;
+import dev.leeroy.plugin.commands.punishment.*;
 import dev.leeroy.plugin.listeners.*;
+import dev.leeroy.plugin.listeners.punishment.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Plugin extends JavaPlugin {

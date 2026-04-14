@@ -1,10 +1,10 @@
 package dev.leeroy.plugin.commands;
 
 import dev.leeroy.plugin.Utils.AutoMessageManager;
-import dev.leeroy.plugin.Utils.BanManager;
 import dev.leeroy.plugin.Utils.ChatGameManager;
-import dev.leeroy.plugin.Utils.IPBanManager;
-import dev.leeroy.plugin.Utils.PunishConfig;
+import dev.leeroy.plugin.Utils.punishment.BanManager;
+import dev.leeroy.plugin.Utils.punishment.IPBanManager;
+import dev.leeroy.plugin.Utils.punishment.PunishConfig;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

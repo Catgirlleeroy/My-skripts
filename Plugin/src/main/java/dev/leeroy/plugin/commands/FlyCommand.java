@@ -1,6 +1,6 @@
 package dev.leeroy.plugin.commands;
 
-import dev.leeroy.plugin.Utils.BanManager;
+import dev.leeroy.plugin.Utils.punishment.BanManager;
 import dev.leeroy.plugin.Utils.FlyConfig;
 import dev.leeroy.plugin.Utils.FlyDataManager;
 import dev.leeroy.plugin.Utils.FlyManager;
