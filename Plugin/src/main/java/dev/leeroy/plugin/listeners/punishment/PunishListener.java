@@ -1,6 +1,6 @@
 package dev.leeroy.plugin.listeners.punishment;
 
-import dev.leeroy.plugin.Utils.PlayerCache;
+import dev.leeroy.plugin.Utils.misc.PlayerCache;
 import dev.leeroy.plugin.Utils.punishment.BanManager;
 import dev.leeroy.plugin.Utils.punishment.IPBanManager;
 import dev.leeroy.plugin.Utils.punishment.MuteManager;

@@ -1,10 +1,16 @@
 package dev.leeroy.plugin;
 
-import dev.leeroy.plugin.Utils.*;
+import dev.leeroy.plugin.Utils.chat.*;
+import dev.leeroy.plugin.Utils.combat.*;
+import dev.leeroy.plugin.Utils.misc.*;
 import dev.leeroy.plugin.Utils.punishment.*;
-import dev.leeroy.plugin.commands.*;
+import dev.leeroy.plugin.commands.chat.*;
+import dev.leeroy.plugin.commands.combat.*;
+import dev.leeroy.plugin.commands.misc.*;
 import dev.leeroy.plugin.commands.punishment.*;
-import dev.leeroy.plugin.listeners.*;
+import dev.leeroy.plugin.listeners.chat.*;
+import dev.leeroy.plugin.listeners.combat.*;
+import dev.leeroy.plugin.listeners.misc.*;
 import dev.leeroy.plugin.listeners.punishment.*;
 import org.bukkit.plugin.java.JavaPlugin;
 

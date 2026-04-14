@@ -1,7 +1,7 @@
 package dev.leeroy.plugin.commands.punishment;
 
 import dev.leeroy.plugin.Utils.punishment.MuteManager;
-import dev.leeroy.plugin.Utils.PlayerCache;
+import dev.leeroy.plugin.Utils.misc.PlayerCache;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

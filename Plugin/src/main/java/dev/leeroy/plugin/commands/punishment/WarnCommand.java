@@ -1,6 +1,6 @@
 package dev.leeroy.plugin.commands.punishment;
 
-import dev.leeroy.plugin.Utils.PlayerCache;
+import dev.leeroy.plugin.Utils.misc.PlayerCache;
 import dev.leeroy.plugin.Utils.punishment.WarnManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
