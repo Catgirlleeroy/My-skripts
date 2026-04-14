@@ -56,7 +56,7 @@ public final class Plugin extends JavaPlugin {
         muteManager        = new MuteManager(this);
         playerCache        = new PlayerCache(this);
         punishConfig       = new PunishConfig(this);
-        vanishManager      = new VanishManager();
+        vanishManager      = new VanishManager(this);
         reportManager      = new ReportManager(this);
         flyDataManager     = new FlyDataManager(this);
         flyConfig          = new FlyConfig(this);
@@ -128,7 +128,8 @@ public final class Plugin extends JavaPlugin {
 
         // Misc listeners
         getServer().getPluginManager().registerEvents(new FullInventoryListener(this), this);
-        getServer().getPluginManager().registerEvents(new VanishListener(vanishManager), this);
+        getServer().getPluginManager().registerEvents(new VanishListener(vanishManager, this), this);
+        getCommand("vanish").setExecutor(new VanishCommand(vanishManager));
 
         // Report
         getCommand("report").setExecutor(new ReportCommand(reportManager, vanishManager));

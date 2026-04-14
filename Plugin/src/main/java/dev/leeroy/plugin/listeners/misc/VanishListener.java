@@ -7,13 +7,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class VanishListener implements Listener {
 
     private final VanishManager vanishManager;
+    private final JavaPlugin plugin;
 
-    public VanishListener(VanishManager vanishManager) {
+    public VanishListener(VanishManager vanishManager, JavaPlugin plugin) {
         this.vanishManager = vanishManager;
+        this.plugin = plugin;
     }
 
     @EventHandler
@@ -27,7 +30,7 @@ public class VanishListener implements Listener {
         if (player.hasPermission("bob.vanish.see")) {
             for (Player online : player.getServer().getOnlinePlayers()) {
                 if (vanishManager.isVanished(online.getUniqueId())) {
-                    player.showPlayer(online);
+                    player.showPlayer(plugin, online);
                 }
             }
         }

@@ -13,6 +13,7 @@ public class BobHooks {
     private static boolean vault          = false;
     private static boolean worldGuard     = false;
     private static boolean placeholderAPI = false;
+    private static boolean tab            = false;
 
     public static void init(JavaPlugin plugin) {
         // Vault
@@ -38,9 +39,18 @@ public class BobHooks {
         } else {
             plugin.getLogger().info("PlaceholderAPI not found ❌ — PAPI placeholders disabled.");
         }
+
+        // TAB
+        if (plugin.getServer().getPluginManager().getPlugin("TAB") != null) {
+            tab = true;
+            plugin.getLogger().info("Hooked into TAB ✅");
+        } else {
+            plugin.getLogger().info("TAB not found ❌ — tab list vanish integration disabled.");
+        }
     }
 
     public static boolean hasVault()          { return vault; }
     public static boolean hasWorldGuard()     { return worldGuard; }
     public static boolean hasPlaceholderAPI() { return placeholderAPI; }
+    public static boolean hasTab()            { return tab; }
 }

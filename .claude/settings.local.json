@@ -1,2 +1,20 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(sed -i 's/import dev\\\\.leeroy\\\\.plugin\\\\.Utils\\\\.ChatGameManager;/import dev.leeroy.plugin.Utils.chat.ChatGameManager;/' commands/chat/ChatGameCommand.java)",
+      "Bash(sed -i 's/import dev\\\\.leeroy\\\\.plugin\\\\.Utils\\\\.CombatManager;/import dev.leeroy.plugin.Utils.combat.CombatManager;/' commands/combat/CombatCommand.java)",
+      "Bash(sed -i 's/import dev\\\\.leeroy\\\\.plugin\\\\.listeners\\\\.CommandSpyListener;/import dev.leeroy.plugin.listeners.misc.CommandSpyListener;/' commands/misc/CommandSpyCommand.java)",
+      "Bash(sed -i 's/import dev\\\\.leeroy\\\\.plugin\\\\.Utils\\\\.DailyRewardManager;/import dev.leeroy.plugin.Utils.misc.DailyRewardManager;/' commands/misc/DailyRewardCommand.java)",
+      "Bash(sed -i -e 's/import dev\\\\.leeroy\\\\.plugin\\\\.Utils\\\\.FlyConfig;/import dev.leeroy.plugin.Utils.misc.FlyConfig;/' -e 's/import dev\\\\.leeroy\\\\.plugin\\\\.Utils\\\\.FlyDataManager;/import dev.leeroy.plugin.Utils.misc.FlyDataManager;/' -e 's/import dev\\\\.leeroy\\\\.plugin\\\\.Utils\\\\.FlyManager;/import dev.leeroy.plugin.Utils.misc.FlyManager;/' -e 's/import dev\\\\.leeroy\\\\.plugin\\\\.Utils\\\\.PlayerCache;/import dev.leeroy.plugin.Utils.misc.PlayerCache;/' commands/misc/FlyCommand.java)",
+      "Bash(sed -i 's/import dev\\\\.leeroy\\\\.plugin\\\\.commands\\\\.ChatColorCommand;/import dev.leeroy.plugin.commands.chat.ChatColorCommand;/' listeners/chat/ChatColorListener.java)",
+      "Bash(sed -i 's/import dev\\\\.leeroy\\\\.plugin\\\\.Utils\\\\.BobHooks;/import dev.leeroy.plugin.Utils.misc.BobHooks;/' listeners/chat/ChatFormatListener.java)",
+      "Bash(sed -i 's/import dev\\\\.leeroy\\\\.plugin\\\\.Utils\\\\.ChatGameManager;/import dev.leeroy.plugin.Utils.chat.ChatGameManager;/' listeners/chat/ChatGameListener.java)",
+      "Bash(sed -i -e 's/import dev\\\\.leeroy\\\\.plugin\\\\.Utils\\\\.BobHooks;/import dev.leeroy.plugin.Utils.misc.BobHooks;/' -e 's/import dev\\\\.leeroy\\\\.plugin\\\\.Utils\\\\.CombatManager;/import dev.leeroy.plugin.Utils.combat.CombatManager;/' listeners/combat/CombatListener.java)",
+      "Bash(sed -i 's/import dev\\\\.leeroy\\\\.plugin\\\\.Utils\\\\.DailyRewardManager;/import dev.leeroy.plugin.Utils.misc.DailyRewardManager;/' listeners/misc/DailyRewardListener.java)",
+      "Bash(rm commands/ChatClearCommand.java commands/ChatColorCommand.java commands/ChatGameCommand.java commands/ChatMuteCommand.java commands/CombatCommand.java commands/CommandSpyCommand.java commands/DailyRewardCommand.java commands/FlyCommand.java commands/Gamemodes.java commands/GlowCommand.java commands/HealCommand.java commands/ReloadCommand.java commands/ReportCommand.java commands/ReportsCommand.java commands/TPACommand.java commands/TPCommand.java commands/VanishCommand.java)",
+      "Bash(rm listeners/ChatColorListener.java listeners/ChatFormatListener.java listeners/ChatGameListener.java listeners/CombatListener.java listeners/CommandSpyListener.java listeners/DailyRewardListener.java listeners/FlyListener.java listeners/FullInventoryListener.java listeners/GlowListener.java listeners/PlayerCacheListener.java listeners/VanishListener.java listeners/VaultHook.java)",
+      "Bash(rm Utils/AutoMessageManager.java Utils/BobHooks.java Utils/ChatGameManager.java Utils/CombatManager.java Utils/DailyRewardManager.java Utils/FlyConfig.java Utils/FlyDataManager.java Utils/FlyManager.java Utils/PlayerCache.java Utils/PlayerHealer.java Utils/ReportManager.java Utils/VanishManager.java)",
+      "WebSearch"
+    ]
+  }
 }
