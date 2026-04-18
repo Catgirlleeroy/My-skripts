@@ -1,7 +1,7 @@
 package dev.leeroy.plugin.Utils.chat;
 
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -60,10 +60,10 @@ public class ChatGameManager {
         activeWord  = words.get(new Random().nextInt(words.size()));
         startTimeMs = System.currentTimeMillis();
 
-        String prefix  = color(cfg.getString("chat-games.announce-prefix", ""));
-        String startMsg = color(cfg.getString("chat-games.messages.start",
+        String prefix  = cfg.getString("chat-games.announce-prefix", "");
+        String startMsg = cfg.getString("chat-games.messages.start",
                         "&7&l| &cA chat game has started! Type &4{word} &cto gain rewards!")
-                .replace("{word}", activeWord));
+                .replace("{word}", activeWord);
 
         broadcast(prefix, startMsg);
         playStartSound();
@@ -73,9 +73,9 @@ public class ChatGameManager {
         final String word = activeWord;
         timeoutTask = Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (activeWord != null && activeWord.equals(word)) {
-                String timeoutMsg = color(cfg.getString("chat-games.messages.timeout",
+                String timeoutMsg = cfg.getString("chat-games.messages.timeout",
                                 "&7&l| &fNo one was able to answer &4{word} &fin 40 seconds!")
-                        .replace("{word}", word));
+                        .replace("{word}", word);
                 broadcast(prefix, timeoutMsg);
                 playTimeoutSound();
                 activeWord = null;
@@ -85,41 +85,39 @@ public class ChatGameManager {
 
     // ── Chat check ────────────────────────────────────────────────────────────
 
-    /**
-     * Called from the chat listener. Returns true if the message matches
-     * the active word and the game should be cancelled.
-     */
-    public boolean handleChat(Player player, String message) {
-        if (activeWord == null) return false;
-        if (!message.trim().equalsIgnoreCase(activeWord.trim())) return false;
+    /** Thread-safe check: does the message match the active word? */
+    public boolean isCorrectAnswer(String message) {
+        return activeWord != null && message.trim().equalsIgnoreCase(activeWord.trim());
+    }
+
+    /** Called on the main thread after a correct answer is confirmed. */
+    public void handleWin(Player player, String message) {
+        if (activeWord == null) return;
+        if (!message.trim().equalsIgnoreCase(activeWord.trim())) return;
 
         FileConfiguration cfg = plugin.getConfig();
-
-        // Calculate time taken
         long elapsed = System.currentTimeMillis() - startTimeMs;
         String timeTaken = formatElapsed(elapsed);
 
-        String prefix  = color(cfg.getString("chat-games.announce-prefix", ""));
-        String winMsg  = color(cfg.getString("chat-games.messages.win",
+        String prefix = cfg.getString("chat-games.announce-prefix", "");
+        String winMsg = cfg.getString("chat-games.messages.win",
                         "&7&l| &4{player} &chas gotten &4{word} &cin &4{time}&c!")
                 .replace("{player}", player.getName())
                 .replace("{word}",   activeWord)
-                .replace("{time}",   timeTaken));
+                .replace("{time}",   timeTaken);
 
         broadcast(prefix, winMsg);
         playStartSound();
 
-        // Run rewards
         List<String> rewards = cfg.getStringList("chat-games.rewards");
         for (String cmd : rewards) {
-            String finalCmd = cmd.replace("{player}", player.getName());
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCmd);
+            if (player.getName().matches("[a-zA-Z0-9_]{1,16}")) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{player}", player.getName()));
+            }
         }
 
-        // Clean up
         if (timeoutTask != null) timeoutTask.cancel();
         activeWord = null;
-        return true;
     }
 
     public boolean isActive() { return activeWord != null; }
@@ -127,11 +125,11 @@ public class ChatGameManager {
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private void broadcast(String prefix, String message) {
-        Bukkit.broadcastMessage("");
-        if (!prefix.isEmpty()) Bukkit.broadcastMessage(prefix);
-        Bukkit.broadcastMessage("");
-        Bukkit.broadcastMessage(message);
-        Bukkit.broadcastMessage("");
+        TextUtil.broadcast("");
+        if (!prefix.isEmpty()) TextUtil.broadcast(prefix);
+        TextUtil.broadcast("");
+        TextUtil.broadcast(message);
+        TextUtil.broadcast("");
     }
 
     private void playStartSound() {
@@ -149,10 +147,6 @@ public class ChatGameManager {
                             p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_XYLOPHONE, 1.0f, pitch)
                     ), i * 5L);
         }
-    }
-
-    private String color(String s) {
-        return ChatColor.translateAlternateColorCodes('&', s);
     }
 
     private String formatElapsed(long ms) {

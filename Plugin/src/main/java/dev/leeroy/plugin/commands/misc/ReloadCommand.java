@@ -5,16 +5,17 @@ import dev.leeroy.plugin.Utils.chat.ChatGameManager;
 import dev.leeroy.plugin.Utils.punishment.BanManager;
 import dev.leeroy.plugin.Utils.punishment.IPBanManager;
 import dev.leeroy.plugin.Utils.punishment.PunishConfig;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReloadCommand implements CommandExecutor {
+public class ReloadCommand implements BasicCommand {
 
     private final JavaPlugin plugin;
     private final BanManager banManager;
@@ -35,41 +36,36 @@ public class ReloadCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
 
         if (!sender.hasPermission("bob.reload")) {
-            sender.sendMessage(ChatColor.RED + "You don't have permission to reload Bob.");
-            return true;
+            sender.sendMessage(Component.text("You don't have permission to reload Bob.", NamedTextColor.RED));
+            return;
         }
 
         List<String> failed = new ArrayList<>();
 
-        attempt(sender, failed, "config",           () -> plugin.reloadConfig());
-        attempt(sender, failed, "ban data",         () -> banManager.reload());
-        attempt(sender, failed, "ip-ban data",      () -> ipBanManager.reload());
-        attempt(sender, failed, "punish.yml",       () -> punishConfig.reload());
-        attempt(sender, failed, "auto-messages",    () -> autoMessageManager.restart());
-        attempt(sender, failed, "chat-games",       () -> chatGameManager.restart());
+        attempt(failed, "config",        () -> plugin.reloadConfig());
+        attempt(failed, "ban data",      () -> banManager.reload());
+        attempt(failed, "ip-ban data",   () -> ipBanManager.reload());
+        attempt(failed, "punish.yml",    () -> punishConfig.reload());
+        attempt(failed, "auto-messages", () -> autoMessageManager.restart());
+        attempt(failed, "chat-games",    () -> chatGameManager.restart());
 
         if (failed.isEmpty()) {
-            sender.sendMessage(ChatColor.GREEN + "✔ Bob reloaded successfully — all components OK.");
+            sender.sendMessage(Component.text("✔ Bob reloaded successfully — all components OK.", NamedTextColor.GREEN));
             plugin.getLogger().info("Bob reloaded by " + sender.getName() + " — all OK.");
         } else {
-            sender.sendMessage(ChatColor.YELLOW + "⚠ Bob reloaded with " + failed.size() + " error(s):");
+            sender.sendMessage(Component.text("⚠ Bob reloaded with " + failed.size() + " error(s):", NamedTextColor.YELLOW));
             for (String f : failed) {
-                sender.sendMessage(ChatColor.RED + "  ✘ " + f + " failed — check console for details.");
+                sender.sendMessage(Component.text("  ✘ " + f + " failed — check console for details.", NamedTextColor.RED));
             }
-            sender.sendMessage(ChatColor.YELLOW + "Everything else reloaded fine.");
+            sender.sendMessage(Component.text("Everything else reloaded fine.", NamedTextColor.YELLOW));
         }
-
-        return true;
     }
 
-    /**
-     * Runs a reload task, catches any exception, logs it to console,
-     * and adds the component name to the failed list if it threw.
-     */
-    private void attempt(CommandSender sender, List<String> failed, String name, Runnable task) {
+    private void attempt(List<String> failed, String name, Runnable task) {
         try {
             task.run();
         } catch (Exception e) {

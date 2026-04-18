@@ -1,10 +1,12 @@
 package dev.leeroy.plugin.commands.misc;
 
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -16,27 +18,26 @@ import org.bukkit.scoreboard.Team;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GlowCommand implements CommandExecutor {
+public class GlowCommand implements BasicCommand {
 
     public static final String GUI_TITLE = ChatColor.DARK_GRAY + "» Glow Color «";
-
-    // Team name prefix — kept short to avoid scoreboard name limits
     public static final String TEAM_PREFIX = "bob_glow_";
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
+
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ChatColor.RED + "Only players can use this command.");
-            return true;
+            sender.sendMessage(Component.text("Only players can use this command.", NamedTextColor.RED));
+            return;
         }
 
         if (!player.hasPermission("bob.glow")) {
-            player.sendMessage(ChatColor.RED + "You don't have permission to use glow.");
-            return true;
+            player.sendMessage(Component.text("You don't have permission to use glow.", NamedTextColor.RED));
+            return;
         }
 
         openGUI(player);
-        return true;
     }
 
     public static void openGUI(Player player) {
@@ -57,14 +58,12 @@ public class GlowCommand implements CommandExecutor {
         addSlot(inv, player, 15, Material.LIGHT_GRAY_WOOL,  ChatColor.DARK_GRAY    + "Dark Gray",    "dark_gray");
         addSlot(inv, player, 16, Material.BLACK_WOOL,       ChatColor.BLACK        + "Black",        "black");
 
-        // Rainbow
         addSlot(inv, player, 22, Material.DIAMOND,
                 "" + ChatColor.RED + "R" + ChatColor.GOLD + "a" + ChatColor.YELLOW + "i"
                         + ChatColor.GREEN + "n" + ChatColor.AQUA + "b" + ChatColor.BLUE + "o"
                         + ChatColor.LIGHT_PURPLE + "w",
                 "rainbow");
 
-        // Reset/disable glow
         addSlot(inv, player, 31, Material.BARRIER, ChatColor.RED + "Disable Glow", "reset");
 
         player.openInventory(inv);
@@ -90,12 +89,6 @@ public class GlowCommand implements CommandExecutor {
         inv.setItem(slot, item);
     }
 
-    // ── Scoreboard team helpers ───────────────────────────────────────────────
-
-    /**
-     * Applies a glow color to a player using a scoreboard team.
-     * ChatColor must be a color (not a format).
-     */
     public static void applyGlow(Player player, ChatColor color) {
         Scoreboard board = getOrCreateBoard();
         String teamName = TEAM_PREFIX + color.name().toLowerCase();
@@ -106,7 +99,6 @@ public class GlowCommand implements CommandExecutor {
             team.setColor(color);
         }
 
-        // Remove from any existing glow team first
         removeFromAllGlowTeams(board, player);
 
         team.addEntry(player.getName());
@@ -129,7 +121,6 @@ public class GlowCommand implements CommandExecutor {
     }
 
     private static Scoreboard getOrCreateBoard() {
-        // Use the main scoreboard so it's shared across all players
         return Bukkit.getScoreboardManager().getMainScoreboard();
     }
 }

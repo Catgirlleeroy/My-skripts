@@ -1,4 +1,5 @@
 dev\leeroy\plugin\commands\misc\ReloadCommand.class
+dev\leeroy\plugin\Utils\misc\TextUtil.class
 dev\leeroy\plugin\listeners\misc\PlayerCacheListener.class
 dev\leeroy\plugin\listeners\chat\ChatFormatListener.class
 dev\leeroy\plugin\commands\chat\ChatClearCommand.class
@@ -6,6 +7,7 @@ dev\leeroy\plugin\listeners\misc\FlyListener.class
 dev\leeroy\plugin\Utils\punishment\WarnManager.class
 dev\leeroy\plugin\Utils\misc\VanishManager.class
 dev\leeroy\plugin\commands\punishment\UnmuteCommand.class
+dev\leeroy\plugin\Utils\misc\TabUtil.class
 dev\leeroy\plugin\commands\punishment\PunishCommand.class
 dev\leeroy\plugin\Utils\misc\DailyRewardManager.class
 dev\leeroy\plugin\commands\misc\GlowCommand.class

@@ -1,7 +1,8 @@
 package dev.leeroy.plugin.Utils.combat;
 
+import dev.leeroy.plugin.Utils.misc.TextUtil;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -13,15 +14,11 @@ import java.util.UUID;
 public class CombatManager {
 
     private final JavaPlugin plugin;
-
-    // UUID -> scheduled untag task
     private final Map<UUID, BukkitTask> combatTasks = new HashMap<>();
 
     public CombatManager(JavaPlugin plugin) {
         this.plugin = plugin;
     }
-
-    // ── Tag ───────────────────────────────────────────────────────────────────
 
     public void tag(Player player) {
         if (!plugin.getConfig().getBoolean("combat-tag.enabled", true)) return;
@@ -29,7 +26,6 @@ public class CombatManager {
         UUID uuid = player.getUniqueId();
         int duration = plugin.getConfig().getInt("combat-tag.duration", 20);
 
-        // Cancel existing task and reschedule
         BukkitTask existing = combatTasks.remove(uuid);
         if (existing != null) existing.cancel();
 
@@ -53,16 +49,9 @@ public class CombatManager {
         return combatTasks.containsKey(uuid);
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
-    public String msg(String key) {
+    public Component msg(String key) {
         String prefix = plugin.getConfig().getString("combat-tag.prefix", "&8[&c&lCombatTag&8] &7");
         String raw    = plugin.getConfig().getString("combat-tag.messages." + key, "&cMissing: " + key);
-        return ChatColor.translateAlternateColorCodes('&', prefix + raw);
-    }
-
-    public String msgRaw(String key) {
-        String raw = plugin.getConfig().getString("combat-tag.messages." + key, "&cMissing: " + key);
-        return ChatColor.translateAlternateColorCodes('&', raw);
+        return TextUtil.parse(prefix + raw);
     }
 }

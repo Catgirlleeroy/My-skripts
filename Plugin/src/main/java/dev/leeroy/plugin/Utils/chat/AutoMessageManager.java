@@ -1,7 +1,7 @@
 package dev.leeroy.plugin.Utils.chat;
 
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -14,7 +14,6 @@ public class AutoMessageManager {
 
     private final JavaPlugin plugin;
     private BukkitTask task;
-    private int currentIndex = 0;
 
     public AutoMessageManager(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -27,7 +26,6 @@ public class AutoMessageManager {
         if (!config.getBoolean("auto-messages.enabled", true)) return;
 
         List<String> messages = config.getStringList("auto-messages.messages");
-
         if (messages.isEmpty()) return;
 
         int cooldown = config.getInt("auto-messages.cooldown", 300);
@@ -38,24 +36,20 @@ public class AutoMessageManager {
             List<String> msgs = cfg.getStringList("auto-messages.messages");
             if (msgs.isEmpty()) return;
 
-            // Pick a random non-empty message
             List<String> valid = msgs.stream()
                     .filter(m -> !m.trim().isEmpty())
                     .toList();
             if (valid.isEmpty()) return;
 
-            String msg = valid.get(new Random().nextInt(valid.size()));
-            String prefix = ChatColor.translateAlternateColorCodes('&', cfg.getString("auto-messages.prefix", ""));
-            String formatted = ChatColor.translateAlternateColorCodes('&', msg);
+            String msg    = valid.get(new Random().nextInt(valid.size()));
+            String prefix = cfg.getString("auto-messages.prefix", "");
 
-            // Broadcast with border
-            if (!prefix.isEmpty()) Bukkit.broadcastMessage(prefix);
-            Bukkit.broadcastMessage("");
-            Bukkit.broadcastMessage(formatted);
-            Bukkit.broadcastMessage("");
-            if (!prefix.isEmpty()) Bukkit.broadcastMessage(prefix);
+            if (!prefix.isEmpty()) Bukkit.broadcast(TextUtil.parse(prefix));
+            Bukkit.broadcast(TextUtil.parse(""));
+            Bukkit.broadcast(TextUtil.parse(msg));
+            Bukkit.broadcast(TextUtil.parse(""));
+            if (!prefix.isEmpty()) Bukkit.broadcast(TextUtil.parse(prefix));
 
-            // Play sound
             String soundName = cfg.getString("auto-messages.sound", "");
             if (!soundName.isEmpty()) {
                 try {
@@ -71,7 +65,6 @@ public class AutoMessageManager {
         }, ticks, ticks);
     }
 
-    /** Stops and restarts the task — call this after /bobreload */
     public void restart() {
         if (task != null) task.cancel();
         start();

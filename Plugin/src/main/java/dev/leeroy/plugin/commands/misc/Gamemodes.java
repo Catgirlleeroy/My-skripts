@@ -1,89 +1,71 @@
 package dev.leeroy.plugin.commands.misc;
 
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class Gamemodes implements CommandExecutor {
+public class Gamemodes implements BasicCommand {
+
+    private final GameMode mode;
+    private final String cmdLabel;
+
+    public Gamemodes(GameMode mode, String cmdLabel) {
+        this.mode     = mode;
+        this.cmdLabel = cmdLabel;
+    }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
 
-        // Resolve the target gamemode from the command label (gm0/gm1/gm2/gm3)
-        GameMode targetMode = resolveGameMode(label);
-        if (targetMode == null) {
-            sender.sendMessage(ChatColor.RED + "Unknown gamemode command.");
-            return true;
-        }
-
-        // No arguments — change own gamemode
         if (args.length == 0) {
-            if (!(sender instanceof Player)) {
-                sender.sendMessage(ChatColor.RED + "Console must specify a player: /" + label + " <player>");
-                return true;
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage(Component.text("Console must specify a player: /" + cmdLabel + " <player>", NamedTextColor.RED));
+                return;
             }
 
-            Player player = (Player) sender;
-            String selfPerm = "bob.gamemode.self." + targetMode.name().toLowerCase();
+            String selfPerm = "bob.gamemode.self." + mode.name().toLowerCase();
 
             if (!player.hasPermission(selfPerm) && !player.hasPermission("bob.gamemode.self")) {
-                player.sendMessage(ChatColor.RED + "You don't have permission to change your gamemode to " + formatGameMode(targetMode) + ".");
-                return true;
+                player.sendMessage(Component.text("You don't have permission to change your gamemode to " + formatGameMode(mode) + ".", NamedTextColor.RED));
+                return;
             }
 
-            player.setGameMode(targetMode);
-            player.sendMessage(ChatColor.GREEN + "Your gamemode has been set to " + formatGameMode(targetMode) + ".");
-            return true;
+            player.setGameMode(mode);
+            player.sendMessage(Component.text("Your gamemode has been set to " + formatGameMode(mode) + ".", NamedTextColor.GREEN));
+            return;
         }
 
-        // One argument — change another player's gamemode
         if (args.length == 1) {
-            String othersPerm = "bob.gamemode.others." + targetMode.name().toLowerCase();
+            String othersPerm = "bob.gamemode.others." + mode.name().toLowerCase();
 
             if (!sender.hasPermission(othersPerm) && !sender.hasPermission("bob.gamemode.others")) {
-                sender.sendMessage(ChatColor.RED + "You don't have permission to change other players' gamemode to " + formatGameMode(targetMode) + ".");
-                return true;
+                sender.sendMessage(Component.text("You don't have permission to change other players' gamemode to " + formatGameMode(mode) + ".", NamedTextColor.RED));
+                return;
             }
 
             Player target = Bukkit.getPlayerExact(args[0]);
             if (target == null) {
-                sender.sendMessage(ChatColor.RED + "Player '" + args[0] + "' not found or is offline.");
-                return true;
+                sender.sendMessage(Component.text("Player '" + args[0] + "' not found or is offline.", NamedTextColor.RED));
+                return;
             }
 
-            target.setGameMode(targetMode);
-            target.sendMessage(ChatColor.GREEN + "Your gamemode has been set to "
-                    + formatGameMode(targetMode) + " by " + sender.getName() + ".");
-            sender.sendMessage(ChatColor.GREEN + "Set " + target.getName()
-                    + "'s gamemode to " + formatGameMode(targetMode) + ".");
-            return true;
+            target.setGameMode(mode);
+            target.sendMessage(Component.text("Your gamemode has been set to " + formatGameMode(mode) + " by " + sender.getName() + ".", NamedTextColor.GREEN));
+            sender.sendMessage(Component.text("Set " + target.getName() + "'s gamemode to " + formatGameMode(mode) + ".", NamedTextColor.GREEN));
+            return;
         }
 
-        sender.sendMessage(ChatColor.YELLOW + "Usage: /" + label + " [player]");
-        return true;
+        sender.sendMessage(Component.text("Usage: /" + cmdLabel + " [player]", NamedTextColor.YELLOW));
     }
 
-    /**
-     * Maps a command label to its corresponding GameMode.
-     * Supports both short aliases (gm0–gm3) and the base "gamemode" command with a numeric arg.
-     */
-    private GameMode resolveGameMode(String label) {
-        return switch (label.toLowerCase()) {
-            case "gm0" -> GameMode.SURVIVAL;
-            case "gm1" -> GameMode.CREATIVE;
-            case "gm2" -> GameMode.ADVENTURE;
-            case "gm3" -> GameMode.SPECTATOR;
-            default -> null;
-        };
-    }
-
-    /** Returns a nicely formatted gamemode name. */
-    private String formatGameMode(GameMode mode) {
-        return switch (mode) {
+    private String formatGameMode(GameMode gm) {
+        return switch (gm) {
             case SURVIVAL  -> "Survival";
             case CREATIVE  -> "Creative";
             case ADVENTURE -> "Adventure";

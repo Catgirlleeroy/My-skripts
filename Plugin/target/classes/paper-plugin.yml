@@ -1,174 +1,25 @@
 name: Bob
-author: Bob
+authors:
+  - Your mom lol
 website: bob.org
-version: '1.1.001-DEV'
+version: '1.2'
 main: dev.leeroy.plugin.Plugin
 api-version: '1.21'
-softdepend: [WorldGuard, Vault, TAB]
 
-commands:
-  heal:
-    description: Heals a player to full HP, hunger, and saturation.
-    usage: /heal [player]
-    permission: bob.heal
-  gm0:
-    description: Sets gamemode to Survival.
-    usage: /gm0 [player]
-    permission: bob.gamemode.self
-  gm1:
-    description: Sets gamemode to Creative.
-    usage: /gm1 [player]
-    permission: bob.gamemode.self
-  gm2:
-    description: Sets gamemode to Adventure.
-    usage: /gm2 [player]
-    permission: bob.gamemode.self
-  gm3:
-    description: Sets gamemode to Spectator.
-    usage: /gm3 [player]
-    permission: bob.gamemode.self
-  ban:
-    description: Permanently bans a player.
-    usage: /ban <player> [reason]
-    permission: bob.ban
-  tempban:
-    description: Temporarily bans a player.
-    usage: /tempban <player> <duration> [reason]
-    permission: bob.tempban
-  checkban:
-    description: Checks the ban status of a player.
-    usage: /checkban <player|uuid>
-    permission: bob.checkban
-  unban:
-    description: Unbans a player.
-    usage: /unban <player|uuid>
-    permission: bob.unban
-  ipban:
-    description: Permanently IP bans a player.
-    usage: /ipban <player> [reason]
-    permission: bob.ipban
-  iptempban:
-    description: Temporarily IP bans a player.
-    usage: /iptempban <player> <duration> [reason]
-    permission: bob.iptempban
-  ipunban:
-    description: Unbans an IP.
-    usage: /ipunban <player|uuid|ip>
-    permission: bob.ipunban
-  checkipban:
-    description: Checks the IP ban status of a player or IP.
-    usage: /checkipban <player|ip>
-    permission: bob.checkipban
-  mute:
-    description: Permanently mutes a player.
-    usage: /mute <player> [reason]
-    permission: bob.mute
-  tempmute:
-    description: Temporarily mutes a player.
-    usage: /tempmute <player> <duration> [reason]
-    permission: bob.tempmute
-  unmute:
-    description: Unmutes a player.
-    usage: /unmute <player|uuid>
-    permission: bob.unmute
-  chatmute:
-    description: Toggles server-wide chat mute.
-    usage: /chatmute
-    permission: bob.chatmute
-  chatclear:
-    description: Clears chat for all players.
-    usage: /chatclear
-    permission: bob.chatclear
-  kick:
-    description: Kicks a player from the server.
-    usage: /kick <player> [reason]
-    permission: bob.kick
-  punish:
-    description: Opens the punishment GUI for a player.
-    usage: /punish <player>
-    permission: bob.punish
-  warn:
-    description: Warn a player.
-    usage: /warn <player> [reason]
-    permission: bob.warn
-  unwarn:
-    description: Remove a warn from a player.
-    usage: /unwarn <player>
-    permission: bob.warn
-  warns:
-    description: Check a player's warns.
-    usage: /warns [player]
-  chatcolor:
-    description: Opens the chat color selector GUI.
-    usage: /chatcolor
-    permission: bob.chatcolor
-  glow:
-    description: Opens the glow color selector GUI.
-    usage: /glow
-    permission: bob.glow
-  vanish:
-    description: Toggle vanish.
-    usage: /vanish
-    permission: bob.vanish
-  fly:
-    description: Toggle tempfly or manage fly time.
-    usage: /fly [time|give|set|remove|perm|bypass] [player] [time]
-    permission: bob.fly
-  chatgame:
-    description: Manage the chat reaction game.
-    usage: /chatgame [now|add|remove|list|help]
-    aliases: [cg]
-    permission: bob.chatgame
-  setcombat:
-    description: Manually combat tag a player.
-    usage: /setcombat [player]
-    permission: bob.combat.admin
-  removecombat:
-    description: Manually remove a player's combat tag.
-    usage: /removecombat [player]
-    permission: bob.combat.admin
-  daily:
-    description: Claim your daily reward.
-    usage: /daily
-  fixdaily:
-    description: Reset all daily reward cooldowns.
-    usage: /fixdaily
-    permission: bob.daily.admin
-  report:
-    description: Report a player.
-    usage: /report <player> <reason>
-    permission: bob.report
-  reports:
-    description: View and manage reports.
-    usage: /reports [delete <id>]
-    permission: bob.reports
-  commandspy:
-    description: Toggles CommandSpy.
-    usage: /commandspy
-    permission: bob.commandspy
-  bobreload:
-    description: Reloads config files from disk.
-    usage: /bobreload
-    permission: bob.reload
-  tp:
-    description: Teleport to a player or coordinates.
-    usage: /tp <player> | /tp <x> <y> <z> | /tp <player1> <player2>
-    permission: bob.tp.self
-  tphere:
-    description: Teleport a player to you.
-    usage: /tphere <player>
-    permission: bob.tp.here
-  tpa:
-    description: Send a teleport request to a player.
-    usage: /tpa <player>
-    permission: bob.tpa
-  tpaccept:
-    description: Accept a pending teleport request.
-    usage: /tpaccept
-    permission: bob.tpa
-  tpdeny:
-    description: Deny a pending teleport request.
-    usage: /tpdeny
+dependencies:
+  server:
+    WorldGuard:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    Vault:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    TAB:
+      load: BEFORE
+      required: false
+      join-classpath: true
 
 permissions:
   bob.staff:

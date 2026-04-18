@@ -1,6 +1,5 @@
 package dev.leeroy.plugin.Utils.misc;
 
-import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class FlyConfig {
@@ -15,13 +14,15 @@ public class FlyConfig {
         return plugin.getConfig().getConfigurationSection("fly");
     }
 
+    /** Returns the raw & color-coded message (prefix + body). Pass to TextUtil.parse(). */
     public String msg(String path) {
         String prefix = plugin.getConfig().getString("fly.messages.prefix", "&8[&dFly&8] ");
         String raw    = plugin.getConfig().getString("fly.messages." + path, "&cMissing: " + path);
-        return colorize(prefix + raw);
+        return prefix + raw;
     }
 
-    public static String colorize(String s) {
-        return ChatColor.translateAlternateColorCodes('&', s);
+    /** Returns just the raw & color-coded prefix string. */
+    public String prefix() {
+        return plugin.getConfig().getString("fly.messages.prefix", "&8[&dFly&8] ");
     }
 }

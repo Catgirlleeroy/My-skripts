@@ -1,13 +1,15 @@
 package dev.leeroy.plugin.listeners.punishment;
 
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.punishment.BanManager;
 import dev.leeroy.plugin.Utils.punishment.MuteManager;
-import org.bukkit.ChatColor;
+import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.Map;
 
@@ -30,10 +32,10 @@ public class MuteListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void onChat(AsyncPlayerChatEvent event) {
+    public void onChat(AsyncChatEvent event) {
         // Server-wide chat mute — bypass for players with permission
         if (chatMuted && !event.getPlayer().hasPermission("bob.chatmute.bypass")) {
-            event.getPlayer().sendMessage(ChatColor.RED + "Chat is currently muted.");
+            event.getPlayer().sendMessage(Component.text("Chat is currently muted.", NamedTextColor.RED));
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_ANVIL_LAND, 1.0f, 2.0f);
             event.setCancelled(true);
             return;
@@ -47,13 +49,11 @@ public class MuteListener implements Listener {
                 String reason = (String) details.get("reason");
                 long   expiry = (long)   details.get("expiry");
 
-                StringBuilder msg = new StringBuilder();
-                msg.append(ChatColor.RED).append("You are muted. Reason: ").append(reason);
+                StringBuilder msg = new StringBuilder("&cYou are muted. Reason: " + reason);
                 if (type.equals("temp") && expiry != -1L) {
-                    msg.append(ChatColor.RED).append(" | Expires in: ")
-                            .append(ChatColor.WHITE).append(BanManager.formatRemaining(expiry));
+                    msg.append(" &c| Expires in: &f").append(BanManager.formatRemaining(expiry));
                 }
-                event.getPlayer().sendMessage(msg.toString());
+                event.getPlayer().sendMessage(TextUtil.parse(msg.toString()));
                 event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_ANVIL_LAND, 1.0f, 2.0f);
             }
             event.setCancelled(true);

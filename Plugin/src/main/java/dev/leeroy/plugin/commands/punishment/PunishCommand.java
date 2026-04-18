@@ -1,54 +1,68 @@
 package dev.leeroy.plugin.commands.punishment;
 
+import dev.leeroy.plugin.Utils.misc.TabUtil;
+import dev.leeroy.plugin.Utils.misc.VanishManager;
 import dev.leeroy.plugin.Utils.punishment.PunishConfig;
 import dev.leeroy.plugin.gui.PunishGUI;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class PunishCommand implements CommandExecutor {
+import java.util.Collection;
+
+public class PunishCommand implements BasicCommand {
 
     private final JavaPlugin plugin;
     private final PunishConfig punishConfig;
+    private final VanishManager vanishManager;
 
-    public PunishCommand(JavaPlugin plugin, PunishConfig punishConfig) {
-        this.plugin = plugin;
-        this.punishConfig = punishConfig;
+    public PunishCommand(JavaPlugin plugin, PunishConfig punishConfig, VanishManager vanishManager) {
+        this.plugin        = plugin;
+        this.punishConfig  = punishConfig;
+        this.vanishManager = vanishManager;
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public Collection<String> suggest(CommandSourceStack stack, String[] args) {
+        if (args.length == 1) return TabUtil.onlinePlayers(stack, args[0], vanishManager);
+        return java.util.Collections.emptyList();
+    }
+
+    @Override
+    public void execute(CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
+
         if (!(sender instanceof Player staff)) {
-            sender.sendMessage(ChatColor.RED + "Only players can use this command.");
-            return true;
+            sender.sendMessage(Component.text("Only players can use this command.", NamedTextColor.RED));
+            return;
         }
 
         if (!staff.hasPermission("bob.punish")) {
-            staff.sendMessage(ChatColor.RED + "You don't have permission to punish players.");
-            return true;
+            staff.sendMessage(Component.text("You don't have permission to punish players.", NamedTextColor.RED));
+            return;
         }
 
         if (args.length < 1) {
-            staff.sendMessage(ChatColor.YELLOW + "Usage: /punish <player>");
-            return true;
+            staff.sendMessage(Component.text("Usage: /punish <player>", NamedTextColor.YELLOW));
+            return;
         }
 
         Player target = Bukkit.getPlayerExact(args[0]);
         if (target == null) {
-            staff.sendMessage(ChatColor.RED + "Player '" + args[0] + "' not found or is offline.");
-            return true;
+            staff.sendMessage(Component.text("Player '" + args[0] + "' not found or is offline.", NamedTextColor.RED));
+            return;
         }
 
         if (target.equals(staff)) {
-            staff.sendMessage(ChatColor.RED + "You cannot punish yourself.");
-            return true;
+            staff.sendMessage(Component.text("You cannot punish yourself.", NamedTextColor.RED));
+            return;
         }
 
         PunishGUI.openActionGUI(staff, target, punishConfig.get());
-        return true;
     }
 }

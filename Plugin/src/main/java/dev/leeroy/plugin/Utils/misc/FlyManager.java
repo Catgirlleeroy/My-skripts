@@ -1,11 +1,15 @@
 package dev.leeroy.plugin.Utils.misc;
 
 import dev.leeroy.plugin.Utils.combat.CombatManager;
+import dev.leeroy.plugin.Utils.misc.TextUtil;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.time.Duration;
 import java.util.*;
 
 public class FlyManager {
@@ -79,7 +83,7 @@ public class FlyManager {
                 long time = dataManager.getTime(uuid);
                 if (time <= 0) {
                     disableFly(p, "out-of-time");
-                    p.sendMessage(msg("out-of-time"));
+                    p.sendMessage(TextUtil.parse(msg("out-of-time")));
                     continue;
                 }
 
@@ -113,7 +117,7 @@ public class FlyManager {
     public boolean enableFly(Player p) {
         // Use CombatManager if available, else skip check
         if (combatManager != null && combatManager.isTagged(p.getUniqueId())) {
-            p.sendMessage(msg("combat-tagged"));
+            p.sendMessage(TextUtil.parse(msg("combat-tagged")));
             return false;
         }
 
@@ -127,8 +131,7 @@ public class FlyManager {
 
         int maxHeight = flyConfig.get().getInt("general.flight.max-height", -1);
         if (maxHeight > 0 && p.getLocation().getY() > maxHeight) {
-            p.sendMessage(FlyConfig.colorize(flyConfig.get().getString("messages.prefix", "") +
-                    "&cYou cannot fly above Y " + maxHeight + "!"));
+            p.sendMessage(TextUtil.parse(flyConfig.prefix() + "&cYou cannot fly above Y " + maxHeight + "!"));
             return false;
         }
 
@@ -176,7 +179,7 @@ public class FlyManager {
     public void onCombat(Player p) {
         if (isFlying(p.getUniqueId())) {
             disableFly(p, "combat");
-            p.sendMessage(msg("combat-tagged"));
+            p.sendMessage(TextUtil.parse(msg("combat-tagged")));
         }
     }
 
@@ -191,33 +194,35 @@ public class FlyManager {
 
         String text;
         if (permanent) {
-            text = FlyConfig.colorize(flyConfig.get().getString("aesthetic.action-bar.text", "&6✈ Flight&7: &f{time}")
-                    .replace("{time}", "&a∞ Permanent"));
+            text = flyConfig.get().getString("aesthetic.action-bar.text", "&6✈ Flight&7: &f{time}")
+                    .replace("{time}", "&a∞ Permanent");
         } else if (time <= 0) {
-            text = FlyConfig.colorize(flyConfig.get().getString("aesthetic.action-bar.no-time-text",
-                    "&6✈ Flight&7: &cNo time remaining"));
+            text = flyConfig.get().getString("aesthetic.action-bar.no-time-text",
+                    "&6✈ Flight&7: &cNo time remaining");
         } else {
-            text = FlyConfig.colorize(flyConfig.get().getString("aesthetic.action-bar.text", "&6✈ Flight&7: &f{time}")
-                    .replace("{time}", formatTime(time)));
+            text = flyConfig.get().getString("aesthetic.action-bar.text", "&6✈ Flight&7: &f{time}")
+                    .replace("{time}", formatTime(time));
         }
 
-        p.spigot().sendMessage(net.md_5.bungee.api.ChatMessageType.ACTION_BAR,
-                net.md_5.bungee.api.chat.TextComponent.fromLegacyText(text));
+        p.sendActionBar(TextUtil.parse(text));
     }
 
     public void clearActionBar(Player p) {
-        p.spigot().sendMessage(net.md_5.bungee.api.ChatMessageType.ACTION_BAR,
-                net.md_5.bungee.api.chat.TextComponent.fromLegacyText(""));
+        p.sendActionBar(Component.empty());
     }
 
     // ── Warning subtitle ──────────────────────────────────────────────────────
 
     private void sendWarning(Player p, long remaining) {
-        String title    = FlyConfig.colorize(flyConfig.get().getString("aesthetic.warning.title", "&cWARNING!"));
-        String subtitle = FlyConfig.colorize(flyConfig.get().getString("aesthetic.warning.subtitle",
+        String titleStr    = flyConfig.get().getString("aesthetic.warning.title", "&cWARNING!");
+        String subtitleStr = flyConfig.get().getString("aesthetic.warning.subtitle",
                         "&fYou have &e{time} &fof flight remaining!")
-                .replace("{time}", formatTime(remaining)));
-        p.sendTitle(title, subtitle, 5, 40, 10);
+                .replace("{time}", formatTime(remaining));
+        p.showTitle(Title.title(
+                TextUtil.parse(titleStr),
+                TextUtil.parse(subtitleStr),
+                Title.Times.times(Duration.ofMillis(250), Duration.ofMillis(2000), Duration.ofMillis(500))
+        ));
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

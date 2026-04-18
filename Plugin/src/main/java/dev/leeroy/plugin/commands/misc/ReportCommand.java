@@ -1,21 +1,22 @@
 package dev.leeroy.plugin.commands.misc;
 
 import dev.leeroy.plugin.Utils.misc.ReportManager;
+import dev.leeroy.plugin.Utils.misc.TabUtil;
 import dev.leeroy.plugin.Utils.misc.VanishManager;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Collection;
 
-public class ReportCommand implements CommandExecutor {
+public class ReportCommand implements BasicCommand {
 
     private final ReportManager reportManager;
     private final VanishManager vanishManager;
@@ -26,20 +27,28 @@ public class ReportCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public Collection<String> suggest(CommandSourceStack stack, String[] args) {
+        if (args.length == 1) return TabUtil.onlinePlayers(stack, args[0], vanishManager);
+        return java.util.Collections.emptyList();
+    }
+
+    @Override
+    public void execute(CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
+
         if (!(sender instanceof Player reporter)) {
-            sender.sendMessage(ChatColor.RED + "Only players can use this command.");
-            return true;
+            sender.sendMessage(Component.text("Only players can use this command.", NamedTextColor.RED));
+            return;
         }
 
         if (!reporter.hasPermission("bob.report")) {
-            reporter.sendMessage(ChatColor.RED + "You don't have permission to report players.");
-            return true;
+            reporter.sendMessage(Component.text("You don't have permission to report players.", NamedTextColor.RED));
+            return;
         }
 
         if (args.length < 2) {
-            reporter.sendMessage(ChatColor.YELLOW + "Usage: /report <player> <reason>");
-            return true;
+            reporter.sendMessage(Component.text("Usage: /report <player> <reason>", NamedTextColor.YELLOW));
+            return;
         }
 
         String targetName = args[0];
@@ -47,70 +56,52 @@ public class ReportCommand implements CommandExecutor {
 
         Player target = Bukkit.getPlayerExact(targetName);
         if (target == null) {
-            reporter.sendMessage(ChatColor.RED + "Player '" + targetName + "' not found or is offline.");
-            return true;
+            reporter.sendMessage(Component.text("Player '" + targetName + "' not found or is offline.", NamedTextColor.RED));
+            return;
         }
 
         if (target.equals(reporter)) {
-            reporter.sendMessage(ChatColor.RED + "You cannot report yourself.");
-            return true;
+            reporter.sendMessage(Component.text("You cannot report yourself.", NamedTextColor.RED));
+            return;
         }
 
         String id = reportManager.addReport(reporter.getName(), target.getName(), reason);
 
-        reporter.sendMessage(ChatColor.GREEN + "✦ Your report against " + ChatColor.YELLOW + target.getName() + ChatColor.GREEN + " has been submitted.");
+        reporter.sendMessage(Component.text("✦ Your report against ", NamedTextColor.GREEN)
+                .append(Component.text(target.getName(), NamedTextColor.YELLOW))
+                .append(Component.text(" has been submitted.", NamedTextColor.GREEN)));
 
-        // Notify all online staff with bob.reports permission
         for (Player staff : Bukkit.getOnlinePlayers()) {
             if (!staff.hasPermission("bob.reports")) continue;
 
-            // Header
-            staff.sendMessage(ChatColor.RED + "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-            staff.sendMessage(ChatColor.YELLOW + "[REPORT] " + ChatColor.WHITE + reporter.getName()
-                    + ChatColor.GRAY + " reported " + ChatColor.RED + target.getName());
-            staff.sendMessage(ChatColor.GRAY + "Reason: " + ChatColor.WHITE + reason);
-            staff.sendMessage(ChatColor.GRAY + "Report ID: " + ChatColor.DARK_GRAY + id);
+            staff.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.RED));
+            staff.sendMessage(Component.text("[REPORT] ", NamedTextColor.YELLOW)
+                    .append(Component.text(reporter.getName(), NamedTextColor.WHITE))
+                    .append(Component.text(" reported ", NamedTextColor.GRAY))
+                    .append(Component.text(target.getName(), NamedTextColor.RED)));
+            staff.sendMessage(Component.text("Reason: ", NamedTextColor.GRAY)
+                    .append(Component.text(reason, NamedTextColor.WHITE)));
+            staff.sendMessage(Component.text("Report ID: ", NamedTextColor.GRAY)
+                    .append(Component.text(id, NamedTextColor.DARK_GRAY)));
 
-            // Clickable action buttons
-            TextComponent punishBtn = new TextComponent(ChatColor.RED + "[Punish]");
-            punishBtn.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/punish " + target.getName()));
-            punishBtn.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                    new ComponentBuilder(ChatColor.GRAY + "Open punishment GUI for " + target.getName()).create()));
+            Component buttons = Component.text("[Punish]", NamedTextColor.RED)
+                    .clickEvent(ClickEvent.runCommand("/punish " + target.getName()))
+                    .hoverEvent(HoverEvent.showText(Component.text("Open punishment GUI for " + target.getName(), NamedTextColor.GRAY)))
+                    .append(Component.text(" "))
+                    .append(Component.text("[Teleport]", NamedTextColor.AQUA)
+                            .clickEvent(ClickEvent.runCommand("/tp " + target.getName()))
+                            .hoverEvent(HoverEvent.showText(Component.text("Teleport to " + target.getName(), NamedTextColor.GRAY))))
+                    .append(Component.text(" "))
+                    .append(Component.text("[Vanish]", NamedTextColor.GREEN)
+                            .clickEvent(ClickEvent.runCommand("/vanish"))
+                            .hoverEvent(HoverEvent.showText(Component.text("Toggle your vanish", NamedTextColor.GRAY))))
+                    .append(Component.text(" "))
+                    .append(Component.text("[Dismiss]", NamedTextColor.DARK_GRAY)
+                            .clickEvent(ClickEvent.runCommand("/reports delete " + id))
+                            .hoverEvent(HoverEvent.showText(Component.text("Dismiss this report", NamedTextColor.GRAY))));
 
-            TextComponent space1 = new TextComponent(" ");
-
-            TextComponent tpBtn = new TextComponent(ChatColor.AQUA + "[Teleport]");
-            tpBtn.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp " + target.getName()));
-            tpBtn.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                    new ComponentBuilder(ChatColor.GRAY + "Teleport to " + target.getName()).create()));
-
-            TextComponent space2 = new TextComponent(" ");
-
-            TextComponent vanishBtn = new TextComponent(ChatColor.GREEN + "[Vanish]");
-            vanishBtn.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vanish"));
-            vanishBtn.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                    new ComponentBuilder(ChatColor.GRAY + "Toggle your vanish").create()));
-
-            TextComponent space3 = new TextComponent(" ");
-
-            TextComponent deleteBtn = new TextComponent(ChatColor.DARK_GRAY + "[Dismiss]");
-            deleteBtn.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/reports delete " + id));
-            deleteBtn.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                    new ComponentBuilder(ChatColor.GRAY + "Dismiss this report").create()));
-
-            TextComponent line = new TextComponent("");
-            line.addExtra(punishBtn);
-            line.addExtra(space1);
-            line.addExtra(tpBtn);
-            line.addExtra(space2);
-            line.addExtra(vanishBtn);
-            line.addExtra(space3);
-            line.addExtra(deleteBtn);
-
-            staff.spigot().sendMessage(line);
-            staff.sendMessage(ChatColor.RED + "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+            staff.sendMessage(buttons);
+            staff.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.RED));
         }
-
-        return true;
     }
 }

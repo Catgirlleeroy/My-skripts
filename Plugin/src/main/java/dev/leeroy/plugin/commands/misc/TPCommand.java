@@ -1,15 +1,19 @@
 package dev.leeroy.plugin.commands.misc;
 
+import dev.leeroy.plugin.Utils.misc.TabUtil;
 import dev.leeroy.plugin.Utils.misc.VanishManager;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class TPCommand implements CommandExecutor {
+import java.util.Collection;
+
+public class TPCommand implements BasicCommand {
 
     private final VanishManager vanishManager;
 
@@ -18,56 +22,60 @@ public class TPCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public Collection<String> suggest(CommandSourceStack stack, String[] args) {
+        if (args.length == 1 || args.length == 2) return TabUtil.onlinePlayers(stack, args[args.length - 1], vanishManager);
+        return java.util.Collections.emptyList();
+    }
+
+    @Override
+    public void execute(CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
 
         // /tp <player> — teleport self to player
         if (args.length == 1) {
-            if (!(sender instanceof Player)) {
-                sender.sendMessage(ChatColor.RED + "Console must specify a target: /tp <player1> <player2>");
-                return true;
+            if (!(sender instanceof Player self)) {
+                sender.sendMessage(Component.text("Console must specify a target: /tp <player1> <player2>", NamedTextColor.RED));
+                return;
             }
 
             if (!sender.hasPermission("bob.tp.self")) {
-                sender.sendMessage(ChatColor.RED + "You don't have permission to teleport.");
-                return true;
+                sender.sendMessage(Component.text("You don't have permission to teleport.", NamedTextColor.RED));
+                return;
             }
 
-            Player self = (Player) sender;
             Player target = Bukkit.getPlayerExact(args[0]);
 
             if (target == null) {
-                sender.sendMessage(ChatColor.RED + "Player '" + args[0] + "' not found or is offline.");
-                return true;
+                sender.sendMessage(Component.text("Player '" + args[0] + "' not found or is offline.", NamedTextColor.RED));
+                return;
             }
 
             if (target.equals(self)) {
-                sender.sendMessage(ChatColor.RED + "You cannot teleport to yourself.");
-                return true;
+                sender.sendMessage(Component.text("You cannot teleport to yourself.", NamedTextColor.RED));
+                return;
             }
 
             if (vanishManager.isVanished(target.getUniqueId()) && !sender.hasPermission("bob.vanish.see")) {
-                sender.sendMessage(ChatColor.RED + "Player '" + args[0] + "' not found or is offline.");
-                return true;
+                sender.sendMessage(Component.text("Player '" + args[0] + "' not found or is offline.", NamedTextColor.RED));
+                return;
             }
 
             self.teleport(target.getLocation());
-            self.sendMessage(ChatColor.GREEN + "Teleported to " + target.getName() + ".");
-            return true;
+            self.sendMessage(Component.text("Teleported to " + target.getName() + ".", NamedTextColor.GREEN));
+            return;
         }
 
         // /tp <x> <y> <z> — teleport self to coordinates
         if (args.length == 3) {
-            if (!(sender instanceof Player)) {
-                sender.sendMessage(ChatColor.RED + "Console cannot teleport to coordinates.");
-                return true;
+            if (!(sender instanceof Player self)) {
+                sender.sendMessage(Component.text("Console cannot teleport to coordinates.", NamedTextColor.RED));
+                return;
             }
 
             if (!sender.hasPermission("bob.tp.coords")) {
-                sender.sendMessage(ChatColor.RED + "You don't have permission to teleport to coordinates.");
-                return true;
+                sender.sendMessage(Component.text("You don't have permission to teleport to coordinates.", NamedTextColor.RED));
+                return;
             }
-
-            Player self = (Player) sender;
 
             double x, y, z;
             try {
@@ -75,64 +83,60 @@ public class TPCommand implements CommandExecutor {
                 y = parseCoord(args[1], self.getLocation().getY());
                 z = parseCoord(args[2], self.getLocation().getZ());
             } catch (NumberFormatException e) {
-                sender.sendMessage(ChatColor.RED + "Invalid coordinates. Use numbers or ~ for relative.");
-                return true;
+                sender.sendMessage(Component.text("Invalid coordinates. Use numbers or ~ for relative.", NamedTextColor.RED));
+                return;
             }
 
             Location dest = new Location(self.getWorld(), x, y, z,
                     self.getLocation().getYaw(), self.getLocation().getPitch());
             self.teleport(dest);
-            self.sendMessage(ChatColor.GREEN + "Teleported to " + format(x) + ", " + format(y) + ", " + format(z) + ".");
-            return true;
+            self.sendMessage(Component.text("Teleported to " + format(x) + ", " + format(y) + ", " + format(z) + ".", NamedTextColor.GREEN));
+            return;
         }
 
         // /tp <player1> <player2> — teleport player1 to player2
         if (args.length == 2) {
             if (!sender.hasPermission("bob.tp.others")) {
-                sender.sendMessage(ChatColor.RED + "You don't have permission to teleport other players.");
-                return true;
+                sender.sendMessage(Component.text("You don't have permission to teleport other players.", NamedTextColor.RED));
+                return;
             }
 
             Player player1 = Bukkit.getPlayerExact(args[0]);
             Player player2 = Bukkit.getPlayerExact(args[1]);
 
             if (player1 == null) {
-                sender.sendMessage(ChatColor.RED + "Player '" + args[0] + "' not found or is offline.");
-                return true;
+                sender.sendMessage(Component.text("Player '" + args[0] + "' not found or is offline.", NamedTextColor.RED));
+                return;
             }
             if (player2 == null) {
-                sender.sendMessage(ChatColor.RED + "Player '" + args[1] + "' not found or is offline.");
-                return true;
+                sender.sendMessage(Component.text("Player '" + args[1] + "' not found or is offline.", NamedTextColor.RED));
+                return;
             }
 
             if (player1.equals(player2)) {
-                sender.sendMessage(ChatColor.RED + "Cannot teleport a player to themselves.");
-                return true;
+                sender.sendMessage(Component.text("Cannot teleport a player to themselves.", NamedTextColor.RED));
+                return;
             }
 
             if (vanishManager.isVanished(player2.getUniqueId()) && !sender.hasPermission("bob.vanish.see")) {
-                sender.sendMessage(ChatColor.RED + "Player '" + args[1] + "' not found or is offline.");
-                return true;
+                sender.sendMessage(Component.text("Player '" + args[1] + "' not found or is offline.", NamedTextColor.RED));
+                return;
             }
 
             player1.teleport(player2.getLocation());
-            player1.sendMessage(ChatColor.GREEN + "You have been teleported to " + player2.getName()
-                    + " by " + sender.getName() + ".");
-            sender.sendMessage(ChatColor.GREEN + "Teleported " + player1.getName()
-                    + " to " + player2.getName() + ".");
-            return true;
+            player1.sendMessage(Component.text("You have been teleported to " + player2.getName()
+                    + " by " + sender.getName() + ".", NamedTextColor.GREEN));
+            sender.sendMessage(Component.text("Teleported " + player1.getName()
+                    + " to " + player2.getName() + ".", NamedTextColor.GREEN));
+            return;
         }
 
-        sender.sendMessage(ChatColor.YELLOW + "Usage:");
-        sender.sendMessage(ChatColor.YELLOW + "  /tp <player>");
-        sender.sendMessage(ChatColor.YELLOW + "  /tp <x> <y> <z>");
-        sender.sendMessage(ChatColor.YELLOW + "  /tp <player1> <player2>");
-        return true;
+        sender.sendMessage(Component.text("Usage:", NamedTextColor.YELLOW));
+        sender.sendMessage(Component.text("  /tp <player>", NamedTextColor.YELLOW));
+        sender.sendMessage(Component.text("  /tp <x> <y> <z>", NamedTextColor.YELLOW));
+        sender.sendMessage(Component.text("  /tp <player1> <player2>", NamedTextColor.YELLOW));
     }
 
-    /**
-     * Parses a coordinate value. Supports ~ for relative coords.
-     */
     private double parseCoord(String input, double current) {
         if (input.startsWith("~")) {
             double offset = input.length() > 1 ? Double.parseDouble(input.substring(1)) : 0;

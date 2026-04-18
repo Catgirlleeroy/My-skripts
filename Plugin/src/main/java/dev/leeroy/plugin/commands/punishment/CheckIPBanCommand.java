@@ -1,17 +1,19 @@
 package dev.leeroy.plugin.commands.punishment;
 
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.punishment.BanManager;
 import dev.leeroy.plugin.Utils.punishment.IPBanManager;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
 
-public class CheckIPBanCommand implements CommandExecutor {
+public class CheckIPBanCommand implements BasicCommand {
 
     private final IPBanManager ipBanManager;
 
@@ -20,34 +22,28 @@ public class CheckIPBanCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
 
         if (!sender.hasPermission("bob.checkipban")) {
-            sender.sendMessage(ChatColor.RED + "You don't have permission to check IP bans.");
-            return true;
+            sender.sendMessage(Component.text("You don't have permission to check IP bans.", NamedTextColor.RED));
+            return;
         }
 
         if (args.length < 1) {
-            sender.sendMessage(ChatColor.YELLOW + "Usage: /checkipban <player|ip>");
-            return true;
+            sender.sendMessage(Component.text("Usage: /checkipban <player|ip>", NamedTextColor.YELLOW));
+            return;
         }
 
-        // Resolve to IP — check if it's an online player name first, otherwise treat as raw IP
         String input = args[0];
         String ip;
-
         Player target = Bukkit.getPlayerExact(input);
-        if (target != null) {
-            ip = target.getAddress().getAddress().getHostAddress();
-        } else {
-            ip = input;
-        }
+        ip = target != null ? target.getAddress().getAddress().getHostAddress() : input;
 
         Map<String, Object> details = ipBanManager.getBanDetails(ip);
-
         if (details == null) {
-            sender.sendMessage(ChatColor.GREEN + "IP " + ip + " is not currently banned.");
-            return true;
+            sender.sendMessage(Component.text("IP " + ip + " is not currently banned.", NamedTextColor.GREEN));
+            return;
         }
 
         String type     = (String) details.get("type");
@@ -55,15 +51,12 @@ public class CheckIPBanCommand implements CommandExecutor {
         String bannedBy = (String) details.get("bannedBy");
         long   expiry   = (long)   details.get("expiry");
 
-        sender.sendMessage(ChatColor.GOLD + "━━━ IP Ban Info: " + ip + " ━━━");
-        sender.sendMessage(ChatColor.YELLOW + "Type: "      + ChatColor.WHITE + (type.equals("permanent") ? "Permanent" : "Temporary"));
-        sender.sendMessage(ChatColor.YELLOW + "Reason: "    + ChatColor.WHITE + reason);
-        sender.sendMessage(ChatColor.YELLOW + "Banned by: " + ChatColor.WHITE + bannedBy);
-
+        sender.sendMessage(TextUtil.parse("&6━━━ IP Ban Info: " + ip + " ━━━"));
+        sender.sendMessage(TextUtil.parse("&eType: &f"      + (type.equals("permanent") ? "Permanent" : "Temporary")));
+        sender.sendMessage(TextUtil.parse("&eReason: &f"    + reason));
+        sender.sendMessage(TextUtil.parse("&eBanned by: &f" + bannedBy));
         if (expiry != -1L) {
-            sender.sendMessage(ChatColor.YELLOW + "Expires in: " + ChatColor.WHITE + BanManager.formatRemaining(expiry));
+            sender.sendMessage(TextUtil.parse("&eExpires in: &f" + BanManager.formatRemaining(expiry)));
         }
-
-        return true;
     }
 }

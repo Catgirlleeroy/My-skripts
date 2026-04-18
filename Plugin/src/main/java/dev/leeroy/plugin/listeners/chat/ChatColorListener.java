@@ -1,13 +1,17 @@
 package dev.leeroy.plugin.listeners.chat;
 
 import dev.leeroy.plugin.commands.chat.ChatColorCommand;
+import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,12 +19,12 @@ import java.util.UUID;
 
 public class ChatColorListener implements Listener {
 
-    private static final ChatColor[] RAINBOW = {
-            ChatColor.RED, ChatColor.GOLD, ChatColor.YELLOW,
-            ChatColor.GREEN, ChatColor.AQUA, ChatColor.BLUE, ChatColor.LIGHT_PURPLE
+    private static final NamedTextColor[] RAINBOW = {
+            NamedTextColor.RED, NamedTextColor.GOLD, NamedTextColor.YELLOW,
+            NamedTextColor.GREEN, NamedTextColor.AQUA, NamedTextColor.BLUE, NamedTextColor.LIGHT_PURPLE
     };
 
-    // Stores color code string, or "rainbow" for rainbow mode
+    // Stores legacy §X color code string, or "rainbow"
     private final Map<UUID, String> chatColors = new HashMap<>();
 
     @EventHandler
@@ -33,7 +37,7 @@ public class ChatColorListener implements Listener {
 
         Material mat = event.getCurrentItem().getType();
         if (mat == Material.GRAY_STAINED_GLASS_PANE) {
-            player.sendMessage(ChatColor.RED + "You don't have permission for that color.");
+            player.sendMessage(Component.text("You don't have permission for that color.", NamedTextColor.RED));
             return;
         }
 
@@ -42,50 +46,54 @@ public class ChatColorListener implements Listener {
 
         if (permKey.equals("reset")) {
             chatColors.remove(player.getUniqueId());
-            player.sendMessage(ChatColor.GRAY + "✦ Your chat color has been " + ChatColor.WHITE + "reset" + ChatColor.GRAY + ".");
+            player.sendMessage(Component.text("✦ Your chat color has been reset.", NamedTextColor.GRAY));
             player.closeInventory();
             return;
         }
 
         if (!player.hasPermission("bob.chatcolor." + permKey)) {
-            player.sendMessage(ChatColor.RED + "You don't have permission for that color.");
+            player.sendMessage(Component.text("You don't have permission for that color.", NamedTextColor.RED));
             return;
         }
 
         String colorCode = resolveColorCode(mat);
         chatColors.put(player.getUniqueId(), colorCode);
 
-        String preview = colorCode.equals("rainbow") ? buildRainbow("This color!") : colorCode + "This color!";
-        player.sendMessage(ChatColor.GRAY + "✦ Chat color set to: " + preview);
+        Component preview = colorCode.equals("rainbow")
+                ? buildRainbowComponent("This color!")
+                : LegacyComponentSerializer.legacySection().deserialize(colorCode + "This color!");
+        player.sendMessage(Component.text("✦ Chat color set to: ", NamedTextColor.GRAY).append(preview));
         player.closeInventory();
     }
 
     @EventHandler
-    public void onPlayerChat(AsyncPlayerChatEvent event) {
+    public void onPlayerChat(AsyncChatEvent event) {
         String color = chatColors.get(event.getPlayer().getUniqueId());
         if (color == null) return;
 
+        String plain = PlainTextComponentSerializer.plainText().serialize(event.message());
+
         if (color.equals("rainbow")) {
-            event.setMessage(buildRainbow(event.getMessage()));
+            event.message(buildRainbowComponent(plain));
         } else {
-            event.setMessage(color + event.getMessage());
+            event.message(LegacyComponentSerializer.legacySection().deserialize(color + plain));
         }
     }
 
     // ── Rainbow builder — cycles color per character ─────────────────────────
 
-    private String buildRainbow(String message) {
-        StringBuilder sb = new StringBuilder();
+    private Component buildRainbowComponent(String message) {
+        Component result = Component.empty();
         int colorIndex = 0;
         for (char c : message.toCharArray()) {
             if (c == ' ') {
-                sb.append(' ');
+                result = result.append(Component.text(' '));
             } else {
-                sb.append(RAINBOW[colorIndex % RAINBOW.length]).append(c);
+                result = result.append(Component.text(c).color(RAINBOW[colorIndex % RAINBOW.length]));
                 colorIndex++;
             }
         }
-        return sb.toString();
+        return result;
     }
 
     // ── Resolvers ─────────────────────────────────────────────────────────────

@@ -1,6 +1,8 @@
 package dev.leeroy.plugin.listeners.misc;
 
 import dev.leeroy.plugin.commands.misc.GlowCommand;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -22,7 +24,6 @@ public class GlowListener implements Listener {
             ChatColor.GREEN, ChatColor.AQUA, ChatColor.BLUE, ChatColor.LIGHT_PURPLE
     };
 
-    // Tracks players with rainbow glow so we can cycle their team
     private final Map<UUID, BukkitTask> rainbowTasks = new HashMap<>();
     private final JavaPlugin plugin;
 
@@ -39,50 +40,53 @@ public class GlowListener implements Listener {
         if (event.getCurrentItem() == null) return;
         if (event.getCurrentItem().getType().isAir()) return;
         if (event.getClickedInventory() == null) return;
-        // Only handle clicks in the top inventory (the GUI), not the player's own inventory
         if (!event.getClickedInventory().equals(event.getView().getTopInventory())) return;
 
         Material mat = event.getCurrentItem().getType();
         if (mat == Material.GRAY_STAINED_GLASS_PANE) {
-            player.sendMessage(ChatColor.RED + "You don't have permission for that glow color.");
+            player.sendMessage(Component.text("You don't have permission for that glow color.", NamedTextColor.RED));
             return;
         }
 
         String permKey = resolvePermKey(mat);
         if (permKey == null) return;
 
-        // Stop any existing rainbow task for this player
         stopRainbow(player);
 
         if (permKey.equals("reset")) {
             GlowCommand.removeGlow(player);
-            player.sendMessage(ChatColor.GRAY + "✦ Your glow has been " + ChatColor.WHITE + "disabled" + ChatColor.GRAY + ".");
+            player.sendMessage(Component.text("✦ Your glow has been ", NamedTextColor.GRAY)
+                    .append(Component.text("disabled", NamedTextColor.WHITE))
+                    .append(Component.text(".", NamedTextColor.GRAY)));
             player.closeInventory();
             return;
         }
 
         if (!player.hasPermission("bob.glow." + permKey)) {
-            player.sendMessage(ChatColor.RED + "You don't have permission for that glow color.");
+            player.sendMessage(Component.text("You don't have permission for that glow color.", NamedTextColor.RED));
             return;
         }
 
         if (permKey.equals("rainbow")) {
             startRainbow(player);
-            player.sendMessage(
-                    "" + ChatColor.RED + "✦" + ChatColor.GOLD + " R" + ChatColor.YELLOW + "a"
-                            + ChatColor.GREEN + "i" + ChatColor.AQUA + "n" + ChatColor.BLUE + "b"
-                            + ChatColor.LIGHT_PURPLE + "o" + ChatColor.RED + "w" + ChatColor.GRAY + " glow enabled!");
+            player.sendMessage(Component.text("✦ ", NamedTextColor.RED)
+                    .append(Component.text("R", NamedTextColor.RED))
+                    .append(Component.text("a", NamedTextColor.GOLD))
+                    .append(Component.text("i", NamedTextColor.YELLOW))
+                    .append(Component.text("n", NamedTextColor.GREEN))
+                    .append(Component.text("b", NamedTextColor.AQUA))
+                    .append(Component.text("o", NamedTextColor.BLUE))
+                    .append(Component.text("w", NamedTextColor.LIGHT_PURPLE))
+                    .append(Component.text(" glow enabled!", NamedTextColor.GRAY)));
         } else {
             ChatColor color = resolveColor(mat);
             if (color == null) return;
             GlowCommand.applyGlow(player, color);
-            player.sendMessage(ChatColor.GRAY + "✦ Glow color set to: " + color + permKey.replace("_", " ") + "!");
+            player.sendMessage(Component.text("✦ Glow color set to: " + permKey.replace("_", " ") + "!", NamedTextColor.GRAY));
         }
 
         player.closeInventory();
     }
-
-    // ── Clean up glow on disconnect ───────────────────────────────────────────
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
@@ -90,8 +94,6 @@ public class GlowListener implements Listener {
         stopRainbow(player);
         GlowCommand.removeGlow(player);
     }
-
-    // ── Rainbow glow — cycles team color every second ─────────────────────────
 
     private void startRainbow(Player player) {
         final int[] index = {0};
@@ -102,7 +104,7 @@ public class GlowListener implements Listener {
             }
             GlowCommand.applyGlow(player, RAINBOW[index[0] % RAINBOW.length]);
             index[0]++;
-        }, 0L, 20L); // cycle every second
+        }, 0L, 20L);
 
         rainbowTasks.put(player.getUniqueId(), task);
     }
@@ -111,8 +113,6 @@ public class GlowListener implements Listener {
         BukkitTask task = rainbowTasks.remove(player.getUniqueId());
         if (task != null) task.cancel();
     }
-
-    // ── Resolvers ─────────────────────────────────────────────────────────────
 
     private String resolvePermKey(Material mat) {
         return switch (mat) {

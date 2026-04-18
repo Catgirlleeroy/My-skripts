@@ -2,8 +2,8 @@ package dev.leeroy.plugin.listeners.combat;
 
 import dev.leeroy.plugin.Utils.misc.BobHooks;
 import dev.leeroy.plugin.Utils.combat.CombatManager;
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -27,19 +27,16 @@ public class CombatListener implements Listener {
     private final CombatManager combatManager;
     private final JavaPlugin plugin;
 
-    // Cooldown per player per message type — stores last sent time in ms
-    private final Map<UUID, Long> regionMsgCooldown  = new HashMap<>();
-    private final Map<UUID, Long> fireworkMsgCooldown = new HashMap<>();
-    private final Map<UUID, Long> commandMsgCooldown  = new HashMap<>();
+    private final Map<UUID, Long> regionMsgCooldown   = new HashMap<>();
+    private final Map<UUID, Long> fireworkMsgCooldown  = new HashMap<>();
+    private final Map<UUID, Long> commandMsgCooldown   = new HashMap<>();
 
-    private static final long MSG_COOLDOWN_MS = 3000; // 3 seconds between same message
+    private static final long MSG_COOLDOWN_MS = 3000;
 
     public CombatListener(CombatManager combatManager, JavaPlugin plugin) {
         this.combatManager = combatManager;
         this.plugin        = plugin;
     }
-
-    // ── PvP — tag both players ────────────────────────────────────────────────
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDamage(EntityDamageByEntityEvent event) {
@@ -54,25 +51,21 @@ public class CombatListener implements Listener {
         combatManager.tag(victim);
 
         if (!attackerWasTagged) {
-            attacker.sendMessage(ChatColor.translateAlternateColorCodes('&',
+            attacker.sendMessage(TextUtil.parse(
                     plugin.getConfig().getString("combat-tag.messages.tagged-attacker", "")
                             .replace("{victim}", victim.getName())));
         }
         if (!victimWasTagged) {
-            victim.sendMessage(ChatColor.translateAlternateColorCodes('&',
+            victim.sendMessage(TextUtil.parse(
                     plugin.getConfig().getString("combat-tag.messages.tagged-victim", "")
                             .replace("{attacker}", attacker.getName())));
         }
     }
 
-    // ── Death — remove tag ────────────────────────────────────────────────────
-
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         combatManager.untag(event.getEntity());
     }
-
-    // ── Quit — combat log ─────────────────────────────────────────────────────
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
@@ -82,14 +75,12 @@ public class CombatListener implements Listener {
         combatManager.untag(player);
 
         if (plugin.getConfig().getBoolean("combat-tag.broadcast-combatlog", true)) {
-            String msg = ChatColor.translateAlternateColorCodes('&',
-                    plugin.getConfig().getString("combat-tag.messages.combatlog", "&c{player} &7just combat logged!")
-                            .replace("{player}", player.getName()));
-            Bukkit.broadcastMessage(msg);
+            String raw = plugin.getConfig()
+                    .getString("combat-tag.messages.combatlog", "&c{player} &7just combat logged!")
+                    .replace("{player}", player.getName());
+            TextUtil.broadcast(raw);
         }
     }
-
-    // ── Commands — block while tagged ────────────────────────────────────────
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onCommand(PlayerCommandPreprocessEvent event) {
@@ -110,8 +101,6 @@ public class CombatListener implements Listener {
             }
         }
     }
-
-    // ── Region — block entry while tagged ────────────────────────────────────
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onMove(PlayerMoveEvent event) {
@@ -151,8 +140,6 @@ public class CombatListener implements Listener {
         } catch (Exception ignored) {}
     }
 
-    // ── Fireworks — block while tagged ───────────────────────────────────────
-
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         if (!plugin.getConfig().getBoolean("combat-tag.enabled", true)) return;
@@ -166,8 +153,6 @@ public class CombatListener implements Listener {
             }
         }
     }
-
-    // ── Cooldown helper ───────────────────────────────────────────────────────
 
     private boolean canSend(Map<UUID, Long> cooldownMap, UUID uuid) {
         long now = System.currentTimeMillis();

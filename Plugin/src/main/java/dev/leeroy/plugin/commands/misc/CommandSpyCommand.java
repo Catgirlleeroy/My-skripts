@@ -1,13 +1,14 @@
 package dev.leeroy.plugin.commands.misc;
 
 import dev.leeroy.plugin.listeners.misc.CommandSpyListener;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CommandSpyCommand implements CommandExecutor {
+public class CommandSpyCommand implements BasicCommand {
 
     private final CommandSpyListener commandSpyListener;
 
@@ -16,27 +17,25 @@ public class CommandSpyCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
 
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "Only players can use this command.");
-            return true;
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(Component.text("Only players can use this command.", NamedTextColor.RED));
+            return;
         }
 
         if (!sender.hasPermission("bob.commandspy")) {
-            sender.sendMessage(ChatColor.RED + "You don't have permission to use CommandSpy.");
-            return true;
+            sender.sendMessage(Component.text("You don't have permission to use CommandSpy.", NamedTextColor.RED));
+            return;
         }
 
-        Player player = (Player) sender;
         boolean isNowEnabled = commandSpyListener.toggle(player);
 
         if (isNowEnabled) {
-            player.sendMessage(ChatColor.GREEN + "CommandSpy enabled. You will now see commands run by others.");
+            player.sendMessage(Component.text("CommandSpy enabled. You will now see commands run by others.", NamedTextColor.GREEN));
         } else {
-            player.sendMessage(ChatColor.YELLOW + "CommandSpy disabled.");
+            player.sendMessage(Component.text("CommandSpy disabled.", NamedTextColor.YELLOW));
         }
-
-        return true;
     }
 }

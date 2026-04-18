@@ -1,13 +1,14 @@
 package dev.leeroy.plugin.commands.misc;
 
 import dev.leeroy.plugin.Utils.misc.VanishManager;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class VanishCommand implements CommandExecutor {
+public class VanishCommand implements BasicCommand {
 
     private final VanishManager vanishManager;
 
@@ -16,25 +17,31 @@ public class VanishCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
+
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ChatColor.RED + "Only players can use this command.");
-            return true;
+            sender.sendMessage(Component.text("Only players can use this command.", NamedTextColor.RED));
+            return;
         }
 
         if (!player.hasPermission("bob.vanish")) {
-            player.sendMessage(ChatColor.RED + "You don't have permission to vanish.");
-            return true;
+            player.sendMessage(Component.text("You don't have permission to vanish.", NamedTextColor.RED));
+            return;
         }
 
         boolean isNowVanished = vanishManager.toggle(player);
 
         if (isNowVanished) {
-            player.sendMessage(ChatColor.GRAY + "✦ You are now " + ChatColor.GREEN + "vanished" + ChatColor.GRAY + ". Staff with " + ChatColor.YELLOW + "bob.vanish.see" + ChatColor.GRAY + " can still see you.");
+            player.sendMessage(Component.text("✦ You are now ", NamedTextColor.GRAY)
+                    .append(Component.text("vanished", NamedTextColor.GREEN))
+                    .append(Component.text(". Staff with ", NamedTextColor.GRAY))
+                    .append(Component.text("bob.vanish.see", NamedTextColor.YELLOW))
+                    .append(Component.text(" can still see you.", NamedTextColor.GRAY)));
         } else {
-            player.sendMessage(ChatColor.GRAY + "✦ You are now " + ChatColor.RED + "visible" + ChatColor.GRAY + ".");
+            player.sendMessage(Component.text("✦ You are now ", NamedTextColor.GRAY)
+                    .append(Component.text("visible", NamedTextColor.RED))
+                    .append(Component.text(".", NamedTextColor.GRAY)));
         }
-
-        return true;
     }
 }

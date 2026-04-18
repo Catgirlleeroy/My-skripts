@@ -1,21 +1,17 @@
 package dev.leeroy.plugin.listeners.chat;
 
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.misc.BobHooks;
 import dev.leeroy.plugin.listeners.misc.VaultHook;
-import net.md_5.bungee.api.ChatColor;
+import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class ChatFormatListener implements Listener {
-
-    private static final Pattern HEX_PATTERN = Pattern.compile("&#([A-Fa-f0-9]{6})");
 
     private final JavaPlugin plugin;
 
@@ -24,7 +20,7 @@ public class ChatFormatListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onChat(AsyncPlayerChatEvent event) {
+    public void onChat(AsyncChatEvent event) {
         if (!plugin.getConfig().getBoolean("chat-format.enabled", true)) return;
 
         Player player = event.getPlayer();
@@ -48,24 +44,15 @@ public class ChatFormatListener implements Listener {
                 .replace("{name}",    player.getName())
                 .replace("{player}",  player.getDisplayName());
 
-        format = colorize(format);
-        format = format.replace("{message}", "%2$s");
+        // Split at {message} so the message component is appended cleanly
+        String[] parts  = format.split("\\{message\\}", 2);
+        String before   = parts[0];
+        String after    = parts.length > 1 ? parts[1] : "";
 
-        if (!format.contains("%2$s")) {
-            format = format + " %2$s";
-        }
-
-        event.setFormat(format);
-    }
-
-    private String colorize(String input) {
-        Matcher matcher = HEX_PATTERN.matcher(input);
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            matcher.appendReplacement(sb,
-                    ChatColor.of("#" + matcher.group(1)).toString());
-        }
-        matcher.appendTail(sb);
-        return ChatColor.translateAlternateColorCodes('&', sb.toString());
+        event.renderer((source, displayName, message, viewer) -> {
+            Component result = TextUtil.parse(before).append(message);
+            if (!after.isEmpty()) result = result.append(TextUtil.parse(after));
+            return result;
+        });
     }
 }

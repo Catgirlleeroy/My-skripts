@@ -1,12 +1,15 @@
 package dev.leeroy.plugin.listeners.punishment;
 
 import dev.leeroy.plugin.Utils.misc.PlayerCache;
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.punishment.BanManager;
 import dev.leeroy.plugin.Utils.punishment.IPBanManager;
 import dev.leeroy.plugin.Utils.punishment.MuteManager;
 import dev.leeroy.plugin.Utils.punishment.PunishConfig;
 import dev.leeroy.plugin.Utils.punishment.WarnManager;
 import dev.leeroy.plugin.gui.PunishGUI;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -176,7 +179,7 @@ public class PunishListener implements Listener {
 
         // Check if target is exempt
         if (target != null && (target.hasPermission("bob.exempt") || target.hasPermission("bob.exempt." + action))) {
-            staff.sendMessage(ChatColor.RED + targetName + " is exempt from this punishment.");
+            staff.sendMessage(Component.text(targetName + " is exempt from this punishment.", NamedTextColor.RED));
             return;
         }
 
@@ -186,96 +189,102 @@ public class PunishListener implements Listener {
 
         switch (action) {
             case "ban" -> {
-                if (target == null) { staff.sendMessage(ChatColor.RED + targetName + " is no longer online."); return; }
-                if (banManager.isBanned(target.getUniqueId())) { staff.sendMessage(ChatColor.RED + targetName + " is already banned."); return; }
+                if (target == null) { staff.sendMessage(Component.text(targetName + " is no longer online.", NamedTextColor.RED)); return; }
+                if (banManager.isBanned(target.getUniqueId())) { staff.sendMessage(Component.text(targetName + " is already banned.", NamedTextColor.RED)); return; }
                 banManager.ban(target.getUniqueId(), target.getName(), reason, staff.getName());
                 target.getWorld().strikeLightningEffect(target.getLocation());
                 org.bukkit.Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f));
-                String kickMsg = PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, null);
-                Bukkit.getScheduler().runTaskLater(plugin, () -> target.kickPlayer(kickMsg), 10L);
-                Bukkit.broadcastMessage(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, null));
+                Component kickMsg = TextUtil.parse(PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, null));
+                Bukkit.getScheduler().runTaskLater(plugin, () -> target.kick(kickMsg), 10L);
+                TextUtil.broadcast(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, null));
             }
             case "tempban" -> {
-                if (target == null) { staff.sendMessage(ChatColor.RED + targetName + " is no longer online."); return; }
+                if (target == null) { staff.sendMessage(Component.text(targetName + " is no longer online.", NamedTextColor.RED)); return; }
                 long ms = BanManager.parseDuration(duration);
-                if (ms == -1) { staff.sendMessage(ChatColor.RED + "Invalid duration."); return; }
-                if (banManager.isBanned(target.getUniqueId())) { staff.sendMessage(ChatColor.RED + targetName + " is already banned."); return; }
+                if (ms == -1) { staff.sendMessage(Component.text("Invalid duration.", NamedTextColor.RED)); return; }
+                if (banManager.isBanned(target.getUniqueId())) { staff.sendMessage(Component.text(targetName + " is already banned.", NamedTextColor.RED)); return; }
                 banManager.tempBan(target.getUniqueId(), target.getName(), reason, staff.getName(), ms);
                 target.getWorld().strikeLightningEffect(target.getLocation());
                 org.bukkit.Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f));
                 String remaining = BanManager.formatRemaining(System.currentTimeMillis() + ms);
-                String kickMsg = PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, remaining);
-                Bukkit.getScheduler().runTaskLater(plugin, () -> target.kickPlayer(kickMsg), 10L);
-                Bukkit.broadcastMessage(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, duration));
+                Component kickMsg = TextUtil.parse(PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, remaining));
+                Bukkit.getScheduler().runTaskLater(plugin, () -> target.kick(kickMsg), 10L);
+                TextUtil.broadcast(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, duration));
             }
             case "mute" -> {
-                if (target == null) { staff.sendMessage(ChatColor.RED + targetName + " is no longer online."); return; }
-                if (muteManager.isMuted(target.getUniqueId())) { staff.sendMessage(ChatColor.RED + targetName + " is already muted."); return; }
+                if (target == null) { staff.sendMessage(Component.text(targetName + " is no longer online.", NamedTextColor.RED)); return; }
+                if (muteManager.isMuted(target.getUniqueId())) { staff.sendMessage(Component.text(targetName + " is already muted.", NamedTextColor.RED)); return; }
                 muteManager.mute(target.getUniqueId(), target.getName(), reason, staff.getName());
-                target.sendMessage(PunishGUI.formatMessage(cfg, selfPath, targetName, staff.getName(), reason, null));
-                Bukkit.broadcastMessage(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, null));
+                target.sendMessage(TextUtil.parse(PunishGUI.formatMessage(cfg, selfPath, targetName, staff.getName(), reason, null)));
+                TextUtil.broadcast(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, null));
             }
             case "tempmute" -> {
-                if (target == null) { staff.sendMessage(ChatColor.RED + targetName + " is no longer online."); return; }
+                if (target == null) { staff.sendMessage(Component.text(targetName + " is no longer online.", NamedTextColor.RED)); return; }
                 long ms = BanManager.parseDuration(duration);
-                if (ms == -1) { staff.sendMessage(ChatColor.RED + "Invalid duration."); return; }
-                if (muteManager.isMuted(target.getUniqueId())) { staff.sendMessage(ChatColor.RED + targetName + " is already muted."); return; }
+                if (ms == -1) { staff.sendMessage(Component.text("Invalid duration.", NamedTextColor.RED)); return; }
+                if (muteManager.isMuted(target.getUniqueId())) { staff.sendMessage(Component.text(targetName + " is already muted.", NamedTextColor.RED)); return; }
                 muteManager.tempMute(target.getUniqueId(), target.getName(), reason, staff.getName(), ms);
-                target.sendMessage(PunishGUI.formatMessage(cfg, selfPath, targetName, staff.getName(), reason, duration));
-                Bukkit.broadcastMessage(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, duration));
+                target.sendMessage(TextUtil.parse(PunishGUI.formatMessage(cfg, selfPath, targetName, staff.getName(), reason, duration)));
+                TextUtil.broadcast(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, duration));
             }
             case "kick" -> {
-                if (target == null) { staff.sendMessage(ChatColor.RED + targetName + " is no longer online."); return; }
-                String kickMsg = PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, null);
-                target.kickPlayer(kickMsg);
-                Bukkit.broadcastMessage(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, null));
+                if (target == null) { staff.sendMessage(Component.text(targetName + " is no longer online.", NamedTextColor.RED)); return; }
+                target.kick(TextUtil.parse(PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, null)));
+                TextUtil.broadcast(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, null));
             }
             case "ipban" -> {
-                if (target == null) { staff.sendMessage(ChatColor.RED + targetName + " is no longer online."); return; }
+                if (target == null) { staff.sendMessage(Component.text(targetName + " is no longer online.", NamedTextColor.RED)); return; }
                 String ip = target.getAddress().getAddress().getHostAddress();
-                if (ipBanManager.isBanned(ip)) { staff.sendMessage(ChatColor.RED + targetName + "'s IP is already banned."); return; }
+                if (ipBanManager.isBanned(ip)) { staff.sendMessage(Component.text(targetName + "'s IP is already banned.", NamedTextColor.RED)); return; }
                 ipBanManager.ban(ip, reason, staff.getName());
                 target.getWorld().strikeLightningEffect(target.getLocation());
                 org.bukkit.Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f));
-                String kickMsg = PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, null);
-                Bukkit.getScheduler().runTaskLater(plugin, () -> target.kickPlayer(kickMsg), 10L);
-                Bukkit.broadcastMessage(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, null));
+                Component kickMsg = TextUtil.parse(PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, null));
+                Bukkit.getScheduler().runTaskLater(plugin, () -> target.kick(kickMsg), 10L);
+                TextUtil.broadcast(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, null));
             }
             case "tempipban" -> {
-                if (target == null) { staff.sendMessage(ChatColor.RED + targetName + " is no longer online."); return; }
+                if (target == null) { staff.sendMessage(Component.text(targetName + " is no longer online.", NamedTextColor.RED)); return; }
                 long ms = BanManager.parseDuration(duration);
-                if (ms == -1) { staff.sendMessage(ChatColor.RED + "Invalid duration."); return; }
+                if (ms == -1) { staff.sendMessage(Component.text("Invalid duration.", NamedTextColor.RED)); return; }
                 String ip = target.getAddress().getAddress().getHostAddress();
-                if (ipBanManager.isBanned(ip)) { staff.sendMessage(ChatColor.RED + targetName + "'s IP is already banned."); return; }
+                if (ipBanManager.isBanned(ip)) { staff.sendMessage(Component.text(targetName + "'s IP is already banned.", NamedTextColor.RED)); return; }
                 ipBanManager.tempBan(ip, reason, staff.getName(), ms);
                 target.getWorld().strikeLightningEffect(target.getLocation());
                 org.bukkit.Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f));
                 String remaining = BanManager.formatRemaining(System.currentTimeMillis() + ms);
-                String kickMsg = PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, remaining);
-                Bukkit.getScheduler().runTaskLater(plugin, () -> target.kickPlayer(kickMsg), 10L);
-                Bukkit.broadcastMessage(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, duration));
+                Component kickMsg = TextUtil.parse(PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, remaining));
+                Bukkit.getScheduler().runTaskLater(plugin, () -> target.kick(kickMsg), 10L);
+                TextUtil.broadcast(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, duration));
             }
             case "warn" -> {
-                int max   = plugin.getConfig().getInt("warn.max-warns", 3);
-                int warns = warnManager.addWarn(resolveUUIDFromName(targetName));
+                int max      = plugin.getConfig().getInt("warn.max-warns", 3);
+                UUID warnUUID = resolveUUIDFromName(targetName);
+                int warns    = warnManager.addWarn(warnUUID);
                 if (target != null) target.playSound(target.getLocation(), Sound.ENTITY_WARDEN_SONIC_BOOM, 1.0f, 1.0f);
                 String broadcastKey = "actions.warn.messages." + (reason.isEmpty() ? "broadcast-no-reason" : "broadcast");
                 String msg = PunishGUI.formatMessage(cfg, broadcastKey, targetName, staff.getName(), reason, null)
                         .replace("{warns}", String.valueOf(warns))
                         .replace("{max}",   String.valueOf(max));
-                Bukkit.broadcastMessage("");
-                Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&4&l                  WARNING!"));
-                Bukkit.broadcastMessage("");
-                Bukkit.broadcastMessage(msg);
-                Bukkit.broadcastMessage("");
-                // Auto-punish at max
+                TextUtil.broadcast("");
+                TextUtil.broadcast("&4&l                  WARNING!");
+                TextUtil.broadcast("");
+                TextUtil.broadcast(msg);
+                TextUtil.broadcast("");
                 if (warns >= max) {
-                    UUID warnUUID = resolveUUIDFromName(targetName);
+                    final int offense = warnManager.getOffenses(warnUUID);
+                    warnManager.incrementOffenses(warnUUID);
                     Bukkit.getScheduler().runTaskLater(plugin, () -> {
                         if (warnManager.getWarns(warnUUID) >= max) {
-                            String punishCmd = plugin.getConfig()
-                                    .getString("warn.max-warn-punishment", "tempban {player} 1d Too many warnings!")
-                                    .replace("{player}", targetName);
+                            if (!targetName.matches("[a-zA-Z0-9_]{1,16}")) return;
+                            java.util.List<String> punishments = plugin.getConfig().getStringList("warn.stacked-punishments");
+                            String punishCmd;
+                            if (punishments.isEmpty()) {
+                                punishCmd = "tempban " + targetName + " 1d Too many warnings!";
+                            } else {
+                                int index = Math.min(offense, punishments.size() - 1);
+                                punishCmd = punishments.get(index).replace("{player}", targetName);
+                            }
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), punishCmd);
                             if (plugin.getConfig().getBoolean("warn.reset-on-max", true)) warnManager.resetWarns(warnUUID);
                         }
@@ -284,7 +293,7 @@ public class PunishListener implements Listener {
             }
         }
 
-        staff.sendMessage(ChatColor.GREEN + "✦ Successfully applied " + action + " to " + targetName + ".");
+        staff.sendMessage(Component.text("✦ Successfully applied " + action + " to " + targetName + ".", NamedTextColor.GREEN));
         staff.playSound(staff.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
     }
 

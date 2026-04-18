@@ -1,10 +1,11 @@
 package dev.leeroy.plugin.listeners.chat;
 
 import dev.leeroy.plugin.Utils.chat.ChatGameManager;
+import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class ChatGameListener implements Listener {
 
@@ -15,17 +16,17 @@ public class ChatGameListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onChat(AsyncPlayerChatEvent event) {
+    public void onChat(AsyncChatEvent event) {
         if (!chatGameManager.isActive()) return;
 
-        // Run on main thread since dispatchCommand needs it
-        org.bukkit.Bukkit.getScheduler().runTask(
-                org.bukkit.Bukkit.getPluginManager().getPlugin("Bob"),
-                () -> {
-                    if (chatGameManager.handleChat(event.getPlayer(), event.getMessage())) {
-                        event.setCancelled(true);
-                    }
-                }
-        );
+        String message = PlainTextComponentSerializer.plainText().serialize(event.message());
+
+        if (chatGameManager.isCorrectAnswer(message)) {
+            event.setCancelled(true);
+            org.bukkit.Bukkit.getScheduler().runTask(
+                    org.bukkit.Bukkit.getPluginManager().getPlugin("Bob"),
+                    () -> chatGameManager.handleWin(event.getPlayer(), message)
+            );
+        }
     }
 }

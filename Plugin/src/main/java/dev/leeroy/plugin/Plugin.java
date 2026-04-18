@@ -12,6 +12,9 @@ import dev.leeroy.plugin.listeners.chat.*;
 import dev.leeroy.plugin.listeners.combat.*;
 import dev.leeroy.plugin.listeners.misc.*;
 import dev.leeroy.plugin.listeners.punishment.*;
+import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import org.bukkit.GameMode;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Plugin extends JavaPlugin {
@@ -68,112 +71,135 @@ public final class Plugin extends JavaPlugin {
         dailyRewardManager = new DailyRewardManager(this);
         warnManager        = new WarnManager(this);
 
-        // Heal
-        getCommand("heal").setExecutor(new HealCommand());
+        // Shared listener instances (needed by both commands and event handlers)
+        MuteListener       muteListener       = new MuteListener(muteManager);
+        CommandSpyListener commandSpyListener = new CommandSpyListener();
+        TPACommand         tpaCommand         = new TPACommand(this);
 
-        // Gamemodes
-        Gamemodes gamemodesExecutor = new Gamemodes();
-        getCommand("gm0").setExecutor(gamemodesExecutor);
-        getCommand("gm1").setExecutor(gamemodesExecutor);
-        getCommand("gm2").setExecutor(gamemodesExecutor);
-        getCommand("gm3").setExecutor(gamemodesExecutor);
-
-        // Ban / IP Ban
-        getCommand("ban").setExecutor(new BanCommand(banManager, playerCache, this));
-        getCommand("tempban").setExecutor(new TempBanCommand(banManager, playerCache, this));
-        getCommand("unban").setExecutor(new UnbanCommand(banManager, playerCache));
-        getCommand("checkban").setExecutor(new CheckBanCommand(banManager, playerCache));
-        getCommand("ipban").setExecutor(new IPBanCommand(ipBanManager, this));
-        getCommand("iptempban").setExecutor(new IPTempBanCommand(ipBanManager, this));
-        getCommand("ipunban").setExecutor(new IPUnbanCommand(ipBanManager, playerCache));
-        getCommand("checkipban").setExecutor(new CheckIPBanCommand(ipBanManager));
-
-        // Mute
-        MuteListener muteListener = new MuteListener(muteManager);
-        getCommand("mute").setExecutor(new MuteCommand(muteManager));
-        getCommand("tempmute").setExecutor(new TempMuteCommand(muteManager));
-        getCommand("unmute").setExecutor(new UnmuteCommand(muteManager, playerCache));
-        getCommand("chatmute").setExecutor(new ChatMuteCommand(muteListener));
-        getCommand("chatclear").setExecutor(new ChatClearCommand());
+        // Event listeners
         getServer().getPluginManager().registerEvents(muteListener, this);
-
-        // Kick
-        getCommand("kick").setExecutor(new KickCommand());
-
-        // Punish GUI
-        getCommand("punish").setExecutor(new PunishCommand(this, punishConfig));
-        getServer().getPluginManager().registerEvents(
-                new PunishListener(this, banManager, ipBanManager, muteManager,
-                        punishConfig, warnManager, playerCache), this);
-
-        // Warn
-        getCommand("warn").setExecutor(new WarnCommand(warnManager, playerCache, this, "warn"));
-        getCommand("unwarn").setExecutor(new WarnCommand(warnManager, playerCache, this, "unwarn"));
-        getCommand("warns").setExecutor(new WarnCommand(warnManager, playerCache, this, "warns"));
-
-        // Chat Color
-        getCommand("chatcolor").setExecutor(new ChatColorCommand());
+        getServer().getPluginManager().registerEvents(new PunishListener(this, banManager, ipBanManager,
+                muteManager, punishConfig, warnManager, playerCache), this);
         getServer().getPluginManager().registerEvents(new ChatColorListener(), this);
-
-        // Chat Format (LuckPerms group prefix)
         getServer().getPluginManager().registerEvents(new ChatFormatListener(this), this);
-
-        // Glow
-        getCommand("glow").setExecutor(new GlowCommand());
         getServer().getPluginManager().registerEvents(new GlowListener(this), this);
-
-        // Fly
-        getCommand("fly").setExecutor(new FlyCommand(flyManager, flyDataManager, flyConfig, playerCache));
         getServer().getPluginManager().registerEvents(new FlyListener(flyManager, flyDataManager, flyConfig), this);
-
-        // Misc listeners
         getServer().getPluginManager().registerEvents(new FullInventoryListener(this), this);
         getServer().getPluginManager().registerEvents(new VanishListener(vanishManager, this), this);
-        getCommand("vanish").setExecutor(new VanishCommand(vanishManager));
-
-        // Report
-        getCommand("report").setExecutor(new ReportCommand(reportManager, vanishManager));
-        getCommand("reports").setExecutor(new ReportsCommand(reportManager));
-
-        // Reload
-        getCommand("bobreload").setExecutor(
-                new ReloadCommand(this, banManager, ipBanManager, punishConfig,
-                        autoMessageManager, chatGameManager));
-
-        // Daily Reward
-        getCommand("daily").setExecutor(new DailyRewardCommand(dailyRewardManager, false));
-        getCommand("fixdaily").setExecutor(new DailyRewardCommand(dailyRewardManager, true));
         getServer().getPluginManager().registerEvents(new DailyRewardListener(dailyRewardManager), this);
-
-        // Combat Tag
-        getCommand("setcombat").setExecutor(new CombatCommand(combatManager, true));
-        getCommand("removecombat").setExecutor(new CombatCommand(combatManager, false));
         getServer().getPluginManager().registerEvents(new CombatListener(combatManager, this), this);
-
-        // Chat Game
-        getCommand("chatgame").setExecutor(new ChatGameCommand(chatGameManager, this));
         getServer().getPluginManager().registerEvents(new ChatGameListener(chatGameManager), this);
-
-        // TP
-        getCommand("tp").setExecutor(new TPCommand(vanishManager));
-        getCommand("tphere").setExecutor(new TPHereCommand(vanishManager));
-        TPACommand tpaCommand = new TPACommand(this);
-        getCommand("tpa").setExecutor(tpaCommand);
-        getCommand("tpaccept").setExecutor(tpaCommand);
-        getCommand("tpdeny").setExecutor(tpaCommand);
         getServer().getPluginManager().registerEvents(tpaCommand, this);
-
-        // Core listeners
         getServer().getPluginManager().registerEvents(new BanListener(banManager, ipBanManager, playerCache), this);
         getServer().getPluginManager().registerEvents(new PlayerCacheListener(playerCache), this);
-
-        // CommandSpy
-        CommandSpyListener commandSpyListener = new CommandSpyListener();
         getServer().getPluginManager().registerEvents(commandSpyListener, this);
-        getCommand("commandspy").setExecutor(new CommandSpyCommand(commandSpyListener));
+
+        // Capture finals for command registration lambda
+        final BanManager         fBan       = banManager;
+        final IPBanManager       fIPBan     = ipBanManager;
+        final MuteManager        fMute      = muteManager;
+        final PlayerCache        fCache     = playerCache;
+        final PunishConfig       fPunishCfg = punishConfig;
+        final VanishManager      fVanish    = vanishManager;
+        final ReportManager      fReport    = reportManager;
+        final FlyDataManager     fFlyData   = flyDataManager;
+        final FlyConfig          fFlyCfg    = flyConfig;
+        final FlyManager         fFly       = flyManager;
+        final AutoMessageManager fAutoMsg   = autoMessageManager;
+        final ChatGameManager    fChatGame  = chatGameManager;
+        final CombatManager      fCombat    = combatManager;
+        final DailyRewardManager fDaily     = dailyRewardManager;
+        final WarnManager        fWarn      = warnManager;
+        final MuteListener       fMuteLsr   = muteListener;
+        final CommandSpyListener fSpyLsr    = commandSpyListener;
+        final TPACommand         fTpa       = tpaCommand;
+
+        // Register commands via Paper LifecycleEvents
+        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
+            Commands cmds = event.registrar();
+
+            // Heal
+            cmds.register("heal", new HealCommand(fVanish));
+
+            // Gamemodes
+            cmds.register("gm0", new Gamemodes(GameMode.SURVIVAL,  "gm0"));
+            cmds.register("gm1", new Gamemodes(GameMode.CREATIVE,  "gm1"));
+            cmds.register("gm2", new Gamemodes(GameMode.ADVENTURE, "gm2"));
+            cmds.register("gm3", new Gamemodes(GameMode.SPECTATOR, "gm3"));
+
+            // Ban / IP Ban
+            cmds.register("ban",        new BanCommand(fBan, fCache, Plugin.this, fVanish));
+            cmds.register("tempban",    new TempBanCommand(fBan, fCache, Plugin.this, fVanish));
+            cmds.register("unban",      new UnbanCommand(fBan, fCache));
+            cmds.register("checkban",   new CheckBanCommand(fBan, fCache));
+            cmds.register("ipban",      new IPBanCommand(fIPBan, Plugin.this));
+            cmds.register("iptempban",  new IPTempBanCommand(fIPBan, Plugin.this));
+            cmds.register("ipunban",    new IPUnbanCommand(fIPBan, fCache));
+            cmds.register("checkipban", new CheckIPBanCommand(fIPBan));
+
+            // Mute
+            cmds.register("mute",      new MuteCommand(fMute, fVanish));
+            cmds.register("tempmute",  new TempMuteCommand(fMute, fVanish));
+            cmds.register("unmute",    new UnmuteCommand(fMute, fCache));
+            cmds.register("chatmute",  new ChatMuteCommand(fMuteLsr));
+            cmds.register("chatclear", new ChatClearCommand());
+
+            // Kick
+            cmds.register("kick", new KickCommand(fVanish));
+
+            // Punish GUI
+            cmds.register("punish", new PunishCommand(Plugin.this, fPunishCfg, fVanish));
+
+            // Warn
+            cmds.register("warn",   new WarnCommand(fWarn, fCache, Plugin.this, "warn",   fVanish));
+            cmds.register("unwarn", new WarnCommand(fWarn, fCache, Plugin.this, "unwarn", fVanish));
+            cmds.register("warns",  new WarnCommand(fWarn, fCache, Plugin.this, "warns",  fVanish));
+
+            // Chat Color
+            cmds.register("chatcolor", new ChatColorCommand());
+
+            // Glow
+            cmds.register("glow", new GlowCommand());
+
+            // Fly
+            cmds.register("fly", new FlyCommand(fFly, fFlyData, fFlyCfg, fCache, fVanish));
+
+            // Vanish
+            cmds.register("vanish", new VanishCommand(fVanish));
+
+            // Report
+            cmds.register("report",  new ReportCommand(fReport, fVanish));
+            cmds.register("reports", new ReportsCommand(fReport));
+
+            // Reload
+            cmds.register("bobreload", new ReloadCommand(Plugin.this, fBan, fIPBan,
+                    fPunishCfg, fAutoMsg, fChatGame));
+
+            // Daily Reward
+            cmds.register("daily",    new DailyRewardCommand(fDaily, false));
+            cmds.register("fixdaily", new DailyRewardCommand(fDaily, true));
+
+            // Combat Tag
+            cmds.register("setcombat",    new CombatCommand(fCombat, true));
+            cmds.register("removecombat", new CombatCommand(fCombat, false));
+
+            // Chat Game
+            cmds.register("chatgame", new ChatGameCommand(fChatGame, Plugin.this));
+
+            // TP
+            cmds.register("tp",       new TPCommand(fVanish));
+            cmds.register("tphere",   new TPHereCommand(fVanish));
+            cmds.register("tpa",      fTpa.tpa());
+            cmds.register("tpaccept", fTpa.tpaccept());
+            cmds.register("tpdeny",   fTpa.tpdeny());
+
+            // CommandSpy
+            cmds.register("commandspy", new CommandSpyCommand(fSpyLsr));
+        });
     }
 
     @Override
     public void onDisable() {
         playerCache.saveNow();
-    }}
+    }
+}

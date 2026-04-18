@@ -14,7 +14,8 @@
       "Bash(rm commands/ChatClearCommand.java commands/ChatColorCommand.java commands/ChatGameCommand.java commands/ChatMuteCommand.java commands/CombatCommand.java commands/CommandSpyCommand.java commands/DailyRewardCommand.java commands/FlyCommand.java commands/Gamemodes.java commands/GlowCommand.java commands/HealCommand.java commands/ReloadCommand.java commands/ReportCommand.java commands/ReportsCommand.java commands/TPACommand.java commands/TPCommand.java commands/VanishCommand.java)",
       "Bash(rm listeners/ChatColorListener.java listeners/ChatFormatListener.java listeners/ChatGameListener.java listeners/CombatListener.java listeners/CommandSpyListener.java listeners/DailyRewardListener.java listeners/FlyListener.java listeners/FullInventoryListener.java listeners/GlowListener.java listeners/PlayerCacheListener.java listeners/VanishListener.java listeners/VaultHook.java)",
       "Bash(rm Utils/AutoMessageManager.java Utils/BobHooks.java Utils/ChatGameManager.java Utils/CombatManager.java Utils/DailyRewardManager.java Utils/FlyConfig.java Utils/FlyDataManager.java Utils/FlyManager.java Utils/PlayerCache.java Utils/PlayerHealer.java Utils/ReportManager.java Utils/VanishManager.java)",
-      "WebSearch"
+      "WebSearch",
+      "WebFetch(domain:docs.papermc.io)"
     ]
   }
 }

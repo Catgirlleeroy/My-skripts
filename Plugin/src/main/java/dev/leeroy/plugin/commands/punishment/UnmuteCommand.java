@@ -1,17 +1,18 @@
 package dev.leeroy.plugin.commands.punishment;
 
-import dev.leeroy.plugin.Utils.punishment.MuteManager;
 import dev.leeroy.plugin.Utils.misc.PlayerCache;
+import dev.leeroy.plugin.Utils.punishment.MuteManager;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class UnmuteCommand implements CommandExecutor {
+public class UnmuteCommand implements BasicCommand {
 
     private final MuteManager muteManager;
     private final PlayerCache playerCache;
@@ -22,38 +23,36 @@ public class UnmuteCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
 
         if (!sender.hasPermission("bob.unmute")) {
-            sender.sendMessage(ChatColor.RED + "You don't have permission to unmute players.");
-            return true;
+            sender.sendMessage(Component.text("You don't have permission to unmute players.", NamedTextColor.RED));
+            return;
         }
 
         if (args.length < 1) {
-            sender.sendMessage(ChatColor.YELLOW + "Usage: /unmute <player|uuid>");
-            return true;
+            sender.sendMessage(Component.text("Usage: /unmute <player|uuid>", NamedTextColor.YELLOW));
+            return;
         }
 
         UUID uuid = resolveUUID(args[0]);
         if (uuid == null) {
-            sender.sendMessage(ChatColor.RED + "Could not find '" + args[0] + "'. Use their UUID or make sure their name is in the cache.");
-            return true;
+            sender.sendMessage(Component.text("Could not find '" + args[0] + "'. Use their UUID or make sure their name is in the cache.", NamedTextColor.RED));
+            return;
         }
 
         if (!muteManager.isMuted(uuid)) {
-            sender.sendMessage(ChatColor.RED + args[0] + " is not currently muted.");
-            return true;
+            sender.sendMessage(Component.text(args[0] + " is not currently muted.", NamedTextColor.RED));
+            return;
         }
 
         muteManager.unmute(uuid);
         String name = playerCache.getName(uuid);
-        String displayName = name != null ? name : uuid.toString();
-
-        sender.sendMessage(ChatColor.GREEN + displayName + " has been unmuted.");
+        sender.sendMessage(Component.text((name != null ? name : uuid.toString()) + " has been unmuted.", NamedTextColor.GREEN));
 
         Player target = Bukkit.getPlayer(uuid);
-        if (target != null) target.sendMessage(ChatColor.GREEN + "You have been unmuted.");
-        return true;
+        if (target != null) target.sendMessage(Component.text("You have been unmuted.", NamedTextColor.GREEN));
     }
 
     private UUID resolveUUID(String input) {

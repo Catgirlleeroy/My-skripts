@@ -1,88 +1,95 @@
 package dev.leeroy.plugin.commands.punishment;
 
 import dev.leeroy.plugin.Utils.misc.PlayerCache;
+import dev.leeroy.plugin.Utils.misc.TabUtil;
+import dev.leeroy.plugin.Utils.misc.TextUtil;
+import dev.leeroy.plugin.Utils.misc.VanishManager;
 import dev.leeroy.plugin.Utils.punishment.WarnManager;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Sound;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.UUID;
 
-public class WarnCommand implements CommandExecutor {
+public class WarnCommand implements BasicCommand {
 
     private final WarnManager warnManager;
     private final PlayerCache playerCache;
     private final JavaPlugin plugin;
-    private final String mode; // "warn", "unwarn", "warns"
+    private final String mode;
+    private final VanishManager vanishManager;
 
     public WarnCommand(WarnManager warnManager, PlayerCache playerCache,
-                       JavaPlugin plugin, String mode) {
-        this.warnManager = warnManager;
-        this.playerCache = playerCache;
-        this.plugin      = plugin;
-        this.mode        = mode;
+                       JavaPlugin plugin, String mode, VanishManager vanishManager) {
+        this.warnManager   = warnManager;
+        this.playerCache   = playerCache;
+        this.plugin        = plugin;
+        this.mode          = mode;
+        this.vanishManager = vanishManager;
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public Collection<String> suggest(CommandSourceStack stack, String[] args) {
+        if (args.length == 1) return TabUtil.onlinePlayers(stack, args[0], vanishManager);
+        return java.util.Collections.emptyList();
+    }
 
+    @Override
+    public void execute(CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
         switch (mode) {
             case "warn"   -> handleWarn(sender, args);
             case "unwarn" -> handleUnwarn(sender, args);
             case "warns"  -> handleWarns(sender, args);
         }
-        return true;
     }
-
-    // ── /warn <player> [reason] ───────────────────────────────────────────────
 
     private void handleWarn(CommandSender sender, String[] args) {
         if (!sender.hasPermission("bob.warn")) {
-            sender.sendMessage(ChatColor.RED + "You don't have permission to warn players.");
+            sender.sendMessage(Component.text("You don't have permission to warn players.", NamedTextColor.RED));
             return;
         }
-        if (args.length < 1) { sender.sendMessage(ChatColor.YELLOW + "Usage: /warn <player> [reason]"); return; }
+        if (args.length < 1) { sender.sendMessage(Component.text("Usage: /warn <player> [reason]", NamedTextColor.YELLOW)); return; }
 
         UUID uuid = resolveUUID(args[0]);
-        if (uuid == null) { sender.sendMessage(ChatColor.RED + "Player '" + args[0] + "' not found."); return; }
+        if (uuid == null) { sender.sendMessage(Component.text("Player '" + args[0] + "' not found.", NamedTextColor.RED)); return; }
 
         String targetName = getName(uuid, args[0]);
         String reason     = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length)) : null;
         int max           = plugin.getConfig().getInt("warn.max-warns", 3);
         int warns         = warnManager.addWarn(uuid);
 
-        // Sound to warned player if online
         Player online = Bukkit.getPlayer(uuid);
         if (online != null) {
             online.playSound(online.getLocation(), Sound.ENTITY_WARDEN_SONIC_BOOM, 1.0f, 1.0f);
         }
 
-        // Broadcast
         String broadcastKey = reason != null ? "warned-broadcast" : "warned-broadcast-no-reason";
-        String msg = color(plugin.getConfig().getString("warn.messages." + broadcastKey, ""))
+        String msg = plugin.getConfig().getString("warn.messages." + broadcastKey, "")
                 .replace("{player}", targetName)
                 .replace("{staff}",  sender.getName())
                 .replace("{reason}", reason != null ? reason : "")
                 .replace("{warns}",  String.valueOf(warns))
                 .replace("{max}",    String.valueOf(max));
 
-        Bukkit.broadcastMessage("");
-        Bukkit.broadcastMessage(color("&4&l                  WARNING!"));
-        Bukkit.broadcastMessage("");
-        Bukkit.broadcastMessage(msg);
-        Bukkit.broadcastMessage("");
+        Bukkit.broadcast(Component.empty());
+        TextUtil.broadcast("&4&l                  WARNING!");
+        Bukkit.broadcast(Component.empty());
+        TextUtil.broadcast(msg);
+        Bukkit.broadcast(Component.empty());
 
-        // Auto-punish at max warns
         if (warns >= max) {
             final UUID fUUID = uuid;
             final String fName = targetName;
-            final int offense = warnManager.getOffenses(uuid); // 0-indexed before increment
+            final int offense = warnManager.getOffenses(uuid);
             warnManager.incrementOffenses(uuid);
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 if (warnManager.getWarns(fUUID) >= max) {
@@ -105,64 +112,59 @@ public class WarnCommand implements CommandExecutor {
         }
     }
 
-    // ── /unwarn <player> ─────────────────────────────────────────────────────
-
     private void handleUnwarn(CommandSender sender, String[] args) {
         if (!sender.hasPermission("bob.warn")) {
-            sender.sendMessage(ChatColor.RED + "You don't have permission.");
+            sender.sendMessage(Component.text("You don't have permission.", NamedTextColor.RED));
             return;
         }
-        if (args.length < 1) { sender.sendMessage(ChatColor.YELLOW + "Usage: /unwarn <player>"); return; }
+        if (args.length < 1) { sender.sendMessage(Component.text("Usage: /unwarn <player>", NamedTextColor.YELLOW)); return; }
 
         UUID uuid = resolveUUID(args[0]);
-        if (uuid == null) { sender.sendMessage(ChatColor.RED + "Player '" + args[0] + "' not found."); return; }
+        if (uuid == null) { sender.sendMessage(Component.text("Player '" + args[0] + "' not found.", NamedTextColor.RED)); return; }
 
         String targetName = getName(uuid, args[0]);
         int max           = plugin.getConfig().getInt("warn.max-warns", 3);
 
         if (warnManager.getWarns(uuid) <= 0) {
-            sender.sendMessage(color(plugin.getConfig().getString("warn.messages.no-warns", "&4{player} &chas no warns.")
+            sender.sendMessage(TextUtil.parse(plugin.getConfig()
+                    .getString("warn.messages.no-warns", "&4{player} &chas no warns.")
                     .replace("{player}", targetName)));
             return;
         }
 
         int warns = warnManager.removeWarn(uuid);
 
-        String msg = color(plugin.getConfig().getString("warn.messages.unwarned-broadcast", ""))
+        String msg = plugin.getConfig().getString("warn.messages.unwarned-broadcast", "")
                 .replace("{player}", targetName)
                 .replace("{staff}",  sender.getName())
                 .replace("{warns}",  String.valueOf(warns))
                 .replace("{max}",    String.valueOf(max));
 
-        Bukkit.broadcastMessage("");
-        Bukkit.broadcastMessage(color("&2&l                  UN-WARN!"));
-        Bukkit.broadcastMessage("");
-        Bukkit.broadcastMessage(msg);
-        Bukkit.broadcastMessage("");
+        Bukkit.broadcast(Component.empty());
+        TextUtil.broadcast("&2&l                  UN-WARN!");
+        Bukkit.broadcast(Component.empty());
+        TextUtil.broadcast(msg);
+        Bukkit.broadcast(Component.empty());
     }
-
-    // ── /warns [player] ───────────────────────────────────────────────────────
 
     private void handleWarns(CommandSender sender, String[] args) {
         int max = plugin.getConfig().getInt("warn.max-warns", 3);
 
         if (args.length == 0 || !(sender instanceof Player)) {
             UUID uuid = sender instanceof Player p ? p.getUniqueId() : null;
-            if (uuid == null) { sender.sendMessage(ChatColor.YELLOW + "Usage: /warns <player>"); return; }
+            if (uuid == null) { sender.sendMessage(Component.text("Usage: /warns <player>", NamedTextColor.YELLOW)); return; }
             int warns = warnManager.getWarns(uuid);
-            sender.sendMessage(color(plugin.getConfig().getString("warn.messages.check-self", "")
+            sender.sendMessage(TextUtil.parse(plugin.getConfig().getString("warn.messages.check-self", "")
                     .replace("{warns}", String.valueOf(warns))
                     .replace("{max}",   String.valueOf(max))));
             return;
         }
 
-        // /warns <player>
         UUID uuid = resolveUUID(args[0]);
-        if (uuid == null) { sender.sendMessage(ChatColor.RED + "Player '" + args[0] + "' not found."); return; }
+        if (uuid == null) { sender.sendMessage(Component.text("Player '" + args[0] + "' not found.", NamedTextColor.RED)); return; }
 
-        // If checking self
         if (sender instanceof Player p && p.getUniqueId().equals(uuid)) {
-            sender.sendMessage(color(plugin.getConfig().getString("warn.messages.check-self", "")
+            sender.sendMessage(TextUtil.parse(plugin.getConfig().getString("warn.messages.check-self", "")
                     .replace("{warns}", String.valueOf(warnManager.getWarns(uuid)))
                     .replace("{max}",   String.valueOf(max))));
             return;
@@ -170,13 +172,11 @@ public class WarnCommand implements CommandExecutor {
 
         String targetName = getName(uuid, args[0]);
         int warns = warnManager.getWarns(uuid);
-        sender.sendMessage(color(plugin.getConfig().getString("warn.messages.check-other", "")
+        sender.sendMessage(TextUtil.parse(plugin.getConfig().getString("warn.messages.check-other", "")
                 .replace("{player}", targetName)
                 .replace("{warns}",  String.valueOf(warns))
                 .replace("{max}",    String.valueOf(max))));
     }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
 
     private UUID resolveUUID(String input) {
         Player online = Bukkit.getPlayerExact(input);
@@ -188,9 +188,5 @@ public class WarnCommand implements CommandExecutor {
     private String getName(UUID uuid, String fallback) {
         String cached = playerCache.getName(uuid);
         return cached != null ? cached : fallback;
-    }
-
-    private String color(String s) {
-        return ChatColor.translateAlternateColorCodes('&', s);
     }
 }

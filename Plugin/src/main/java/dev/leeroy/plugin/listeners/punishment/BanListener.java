@@ -1,10 +1,12 @@
 package dev.leeroy.plugin.listeners.punishment;
 
 import dev.leeroy.plugin.Utils.misc.PlayerCache;
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.punishment.BanManager;
 import dev.leeroy.plugin.Utils.punishment.IPBanManager;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -20,14 +22,13 @@ public class BanListener implements Listener {
     private final IPBanManager ipBanManager;
     private final PlayerCache playerCache;
 
-    // Cooldown in milliseconds between ban attempt notifications per player
-    private static final long NOTIFY_COOLDOWN_MS = 10_000L; // 10 seconds
+    private static final long NOTIFY_COOLDOWN_MS = 10_000L;
     private final Map<UUID, Long> lastNotified = new HashMap<>();
 
     public BanListener(BanManager banManager, IPBanManager ipBanManager, PlayerCache playerCache) {
-        this.banManager  = banManager;
+        this.banManager   = banManager;
         this.ipBanManager = ipBanManager;
-        this.playerCache = playerCache;
+        this.playerCache  = playerCache;
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -68,10 +69,9 @@ public class BanListener implements Listener {
             }
         }
 
-        // ── Check if joining player shares IP with a name-banned player ──────
-        // (player is NOT banned themselves, but their IP matches a banned account)
+        // ── Alt alert: same IP as a banned player ────────────────────────────
         for (UUID bannedUUID : banManager.getAllBannedUUIDs()) {
-            if (bannedUUID.equals(uuid)) continue; // skip self, already checked above
+            if (bannedUUID.equals(uuid)) continue;
 
             String cachedIP = playerCache.getIP(bannedUUID);
             if (cachedIP != null && cachedIP.equals(ip)) {
@@ -82,72 +82,60 @@ public class BanListener implements Listener {
                 String reason   = (String) details.get("reason");
                 String bannedBy = (String) details.get("bannedBy");
 
-                // Notify staff — but let the player join
-                String header =
-                        ChatColor.GOLD + "[ALT ALERT] " +
-                                ChatColor.YELLOW + name +
-                                ChatColor.GRAY + " (" + ip + ")" +
-                                ChatColor.GOLD + " joined on the same IP as banned player " +
-                                ChatColor.RED + (bannedName != null ? bannedName : bannedUUID.toString()) + ChatColor.GOLD + "!";
+                Component header = TextUtil.parse(
+                        "&6[ALT ALERT] &e" + name + " &7(" + ip + ")" +
+                        "&6 joined on the same IP as banned player &c" +
+                        (bannedName != null ? bannedName : bannedUUID) + "&6!");
 
-                String detailLine =
-                        ChatColor.YELLOW + "Banned reason: " + ChatColor.WHITE + reason +
-                                ChatColor.YELLOW + " | Banned by: " + ChatColor.WHITE + bannedBy;
+                Component detail = TextUtil.parse(
+                        "&eBanned reason: &f" + reason + " &e| Banned by: &f" + bannedBy);
 
                 Bukkit.getOnlinePlayers().stream()
                         .filter(p -> p.hasPermission("bob.staff"))
-                        .forEach(staff -> {
-                            staff.sendMessage(header);
-                            staff.sendMessage(detailLine);
-                        });
+                        .forEach(staff -> { staff.sendMessage(header); staff.sendMessage(detail); });
 
-                Bukkit.getLogger().info("[Bob] " + ChatColor.stripColor(header));
-                break; // one alert is enough even if multiple banned accounts share the IP
+                Bukkit.getLogger().info("[Bob] ALT ALERT: " + name + " (" + ip +
+                        ") shares IP with banned " + bannedName + ". Reason: " + reason);
+                break;
             }
         }
     }
 
     private void notifyStaff(String playerName, String ip, String banType,
                              String type, String reason, String bannedBy, long expiry) {
-
-        // Throttle — only notify once per 10 seconds per player to prevent spam
-        // when a client auto-reconnects rapidly
         UUID key = UUID.nameUUIDFromBytes(playerName.getBytes());
         long now = System.currentTimeMillis();
         if (lastNotified.containsKey(key) && now - lastNotified.get(key) < NOTIFY_COOLDOWN_MS) return;
         lastNotified.put(key, now);
-        String header =
-                ChatColor.RED + "[" + banType + "] " +
-                        ChatColor.YELLOW + playerName +
-                        ChatColor.GRAY + " (" + ip + ")" +
-                        ChatColor.RED + " tried to join!";
 
-        String details =
-                ChatColor.YELLOW + "Type: " + ChatColor.WHITE + (type.equals("permanent") ? "Permanent" : "Temporary") +
-                        ChatColor.YELLOW + " | Reason: " + ChatColor.WHITE + reason +
-                        ChatColor.YELLOW + " | By: " + ChatColor.WHITE + bannedBy +
-                        (expiry != -1L ? ChatColor.YELLOW + " | Expires in: " + ChatColor.WHITE + BanManager.formatRemaining(expiry) : "");
+        Component header = TextUtil.parse(
+                "&c[" + banType + "] &e" + playerName + " &7(" + ip + ") &ctried to join!");
+
+        Component details = TextUtil.parse(
+                "&eType: &f" + (type.equals("permanent") ? "Permanent" : "Temporary") +
+                " &e| Reason: &f" + reason +
+                " &e| By: &f" + bannedBy +
+                (expiry != -1L ? " &e| Expires in: &f" + BanManager.formatRemaining(expiry) : ""));
 
         Bukkit.getOnlinePlayers().stream()
                 .filter(p -> p.hasPermission("bob.staff"))
-                .forEach(staff -> {
-                    staff.sendMessage(header);
-                    staff.sendMessage(details);
-                });
+                .forEach(staff -> { staff.sendMessage(header); staff.sendMessage(details); });
 
-        Bukkit.getLogger().info("[Bob] " + ChatColor.stripColor(header) + " " + ChatColor.stripColor(details));
+        Bukkit.getLogger().info("[Bob] [" + banType + "] " + playerName + " (" + ip +
+                ") tried to join. Type: " + type + " Reason: " + reason);
     }
 
-    private String buildKickMessage(String banLabel, String type, String reason, String bannedBy, long expiry) {
-        StringBuilder msg = new StringBuilder();
-        msg.append(ChatColor.RED).append("You are ").append(banLabel).append(" from this server.\n");
-        msg.append(ChatColor.WHITE).append("Reason: ").append(reason).append("\n");
-        msg.append(ChatColor.WHITE).append("Banned by: ").append(bannedBy).append("\n");
+    private Component buildKickMessage(String banLabel, String type, String reason,
+                                       String bannedBy, long expiry) {
+        Component msg = Component.text("You are " + banLabel + " from this server.\n", NamedTextColor.RED)
+                .append(Component.text("Reason: " + reason + "\n", NamedTextColor.WHITE))
+                .append(Component.text("Banned by: " + bannedBy + "\n", NamedTextColor.WHITE));
+
         if (type.equals("temp") && expiry != -1L) {
-            msg.append(ChatColor.WHITE).append("Expires in: ").append(BanManager.formatRemaining(expiry));
+            msg = msg.append(Component.text("Expires in: " + BanManager.formatRemaining(expiry), NamedTextColor.WHITE));
         } else {
-            msg.append(ChatColor.WHITE).append("Duration: Permanent");
+            msg = msg.append(Component.text("Duration: Permanent", NamedTextColor.WHITE));
         }
-        return msg.toString();
+        return msg;
     }
 }

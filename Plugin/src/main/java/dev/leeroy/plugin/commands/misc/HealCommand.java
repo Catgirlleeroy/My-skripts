@@ -1,57 +1,70 @@
 package dev.leeroy.plugin.commands.misc;
 
 import dev.leeroy.plugin.Utils.misc.PlayerHealer;
+import dev.leeroy.plugin.Utils.misc.TabUtil;
+import dev.leeroy.plugin.Utils.misc.VanishManager;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class HealCommand implements CommandExecutor {
+import java.util.Collection;
+
+public class HealCommand implements BasicCommand {
+
+    private final VanishManager vanishManager;
+
+    public HealCommand(VanishManager vanishManager) {
+        this.vanishManager = vanishManager;
+    }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public Collection<String> suggest(CommandSourceStack stack, String[] args) {
+        if (args.length == 1) return TabUtil.onlinePlayers(stack, args[0], vanishManager);
+        return java.util.Collections.emptyList();
+    }
 
-        // No arguments — heal self
+    @Override
+    public void execute(CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
+
         if (args.length == 0) {
-            if (!(sender instanceof Player)) {
-                sender.sendMessage(ChatColor.RED + "Console must specify a player: /heal <player>");
-                return true;
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage(Component.text("Console must specify a player: /heal <player>", NamedTextColor.RED));
+                return;
             }
 
-            Player player = (Player) sender;
-
             if (!player.hasPermission("bob.heal")) {
-                player.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
-                return true;
+                player.sendMessage(Component.text("You don't have permission to use this command.", NamedTextColor.RED));
+                return;
             }
 
             PlayerHealer.heal(player);
-            player.sendMessage(ChatColor.GREEN + "You have been healed!");
-            return true;
+            player.sendMessage(Component.text("You have been healed!", NamedTextColor.GREEN));
+            return;
         }
 
-        // One argument — heal another player
         if (args.length == 1) {
             if (!sender.hasPermission("bob.heal.others")) {
-                sender.sendMessage(ChatColor.RED + "You don't have permission to heal other players.");
-                return true;
+                sender.sendMessage(Component.text("You don't have permission to heal other players.", NamedTextColor.RED));
+                return;
             }
 
             Player target = Bukkit.getPlayerExact(args[0]);
             if (target == null) {
-                sender.sendMessage(ChatColor.RED + "Player '" + args[0] + "' not found or is offline.");
-                return true;
+                sender.sendMessage(Component.text("Player '" + args[0] + "' not found or is offline.", NamedTextColor.RED));
+                return;
             }
 
             PlayerHealer.heal(target);
-            target.sendMessage(ChatColor.GREEN + "You have been healed by " + sender.getName() + "!");
-            sender.sendMessage(ChatColor.GREEN + "Healed " + target.getName() + ".");
-            return true;
+            target.sendMessage(Component.text("You have been healed by " + sender.getName() + "!", NamedTextColor.GREEN));
+            sender.sendMessage(Component.text("Healed " + target.getName() + ".", NamedTextColor.GREEN));
+            return;
         }
 
-        sender.sendMessage(ChatColor.YELLOW + "Usage: /heal [player]");
-        return true;
+        sender.sendMessage(Component.text("Usage: /heal [player]", NamedTextColor.YELLOW));
     }
 }

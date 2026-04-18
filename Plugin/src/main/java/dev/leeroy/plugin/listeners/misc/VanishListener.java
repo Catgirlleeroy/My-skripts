@@ -1,7 +1,6 @@
 package dev.leeroy.plugin.listeners.misc;
 
 import dev.leeroy.plugin.Utils.misc.VanishManager;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -40,9 +39,9 @@ public class VanishListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
-        // If they quit while vanished, clean up and suppress quit message
+        // If they quit while vanished, suppress quit message and clean up
         if (vanishManager.isVanished(player.getUniqueId())) {
-            event.setQuitMessage(null);
+            event.quitMessage(null);
             vanishManager.onQuit(player);
         }
     }

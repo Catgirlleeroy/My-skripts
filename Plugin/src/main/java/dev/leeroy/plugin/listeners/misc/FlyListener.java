@@ -3,6 +3,7 @@ package dev.leeroy.plugin.listeners.misc;
 import dev.leeroy.plugin.Utils.misc.FlyConfig;
 import dev.leeroy.plugin.Utils.misc.FlyDataManager;
 import dev.leeroy.plugin.Utils.misc.FlyManager;
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -24,28 +25,23 @@ public class FlyListener implements Listener {
         this.flyConfig  = flyConfig;
     }
 
-    // ── Join — daily bonus + restore flight ───────────────────────────────────
-
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player p = event.getPlayer();
 
-        // First join bonus
         if (!flyData.hasJoinedBefore(p.getUniqueId())) {
             flyData.markFirstJoin(p.getUniqueId());
             long bonus = flyConfig.get().getLong("general.bonus.first-join", 0L);
             if (bonus > 0) {
                 flyData.addTime(p.getUniqueId(), bonus);
-                p.sendMessage(flyConfig.msg("first-join").replace("{time}", FlyManager.formatTime(bonus)));
+                p.sendMessage(TextUtil.parse(flyConfig.msg("first-join").replace("{time}", FlyManager.formatTime(bonus))));
             }
         }
 
-        // Daily bonus
         if (!flyData.hasReceivedDailyBonus(p.getUniqueId())) {
             flyData.markDailyBonus(p.getUniqueId());
             long totalBonus = 0;
 
-            // Check permission groups
             if (flyConfig.get().isConfigurationSection("general.bonus.daily-login")) {
                 for (String group : flyConfig.get().getConfigurationSection("general.bonus.daily-login").getKeys(false)) {
                     if (p.hasPermission("bob.fly.bonus." + group)) {
@@ -56,46 +52,36 @@ public class FlyListener implements Listener {
 
             if (totalBonus > 0) {
                 flyData.addTime(p.getUniqueId(), totalBonus);
-                p.sendMessage(flyConfig.msg("daily-bonus").replace("{time}", FlyManager.formatTime(totalBonus)));
+                p.sendMessage(TextUtil.parse(flyConfig.msg("daily-bonus").replace("{time}", FlyManager.formatTime(totalBonus))));
             }
         }
 
-        // Restore permanent fly
         if (flyData.hasPermanentFly(p.getUniqueId())) {
             p.setAllowFlight(true);
         }
     }
-
-    // ── Quit — clean up ───────────────────────────────────────────────────────
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         flyManager.cleanup(event.getPlayer().getUniqueId());
     }
 
-    // ── Movement — track for idle + update action bar ─────────────────────────
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onMove(PlayerMoveEvent event) {
         Player p = event.getPlayer();
-        // Only count actual position change, not just head rotation
         if (event.getFrom().getBlockX() == event.getTo().getBlockX()
                 && event.getFrom().getBlockY() == event.getTo().getBlockY()
                 && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) return;
 
         flyManager.updateLastMoved(p.getUniqueId());
 
-        // Update action bar while flying
         if (flyManager.isFlying(p.getUniqueId())) {
             flyManager.updateActionBar(p);
         }
     }
 
-    // ── Combat — disable flight on hit ────────────────────────────────────────
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDamage(EntityDamageByEntityEvent event) {
-        // Player attacks another player
         if (event.getDamager() instanceof Player attacker && event.getEntity() instanceof Player victim) {
             if (flyConfig.get().getBoolean("general.combat.attack-player", true)) {
                 flyManager.onCombat(attacker);
@@ -106,14 +92,12 @@ public class FlyListener implements Listener {
             return;
         }
 
-        // Player attacks a mob
         if (event.getDamager() instanceof Player attacker) {
             if (flyConfig.get().getBoolean("general.combat.attack-mob", false)) {
                 flyManager.onCombat(attacker);
             }
         }
 
-        // Mob attacks a player
         if (event.getEntity() instanceof Player victim) {
             if (flyConfig.get().getBoolean("general.combat.attacked-by-mob", false)) {
                 flyManager.onCombat(victim);

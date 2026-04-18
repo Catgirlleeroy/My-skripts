@@ -1,43 +1,51 @@
 package dev.leeroy.plugin.commands.punishment;
 
 import dev.leeroy.plugin.Utils.misc.PlayerCache;
+import dev.leeroy.plugin.Utils.misc.TabUtil;
+import dev.leeroy.plugin.Utils.misc.TextUtil;
+import dev.leeroy.plugin.Utils.misc.VanishManager;
 import dev.leeroy.plugin.Utils.punishment.BanManager;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Sound;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.UUID;
 
-public class TempBanCommand implements CommandExecutor {
+public class TempBanCommand implements BasicCommand {
 
     private final BanManager banManager;
     private final PlayerCache playerCache;
     private final JavaPlugin plugin;
+    private final VanishManager vanishManager;
 
-    public TempBanCommand(BanManager banManager, PlayerCache playerCache, JavaPlugin plugin) {
-        this.banManager  = banManager;
-        this.playerCache = playerCache;
-        this.plugin      = plugin;
+    public TempBanCommand(BanManager banManager, PlayerCache playerCache, JavaPlugin plugin, VanishManager vanishManager) {
+        this.banManager    = banManager;
+        this.playerCache   = playerCache;
+        this.plugin        = plugin;
+        this.vanishManager = vanishManager;
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
 
         if (!sender.hasPermission("bob.tempban")) {
-            sender.sendMessage(ChatColor.RED + "You don't have permission to tempban players.");
-            return true;
+            sender.sendMessage(Component.text("You don't have permission to tempban players.", NamedTextColor.RED));
+            return;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(ChatColor.YELLOW + "Usage: /tempban <player|uuid> <duration> [reason]");
-            sender.sendMessage(ChatColor.GRAY + "Duration examples: 30m, 2h, 1d, 1d12h");
-            return true;
+            sender.sendMessage(Component.text("Usage: /tempban <player|uuid> <duration> [reason]", NamedTextColor.YELLOW));
+            sender.sendMessage(Component.text("Duration examples: 30m, 2h, 1d, 1d12h", NamedTextColor.GRAY));
+            return;
         }
 
         String input       = args[0];
@@ -48,11 +56,10 @@ public class TempBanCommand implements CommandExecutor {
 
         long durationMs = BanManager.parseDuration(durationStr);
         if (durationMs == -1) {
-            sender.sendMessage(ChatColor.RED + "Invalid duration '" + durationStr + "'. Use formats like 30m, 2h, 1d.");
-            return true;
+            sender.sendMessage(Component.text("Invalid duration '" + durationStr + "'. Use formats like 30m, 2h, 1d.", NamedTextColor.RED));
+            return;
         }
 
-        // Resolve UUID and name
         UUID   uuid;
         String targetName;
         Player onlineTarget = Bukkit.getPlayerExact(input);
@@ -64,52 +71,46 @@ public class TempBanCommand implements CommandExecutor {
             uuid = tryParseUUID(input);
             if (uuid == null) uuid = playerCache.getUUID(input);
             if (uuid == null) {
-                sender.sendMessage(ChatColor.RED + "Player '" + input + "' not found. They must have joined before, or provide a UUID.");
-                return true;
+                sender.sendMessage(Component.text("Player '" + input + "' not found. They must have joined before, or provide a UUID.", NamedTextColor.RED));
+                return;
             }
             String cached = playerCache.getName(uuid);
             targetName = cached != null ? cached : uuid.toString();
         }
 
-
-        // Check if target is exempt from this punishment
         if (onlineTarget != null && (onlineTarget.hasPermission("bob.exempt") || onlineTarget.hasPermission("bob.exempt.tempban"))) {
-            sender.sendMessage(ChatColor.RED + onlineTarget.getName() + " is exempt from this punishment.");
-            return true;
+            sender.sendMessage(Component.text(onlineTarget.getName() + " is exempt from this punishment.", NamedTextColor.RED));
+            return;
         }
 
         if (banManager.isBanned(uuid)) {
-            sender.sendMessage(ChatColor.RED + targetName + " is already banned.");
-            return true;
+            sender.sendMessage(Component.text(targetName + " is already banned.", NamedTextColor.RED));
+            return;
         }
 
         banManager.tempBan(uuid, targetName, reason, sender.getName(), durationMs);
 
-        // Effects and kick if online
         if (onlineTarget != null) {
             onlineTarget.getWorld().strikeLightningEffect(onlineTarget.getLocation());
-            Bukkit.getOnlinePlayers().forEach(p ->
-                    p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f)
-            );
+            Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f));
             final String finalReason   = reason;
             final long   finalDuration = durationMs;
             Bukkit.getScheduler().runTaskLater(plugin, () ->
-                    onlineTarget.kickPlayer(
-                            ChatColor.RED + "You have been temporarily banned.\n" +
-                                    ChatColor.WHITE + "Duration: " + BanManager.formatRemaining(System.currentTimeMillis() + finalDuration) + "\n" +
-                                    ChatColor.WHITE + "Reason: " + finalReason
+                    onlineTarget.kick(
+                            Component.text("You have been temporarily banned.\n", NamedTextColor.RED)
+                                    .append(Component.text("Duration: " + BanManager.formatRemaining(System.currentTimeMillis() + finalDuration) + "\n", NamedTextColor.WHITE))
+                                    .append(Component.text("Reason: " + finalReason, NamedTextColor.WHITE))
                     ), 10L);
         }
 
-        Bukkit.broadcastMessage(
-                ChatColor.RED + "[TEMPBAN] " +
-                        ChatColor.YELLOW + targetName +
-                        ChatColor.RED + " has been temporarily banned! " +
-                        ChatColor.GRAY + "Duration: " + durationStr + " | Reason: " + reason
-        );
+        TextUtil.broadcast("&c[TEMPBAN] &e" + targetName + " &chas been temporarily banned! &7Duration: " + durationStr + " | Reason: " + reason);
+        sender.sendMessage(Component.text("Tempbanned " + targetName + " for " + durationStr + ". Reason: " + reason, NamedTextColor.GREEN));
+    }
 
-        sender.sendMessage(ChatColor.GREEN + "Tempbanned " + targetName + " for " + durationStr + ". Reason: " + reason);
-        return true;
+    @Override
+    public Collection<String> suggest(CommandSourceStack stack, String[] args) {
+        if (args.length == 1) return TabUtil.onlinePlayers(stack, args[0], vanishManager);
+        return java.util.Collections.emptyList();
     }
 
     private UUID tryParseUUID(String input) {
