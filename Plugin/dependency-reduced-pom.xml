@@ -4,7 +4,7 @@
   <groupId>dev.leeroy</groupId>
   <artifactId>Bob</artifactId>
   <name>Bob</name>
-  <version>1.1</version>
+  <version>1.2</version>
   <build>
     <defaultGoal>clean package</defaultGoal>
     <resources>
@@ -32,23 +32,13 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-              <minimizeJar>false</minimizeJar>
               <filters>
-                <filter>
-                  <artifact>net.dv8tion:JDA</artifact>
-                  <excludes>
-                    <exclude>natives/**</exclude>
-                    <exclude>com/sun/jna/**</exclude>
-                    <exclude>club/minnced/**</exclude>
-                  </excludes>
-                </filter>
                 <filter>
                   <artifact>*:*</artifact>
                   <excludes>
                     <exclude>META-INF/*.SF</exclude>
                     <exclude>META-INF/*.DSA</exclude>
                     <exclude>META-INF/*.RSA</exclude>
-                    <exclude>META-INF/MANIFEST.MF</exclude>
                   </excludes>
                 </filter>
               </filters>
@@ -67,6 +57,14 @@
       <id>sk89q-repo</id>
       <url>https://maven.enginehub.org/repo/</url>
     </repository>
+    <repository>
+      <id>jitpack</id>
+      <url>https://jitpack.io</url>
+    </repository>
+    <repository>
+      <id>Scarsz-Nexus</id>
+      <url>https://nexus.scarsz.me/content/groups/public/</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -79,6 +77,18 @@
       <groupId>com.sk89q.worldguard</groupId>
       <artifactId>worldguard-bukkit</artifactId>
       <version>7.0.11</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.MilkBowl</groupId>
+      <artifactId>VaultAPI</artifactId>
+      <version>1.7</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.discordsrv</groupId>
+      <artifactId>discordsrv</artifactId>
+      <version>1.28.0</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

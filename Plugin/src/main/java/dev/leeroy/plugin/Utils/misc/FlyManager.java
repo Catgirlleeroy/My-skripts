@@ -2,6 +2,7 @@ package dev.leeroy.plugin.Utils.misc;
 
 import dev.leeroy.plugin.Utils.combat.CombatManager;
 import dev.leeroy.plugin.Utils.misc.TextUtil;
+import org.bukkit.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
@@ -125,7 +126,7 @@ public class FlyManager {
         long time = dataManager.getTime(p.getUniqueId());
 
         if (!permanent && time <= 0) {
-            p.sendMessage(msg("no-time"));
+            p.sendMessage(TextUtil.parse(msg("no-time")));
             return false;
         }
 
@@ -223,6 +224,16 @@ public class FlyManager {
                 TextUtil.parse(subtitleStr),
                 Title.Times.times(Duration.ofMillis(250), Duration.ofMillis(2000), Duration.ofMillis(500))
         ));
+
+        String soundName = flyConfig.get().getString("aesthetic.warning.sound", "BLOCK_NOTE_BLOCK_PLING");
+        if (!soundName.isEmpty()) {
+            try {
+                Sound sound = Sound.valueOf(soundName.toUpperCase());
+                // pitch rises as time gets lower: 60s→0.8, 30s→1.0, 10s→1.5, 5s→2.0
+                float pitch = remaining <= 5 ? 2.0f : remaining <= 10 ? 1.5f : remaining <= 30 ? 1.0f : 0.8f;
+                p.playSound(p.getLocation(), sound, 1.0f, pitch);
+            } catch (IllegalArgumentException ignored) {}
+        }
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

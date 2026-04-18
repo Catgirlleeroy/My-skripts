@@ -20,6 +20,10 @@ dependencies:
       load: BEFORE
       required: false
       join-classpath: true
+    DiscordSRV:
+      load: BEFORE
+      required: false
+      join-classpath: true
 
 permissions:
   bob.staff:

@@ -7,7 +7,6 @@ C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugi
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\misc\DailyRewardCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\misc\FlyCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\misc\Gamemodes.java
-C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\misc\GlowCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\misc\HealCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\misc\ReloadCommand.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\commands\misc\ReportCommand.java
@@ -37,9 +36,9 @@ C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugi
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\combat\CombatListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\misc\CommandSpyListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\misc\DailyRewardListener.java
+C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\misc\DiscordSRVChatListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\misc\FlyListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\misc\FullInventoryListener.java
-C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\misc\GlowListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\misc\PlayerCacheListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\misc\VanishListener.java
 C:\Users\leero\Documents\GitHub\My-skripts\Plugin\src\main\java\dev\leeroy\plugin\listeners\misc\VaultHook.java

@@ -10,7 +10,6 @@ dev\leeroy\plugin\commands\punishment\UnmuteCommand.class
 dev\leeroy\plugin\Utils\misc\TabUtil.class
 dev\leeroy\plugin\commands\punishment\PunishCommand.class
 dev\leeroy\plugin\Utils\misc\DailyRewardManager.class
-dev\leeroy\plugin\commands\misc\GlowCommand.class
 dev\leeroy\plugin\Utils\punishment\MuteManager.class
 dev\leeroy\plugin\Utils\chat\AutoMessageManager.class
 dev\leeroy\plugin\commands\punishment\IPUnbanCommand.class
@@ -31,6 +30,7 @@ dev\leeroy\plugin\listeners\misc\DailyRewardListener.class
 dev\leeroy\plugin\listeners\misc\CommandSpyListener.class
 dev\leeroy\plugin\listeners\misc\VanishListener.class
 dev\leeroy\plugin\gui\PunishGUI.class
+dev\leeroy\plugin\commands\misc\TPACommand$1.class
 dev\leeroy\plugin\commands\misc\TPCommand.class
 dev\leeroy\plugin\commands\punishment\KickCommand.class
 dev\leeroy\plugin\commands\misc\CommandSpyCommand.class
@@ -41,10 +41,8 @@ dev\leeroy\plugin\commands\punishment\TempMuteCommand.class
 dev\leeroy\plugin\commands\punishment\MuteCommand.class
 dev\leeroy\plugin\Utils\misc\FlyManager.class
 dev\leeroy\plugin\listeners\combat\CombatListener.class
-dev\leeroy\plugin\listeners\misc\GlowListener$1.class
 dev\leeroy\plugin\commands\misc\ReportCommand.class
 dev\leeroy\plugin\commands\chat\ChatMuteCommand.class
-dev\leeroy\plugin\listeners\misc\GlowListener.class
 dev\leeroy\plugin\Utils\punishment\IPBanManager.class
 dev\leeroy\plugin\commands\misc\Gamemodes$1.class
 dev\leeroy\plugin\commands\punishment\CheckBanCommand.class
@@ -61,8 +59,10 @@ dev\leeroy\plugin\commands\punishment\CheckIPBanCommand.class
 dev\leeroy\plugin\commands\punishment\WarnCommand.class
 dev\leeroy\plugin\listeners\chat\ChatColorListener.class
 dev\leeroy\plugin\Utils\misc\FlyDataManager.class
+dev\leeroy\plugin\Plugin$1.class
 dev\leeroy\plugin\commands\misc\ReportsCommand.class
 dev\leeroy\plugin\Utils\misc\PlayerHealer.class
+dev\leeroy\plugin\listeners\misc\DiscordSRVChatListener.class
 dev\leeroy\plugin\commands\misc\HealCommand.class
 dev\leeroy\plugin\commands\misc\TPHereCommand.class
 dev\leeroy\plugin\commands\punishment\IPTempBanCommand.class

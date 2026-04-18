@@ -111,6 +111,7 @@ fly:
       enabled: true
       title: "&cWARNING!"
       subtitle: "&fYou have &e{time} &fof flight remaining!"
+      sound: "BLOCK_NOTE_BLOCK_PLING"
       thresholds:
         - 60
         - 30
@@ -257,3 +258,7 @@ warn:
     no-warns: "&4{player} &chas no warns."
     check-self: "&cYou have &4{warns}&8/&4{max} &cwarns."
     check-other: "&4{player} &chas &4{warns}&8/&4{max} &cwarns."
+    # Personal message sent to the warned player.
+    # {punishment} = readable punishment e.g. "tempbanned for 1d", {offense} = offense number
+    personal-warn: "&7You now have &4{warns}&8/&4{max} &7warnings. &cYou will be &4{punishment} &cif you get too many warnings &8(Offense &4{offense}&8)"
+    personal-warn-max: "&cYou have reached &4{max}&c warnings and will be punished!"

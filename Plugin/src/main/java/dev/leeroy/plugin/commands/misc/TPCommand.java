@@ -23,7 +23,7 @@ public class TPCommand implements BasicCommand {
 
     @Override
     public Collection<String> suggest(CommandSourceStack stack, String[] args) {
-        if (args.length == 1 || args.length == 2) return TabUtil.onlinePlayers(stack, args[args.length - 1], vanishManager);
+        if (args.length <= 2) return TabUtil.onlinePlayers(stack, TabUtil.arg(args, args.length > 0 ? args.length - 1 : 0), vanishManager);
         return java.util.Collections.emptyList();
     }
 

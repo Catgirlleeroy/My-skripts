@@ -14,6 +14,7 @@ public class BobHooks {
     private static boolean worldGuard     = false;
     private static boolean placeholderAPI = false;
     private static boolean tab            = false;
+    private static boolean discordSRV     = false;
 
     public static void init(JavaPlugin plugin) {
         // Vault
@@ -47,10 +48,19 @@ public class BobHooks {
         } else {
             plugin.getLogger().info("TAB not found ❌ — tab list vanish integration disabled.");
         }
+
+        // DiscordSRV
+        if (plugin.getServer().getPluginManager().getPlugin("DiscordSRV") != null) {
+            discordSRV = true;
+            plugin.getLogger().info("Hooked into DiscordSRV ✅");
+        } else {
+            plugin.getLogger().info("DiscordSRV not found ❌ — mute/chatmute Discord suppression disabled.");
+        }
     }
 
     public static boolean hasVault()          { return vault; }
     public static boolean hasWorldGuard()     { return worldGuard; }
     public static boolean hasPlaceholderAPI() { return placeholderAPI; }
     public static boolean hasTab()            { return tab; }
+    public static boolean hasDiscordSRV()     { return discordSRV; }
 }

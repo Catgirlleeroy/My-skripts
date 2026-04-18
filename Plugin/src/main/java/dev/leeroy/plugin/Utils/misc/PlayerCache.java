@@ -6,6 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -69,6 +70,10 @@ public class PlayerCache {
     public String getIPByName(String name) {
         UUID uuid = getUUID(name);
         return uuid != null ? getIP(uuid) : null;
+    }
+
+    public Collection<String> getAllNames() {
+        return names.values();
     }
 
     // -------------------------------------------------------------------------

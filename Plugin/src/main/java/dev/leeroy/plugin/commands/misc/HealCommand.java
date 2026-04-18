@@ -23,7 +23,7 @@ public class HealCommand implements BasicCommand {
 
     @Override
     public Collection<String> suggest(CommandSourceStack stack, String[] args) {
-        if (args.length == 1) return TabUtil.onlinePlayers(stack, args[0], vanishManager);
+        if (args.length <= 1) return TabUtil.onlinePlayers(stack, TabUtil.arg(args, 0), vanishManager);
         return java.util.Collections.emptyList();
     }
 

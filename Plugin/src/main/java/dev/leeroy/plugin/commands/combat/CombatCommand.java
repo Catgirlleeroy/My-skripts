@@ -9,6 +9,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 public class CombatCommand implements BasicCommand {
 
     private final CombatManager combatManager;
@@ -17,6 +21,17 @@ public class CombatCommand implements BasicCommand {
     public CombatCommand(CombatManager combatManager, boolean setMode) {
         this.combatManager = combatManager;
         this.setMode       = setMode;
+    }
+
+    @Override
+    public Collection<String> suggest(CommandSourceStack stack, String[] args) {
+        if (args.length > 1) return java.util.Collections.emptyList();
+        String lower = (args.length == 1 ? args[0] : "").toLowerCase();
+        List<String> result = new ArrayList<>();
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (p.getName().toLowerCase().startsWith(lower)) result.add(p.getName());
+        }
+        return result;
     }
 
     @Override

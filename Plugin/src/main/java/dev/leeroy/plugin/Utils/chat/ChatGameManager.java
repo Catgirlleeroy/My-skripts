@@ -125,11 +125,16 @@ public class ChatGameManager {
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private void broadcast(String prefix, String message) {
-        TextUtil.broadcast("");
-        if (!prefix.isEmpty()) TextUtil.broadcast(prefix);
-        TextUtil.broadcast("");
-        TextUtil.broadcast(message);
-        TextUtil.broadcast("");
+        // Send directly to each player to avoid DiscordSRV picking up the messages
+        java.util.function.Consumer<org.bukkit.command.CommandSender> send = sender -> {
+            sender.sendMessage(TextUtil.parse(""));
+            if (!prefix.isEmpty()) sender.sendMessage(TextUtil.parse(prefix));
+            sender.sendMessage(TextUtil.parse(""));
+            sender.sendMessage(TextUtil.parse(message));
+            sender.sendMessage(TextUtil.parse(""));
+        };
+        Bukkit.getOnlinePlayers().forEach(send);
+        send.accept(Bukkit.getConsoleSender());
     }
 
     private void playStartSound() {

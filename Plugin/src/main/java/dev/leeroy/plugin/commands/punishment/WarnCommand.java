@@ -17,6 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 public class WarnCommand implements BasicCommand {
@@ -38,7 +39,7 @@ public class WarnCommand implements BasicCommand {
 
     @Override
     public Collection<String> suggest(CommandSourceStack stack, String[] args) {
-        if (args.length == 1) return TabUtil.onlinePlayers(stack, args[0], vanishManager);
+        if (args.length <= 1) return TabUtil.onlinePlayers(stack, TabUtil.arg(args, 0), vanishManager);
         return java.util.Collections.emptyList();
     }
 
@@ -85,6 +86,31 @@ public class WarnCommand implements BasicCommand {
         Bukkit.broadcast(Component.empty());
         TextUtil.broadcast(msg);
         Bukkit.broadcast(Component.empty());
+
+        // Personal message to the warned player
+        if (online != null) {
+            if (warns >= max) {
+                String maxMsg = plugin.getConfig().getString("warn.messages.personal-warn-max",
+                                "&cYou have reached &4{max}&c warnings and will be punished!")
+                        .replace("{warns}", String.valueOf(warns))
+                        .replace("{max}",   String.valueOf(max));
+                online.sendMessage(TextUtil.parse(maxMsg));
+            } else {
+                List<String> punishments = plugin.getConfig().getStringList("warn.stacked-punishments");
+                int offense = warnManager.getOffenses(uuid);
+                int offenseDisplay = offense + 1;
+                String rawCmd = punishments.isEmpty()
+                        ? "tempban {player} 1d"
+                        : punishments.get(Math.min(offense, punishments.size() - 1));
+                String personalMsg = plugin.getConfig().getString("warn.messages.personal-warn",
+                                "&7You now have &4{warns}&8/&4{max} &7warnings. &cYou will be &4{punishment} &cif you get too many warnings &8(Offense &4{offense}&8)")
+                        .replace("{warns}",      String.valueOf(warns))
+                        .replace("{max}",        String.valueOf(max))
+                        .replace("{punishment}", describePunishment(rawCmd))
+                        .replace("{offense}",    String.valueOf(offenseDisplay));
+                online.sendMessage(TextUtil.parse(personalMsg));
+            }
+        }
 
         if (warns >= max) {
             final UUID fUUID = uuid;
@@ -188,5 +214,18 @@ public class WarnCommand implements BasicCommand {
     private String getName(UUID uuid, String fallback) {
         String cached = playerCache.getName(uuid);
         return cached != null ? cached : fallback;
+    }
+
+    private String describePunishment(String cmd) {
+        String[] parts = cmd.split("\\s+");
+        if (parts.length == 0) return cmd;
+        return switch (parts[0].toLowerCase()) {
+            case "tempban", "iptempban" -> "tempbanned for " + (parts.length > 2 ? parts[2] : "?");
+            case "ban",     "ipban"     -> "permanently banned";
+            case "tempmute"             -> "muted for "      + (parts.length > 2 ? parts[2] : "?");
+            case "mute"                 -> "permanently muted";
+            case "kick"                 -> "kicked";
+            default                    -> parts[0];
+        };
     }
 }

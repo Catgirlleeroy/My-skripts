@@ -1,5 +1,7 @@
 package dev.leeroy.plugin.commands.misc;
 
+import dev.leeroy.plugin.Utils.misc.TabUtil;
+import dev.leeroy.plugin.Utils.misc.VanishManager;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -26,19 +28,30 @@ public class TPACommand implements Listener {
     private final Map<UUID, Location> warmupLocations = new HashMap<>();
 
     private final JavaPlugin plugin;
+    private final VanishManager vanishManager;
 
     private static final long REQUEST_TIMEOUT_TICKS = 60 * 20L;
 
-    public TPACommand(JavaPlugin plugin) {
+    public TPACommand(JavaPlugin plugin, VanishManager vanishManager) {
         this.plugin = plugin;
+        this.vanishManager = vanishManager;
     }
 
     // ── BasicCommand accessors ───────────────────────────────────────────────
 
     public BasicCommand tpa() {
-        return (stack, args) -> {
-            Player self = requirePlayer(stack);
-            if (self != null) handleTPA(self, args);
+        return new BasicCommand() {
+            @Override
+            public void execute(CommandSourceStack stack, String[] args) {
+                Player self = requirePlayer(stack);
+                if (self != null) handleTPA(self, args);
+            }
+
+            @Override
+            public java.util.Collection<String> suggest(CommandSourceStack stack, String[] args) {
+                if (args.length <= 1) return TabUtil.onlinePlayers(stack, TabUtil.arg(args, 0), vanishManager);
+                return java.util.Collections.emptyList();
+            }
         };
     }
 

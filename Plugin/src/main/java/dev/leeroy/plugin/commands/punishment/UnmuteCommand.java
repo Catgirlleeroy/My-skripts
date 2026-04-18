@@ -1,6 +1,7 @@
 package dev.leeroy.plugin.commands.punishment;
 
 import dev.leeroy.plugin.Utils.misc.PlayerCache;
+import dev.leeroy.plugin.Utils.misc.TabUtil;
 import dev.leeroy.plugin.Utils.punishment.MuteManager;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -10,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.UUID;
 
 public class UnmuteCommand implements BasicCommand {
@@ -20,6 +22,12 @@ public class UnmuteCommand implements BasicCommand {
     public UnmuteCommand(MuteManager muteManager, PlayerCache playerCache) {
         this.muteManager = muteManager;
         this.playerCache = playerCache;
+    }
+
+    @Override
+    public Collection<String> suggest(CommandSourceStack stack, String[] args) {
+        if (args.length <= 1) return TabUtil.cachedPlayers(playerCache, TabUtil.arg(args, 0));
+        return java.util.Collections.emptyList();
     }
 
     @Override

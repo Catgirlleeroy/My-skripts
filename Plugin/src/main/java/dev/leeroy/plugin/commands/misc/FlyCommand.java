@@ -42,9 +42,10 @@ public class FlyCommand implements BasicCommand {
 
     @Override
     public Collection<String> suggest(CommandSourceStack stack, String[] args) {
-        if (args.length == 1) {
-            String lower = args[0].toLowerCase();
-            List<String> result = new java.util.ArrayList<>(TabUtil.onlinePlayers(stack, args[0], vanishManager));
+        if (args.length <= 1) {
+            String input = TabUtil.arg(args, 0);
+            String lower = input.toLowerCase();
+            List<String> result = new java.util.ArrayList<>(TabUtil.onlinePlayers(stack, input, vanishManager));
             SUBCOMMANDS.stream().filter(s -> s.startsWith(lower)).forEach(result::add);
             return result;
         }
