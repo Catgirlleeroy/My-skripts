@@ -1,7 +1,7 @@
 name: Bob
 author: Bob
 website: bob.org
-version: '1.1'
+version: '1.1.001-DEV'
 main: dev.leeroy.plugin.Plugin
 api-version: '1.21'
 softdepend: [WorldGuard, Vault, TAB]
@@ -154,6 +154,10 @@ commands:
     description: Teleport to a player or coordinates.
     usage: /tp <player> | /tp <x> <y> <z> | /tp <player1> <player2>
     permission: bob.tp.self
+  tphere:
+    description: Teleport a player to you.
+    usage: /tphere <player>
+    permission: bob.tp.here
   tpa:
     description: Send a teleport request to a player.
     usage: /tpa <player>
@@ -441,6 +445,9 @@ permissions:
   bob.exempt.iptempban:
     description: Exempts the player from temporary IP bans.
     default: false
+  bob.tp.here:
+    description: Allows the player to teleport others to themselves.
+    default: op
   bob.tp.self:
     description: Allows the player to teleport themselves.
     default: op

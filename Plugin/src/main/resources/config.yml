@@ -241,8 +241,13 @@ warn:
   enabled: true
   # Max warns before auto-punishment
   max-warns: 3
-  # Command run as console when max warns is reached — {player} = player name
-  max-warn-punishment: "tempban {player} 1d You had too many warnings!"
+  # Stacked punishments — each time a player hits max warns, the next entry is used.
+  # The last entry repeats for all subsequent offenses. {player} = player name.
+  stacked-punishments:
+    - "tempban {player} 1d Too many warnings! (Offense 1)"
+    - "tempban {player} 7d Too many warnings! (Offense 2)"
+    - "tempban {player} 14d Too many warnings! (Offense 3)"
+    - "tempban {player} 30d Too many warnings! (Offense 4+)"
   # Reset warns after auto-punishment
   reset-on-max: true
   messages:

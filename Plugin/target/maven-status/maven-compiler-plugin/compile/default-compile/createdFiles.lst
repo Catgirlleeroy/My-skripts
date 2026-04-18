@@ -62,6 +62,7 @@ dev\leeroy\plugin\Utils\misc\FlyDataManager.class
 dev\leeroy\plugin\commands\misc\ReportsCommand.class
 dev\leeroy\plugin\Utils\misc\PlayerHealer.class
 dev\leeroy\plugin\commands\misc\HealCommand.class
+dev\leeroy\plugin\commands\misc\TPHereCommand.class
 dev\leeroy\plugin\commands\punishment\IPTempBanCommand.class
 dev\leeroy\plugin\commands\punishment\TempBanCommand.class
 dev\leeroy\plugin\commands\misc\TPACommand.class

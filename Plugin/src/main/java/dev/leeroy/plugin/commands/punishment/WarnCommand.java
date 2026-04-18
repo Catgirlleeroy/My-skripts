@@ -82,17 +82,26 @@ public class WarnCommand implements CommandExecutor {
         if (warns >= max) {
             final UUID fUUID = uuid;
             final String fName = targetName;
+            final int offense = warnManager.getOffenses(uuid); // 0-indexed before increment
+            warnManager.incrementOffenses(uuid);
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 if (warnManager.getWarns(fUUID) >= max) {
-                    String punishCmd = plugin.getConfig()
-                            .getString("warn.max-warn-punishment", "tempban {player} 1d Too many warnings!")
-                            .replace("{player}", fName);
+                    if (!fName.matches("[a-zA-Z0-9_]{1,16}")) return;
+                    java.util.List<String> punishments = plugin.getConfig()
+                            .getStringList("warn.stacked-punishments");
+                    String punishCmd;
+                    if (punishments.isEmpty()) {
+                        punishCmd = "tempban " + fName + " 1d Too many warnings!";
+                    } else {
+                        int index = Math.min(offense, punishments.size() - 1);
+                        punishCmd = punishments.get(index).replace("{player}", fName);
+                    }
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), punishCmd);
                     if (plugin.getConfig().getBoolean("warn.reset-on-max", true)) {
                         warnManager.resetWarns(fUUID);
                     }
                 }
-            }, 40L); // 2 second delay like original
+            }, 40L);
         }
     }
 

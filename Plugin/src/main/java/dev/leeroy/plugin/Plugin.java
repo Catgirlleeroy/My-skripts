@@ -155,7 +155,8 @@ public final class Plugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ChatGameListener(chatGameManager), this);
 
         // TP
-        getCommand("tp").setExecutor(new TPCommand());
+        getCommand("tp").setExecutor(new TPCommand(vanishManager));
+        getCommand("tphere").setExecutor(new TPHereCommand(vanishManager));
         TPACommand tpaCommand = new TPACommand(this);
         getCommand("tpa").setExecutor(tpaCommand);
         getCommand("tpaccept").setExecutor(tpaCommand);

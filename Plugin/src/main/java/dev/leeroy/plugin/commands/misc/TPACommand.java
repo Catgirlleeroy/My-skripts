@@ -217,12 +217,13 @@ public class TPACommand implements CommandExecutor, Listener {
         Location origin = warmupLocations.get(player.getUniqueId());
         if (origin == null) return;
 
-        // Only care about X/Z movement, not looking around
+        // Only care about positional movement, not head rotation
         Location current = event.getTo();
         if (current == null) return;
 
         double dist = Math.sqrt(
                 Math.pow(current.getX() - origin.getX(), 2) +
+                        Math.pow(current.getY() - origin.getY(), 2) +
                         Math.pow(current.getZ() - origin.getZ(), 2)
         );
 

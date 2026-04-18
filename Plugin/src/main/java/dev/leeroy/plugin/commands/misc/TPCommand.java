@@ -1,5 +1,6 @@
 package dev.leeroy.plugin.commands.misc;
 
+import dev.leeroy.plugin.Utils.misc.VanishManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -9,6 +10,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class TPCommand implements CommandExecutor {
+
+    private final VanishManager vanishManager;
+
+    public TPCommand(VanishManager vanishManager) {
+        this.vanishManager = vanishManager;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -29,6 +36,16 @@ public class TPCommand implements CommandExecutor {
             Player target = Bukkit.getPlayerExact(args[0]);
 
             if (target == null) {
+                sender.sendMessage(ChatColor.RED + "Player '" + args[0] + "' not found or is offline.");
+                return true;
+            }
+
+            if (target.equals(self)) {
+                sender.sendMessage(ChatColor.RED + "You cannot teleport to yourself.");
+                return true;
+            }
+
+            if (vanishManager.isVanished(target.getUniqueId()) && !sender.hasPermission("bob.vanish.see")) {
                 sender.sendMessage(ChatColor.RED + "Player '" + args[0] + "' not found or is offline.");
                 return true;
             }
@@ -84,6 +101,16 @@ public class TPCommand implements CommandExecutor {
                 return true;
             }
             if (player2 == null) {
+                sender.sendMessage(ChatColor.RED + "Player '" + args[1] + "' not found or is offline.");
+                return true;
+            }
+
+            if (player1.equals(player2)) {
+                sender.sendMessage(ChatColor.RED + "Cannot teleport a player to themselves.");
+                return true;
+            }
+
+            if (vanishManager.isVanished(player2.getUniqueId()) && !sender.hasPermission("bob.vanish.see")) {
                 sender.sendMessage(ChatColor.RED + "Player '" + args[1] + "' not found or is offline.");
                 return true;
             }

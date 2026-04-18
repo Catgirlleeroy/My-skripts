@@ -49,9 +49,15 @@ public class DailyRewardCommand implements CommandExecutor {
         if (dailyManager.canClaim(player.getUniqueId())) {
             dailyManager.recordClaim(player.getUniqueId());
 
+            String playerName = player.getName();
+            if (!playerName.matches("[a-zA-Z0-9_]{1,16}")) {
+                player.sendMessage(ChatColor.RED + "Your username contains invalid characters.");
+                return true;
+            }
+
             List<String> rewards = dailyManager.plugin().getConfig().getStringList("daily-reward.rewards");
             for (String cmd : rewards) {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{player}", player.getName()));
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{player}", playerName));
             }
 
             player.sendMessage(color(dailyManager.plugin().getConfig()

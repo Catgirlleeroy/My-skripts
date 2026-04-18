@@ -40,25 +40,43 @@ public class WarnManager {
     }
 
     public int getWarns(UUID uuid) {
-        return config.getInt(uuid.toString(), 0);
+        String key = uuid.toString();
+        // Migrate flat format (old) → nested format (new)
+        if (config.isInt(key)) {
+            int old = config.getInt(key);
+            config.set(key, null);
+            config.set(key + ".warns", old);
+            config.set(key + ".offenses", 0);
+            save();
+        }
+        return config.getInt(key + ".warns", 0);
     }
 
     public int addWarn(UUID uuid) {
         int current = getWarns(uuid) + 1;
-        config.set(uuid.toString(), current);
+        config.set(uuid + ".warns", current);
         save();
         return current;
     }
 
     public int removeWarn(UUID uuid) {
         int current = Math.max(0, getWarns(uuid) - 1);
-        config.set(uuid.toString(), current);
+        config.set(uuid + ".warns", current);
         save();
         return current;
     }
 
     public void resetWarns(UUID uuid) {
-        config.set(uuid.toString(), 0);
+        config.set(uuid + ".warns", 0);
+        save();
+    }
+
+    public int getOffenses(UUID uuid) {
+        return config.getInt(uuid + ".offenses", 0);
+    }
+
+    public void incrementOffenses(UUID uuid) {
+        config.set(uuid + ".offenses", getOffenses(uuid) + 1);
         save();
     }
 }
