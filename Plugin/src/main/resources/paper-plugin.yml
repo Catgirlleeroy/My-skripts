@@ -273,6 +273,9 @@ permissions:
   bob.commandspy:
     description: Allows the player to toggle CommandSpy.
     default: op
+  bob.openinv:
+    description: Allows opening and editing another player's inventory.
+    default: op
   bob.reload:
     description: Allows the player to reload Bobs config and ban files.
     default: op

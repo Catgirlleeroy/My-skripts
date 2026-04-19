@@ -4,6 +4,7 @@ dev\leeroy\plugin\listeners\misc\PlayerCacheListener.class
 dev\leeroy\plugin\listeners\chat\ChatFormatListener.class
 dev\leeroy\plugin\commands\chat\ChatClearCommand.class
 dev\leeroy\plugin\listeners\misc\FlyListener.class
+dev\leeroy\plugin\listeners\misc\OpenInvListener.class
 dev\leeroy\plugin\Utils\punishment\WarnManager.class
 dev\leeroy\plugin\Utils\misc\VanishManager.class
 dev\leeroy\plugin\commands\punishment\UnmuteCommand.class
@@ -62,6 +63,7 @@ dev\leeroy\plugin\Utils\misc\FlyDataManager.class
 dev\leeroy\plugin\Plugin$1.class
 dev\leeroy\plugin\commands\misc\ReportsCommand.class
 dev\leeroy\plugin\Utils\misc\PlayerHealer.class
+dev\leeroy\plugin\commands\misc\OpenInvCommand.class
 dev\leeroy\plugin\listeners\misc\DiscordSRVChatListener.class
 dev\leeroy\plugin\commands\misc\HealCommand.class
 dev\leeroy\plugin\commands\misc\TPHereCommand.class

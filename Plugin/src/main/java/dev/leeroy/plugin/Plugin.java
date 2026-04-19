@@ -94,6 +94,7 @@ public final class Plugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BanListener(banManager, ipBanManager, playerCache), this);
         getServer().getPluginManager().registerEvents(new PlayerCacheListener(playerCache), this);
         getServer().getPluginManager().registerEvents(commandSpyListener, this);
+        getServer().getPluginManager().registerEvents(new OpenInvListener(this), this);
 
         // DiscordSRV mute suppression — only register if DiscordSRV is loaded
         if (BobHooks.hasDiscordSRV()) {
@@ -129,10 +130,10 @@ public final class Plugin extends JavaPlugin {
             cmds.register("heal", perm(new HealCommand(fVanish), "bob.heal"));
 
             // Gamemodes
-            cmds.register("gm0", perm(new Gamemodes(GameMode.SURVIVAL,  "gm0"), "bob.gamemode.self"));
-            cmds.register("gm1", perm(new Gamemodes(GameMode.CREATIVE,  "gm1"), "bob.gamemode.self"));
-            cmds.register("gm2", perm(new Gamemodes(GameMode.ADVENTURE, "gm2"), "bob.gamemode.self"));
-            cmds.register("gm3", perm(new Gamemodes(GameMode.SPECTATOR, "gm3"), "bob.gamemode.self"));
+            cmds.register("gms", perm(new Gamemodes(GameMode.SURVIVAL,  "gms"), "bob.gamemode.self"));
+            cmds.register("gmc", perm(new Gamemodes(GameMode.CREATIVE,  "gmc"), "bob.gamemode.self"));
+            cmds.register("gma", perm(new Gamemodes(GameMode.ADVENTURE, "gma"), "bob.gamemode.self"));
+            cmds.register("gmsp", perm(new Gamemodes(GameMode.SPECTATOR, "gmsp"), "bob.gamemode.self"));
 
             // Ban / IP Ban
             cmds.register("ban",        perm(new BanCommand(fBan, fCache, Plugin.this, fVanish),       "bob.ban"));
@@ -196,6 +197,9 @@ public final class Plugin extends JavaPlugin {
             cmds.register("tpa",      perm(fTpa.tpa(),      "bob.tpa"));
             cmds.register("tpaccept", perm(fTpa.tpaccept(), "bob.tpa"));
             cmds.register("tpdeny",   perm(fTpa.tpdeny(),   "bob.tpa"));
+
+            // OpenInv
+            cmds.register("openinv", new OpenInvCommand());
 
             // CommandSpy
             cmds.register("commandspy", perm(new CommandSpyCommand(fSpyLsr), "bob.commandspy"));

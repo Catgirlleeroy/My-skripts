@@ -32,6 +32,16 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <relocations>
+                <relocation>
+                  <pattern>com.github.retrooper.packetevents</pattern>
+                  <shadedPattern>dev.leeroy.plugin.libs.packetevents</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>io.github.retrooper.packetevents</pattern>
+                  <shadedPattern>dev.leeroy.plugin.libs.ipacketevents</shadedPattern>
+                </relocation>
+              </relocations>
               <filters>
                 <filter>
                   <artifact>*:*</artifact>
@@ -60,6 +70,10 @@
     <repository>
       <id>jitpack</id>
       <url>https://jitpack.io</url>
+    </repository>
+    <repository>
+      <id>codemc-releases</id>
+      <url>https://repo.codemc.io/repository/maven-releases/</url>
     </repository>
     <repository>
       <id>Scarsz-Nexus</id>
@@ -92,6 +106,15 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.18.0</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
   <properties>
     <java.version>21</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
