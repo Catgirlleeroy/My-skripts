@@ -3,6 +3,7 @@ package dev.leeroy.plugin.commands.punishment;
 import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.punishment.BanManager;
 import dev.leeroy.plugin.Utils.punishment.IPBanManager;
+import dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -19,10 +20,13 @@ public class IPTempBanCommand implements BasicCommand {
 
     private final IPBanManager ipBanManager;
     private final JavaPlugin plugin;
+    private final PunishmentDiscordBroadcaster discordBroadcaster;
 
-    public IPTempBanCommand(IPBanManager ipBanManager, JavaPlugin plugin) {
-        this.ipBanManager = ipBanManager;
-        this.plugin = plugin;
+    public IPTempBanCommand(IPBanManager ipBanManager, JavaPlugin plugin,
+                             PunishmentDiscordBroadcaster discordBroadcaster) {
+        this.ipBanManager       = ipBanManager;
+        this.plugin             = plugin;
+        this.discordBroadcaster = discordBroadcaster;
     }
 
     @Override
@@ -92,5 +96,6 @@ public class IPTempBanCommand implements BasicCommand {
         }, 10L);
 
         TextUtil.broadcast("&c[IP-TEMPBAN] &e" + target.getName() + " &chas been temporarily IP banned! &7Duration: " + durationStr + " | Reason: " + reason);
+        discordBroadcaster.broadcast("iptempban", target.getName(), sender.getName(), reason, durationStr);
     }
 }

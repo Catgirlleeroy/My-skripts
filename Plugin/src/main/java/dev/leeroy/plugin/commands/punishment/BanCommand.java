@@ -5,6 +5,7 @@ import dev.leeroy.plugin.Utils.misc.TabUtil;
 import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.misc.VanishManager;
 import dev.leeroy.plugin.Utils.punishment.BanManager;
+import dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -25,12 +26,15 @@ public class BanCommand implements BasicCommand {
     private final PlayerCache playerCache;
     private final JavaPlugin plugin;
     private final VanishManager vanishManager;
+    private final PunishmentDiscordBroadcaster discordBroadcaster;
 
-    public BanCommand(BanManager banManager, PlayerCache playerCache, JavaPlugin plugin, VanishManager vanishManager) {
-        this.banManager    = banManager;
-        this.playerCache   = playerCache;
-        this.plugin        = plugin;
-        this.vanishManager = vanishManager;
+    public BanCommand(BanManager banManager, PlayerCache playerCache, JavaPlugin plugin,
+                      VanishManager vanishManager, PunishmentDiscordBroadcaster discordBroadcaster) {
+        this.banManager          = banManager;
+        this.playerCache         = playerCache;
+        this.plugin              = plugin;
+        this.vanishManager       = vanishManager;
+        this.discordBroadcaster  = discordBroadcaster;
     }
 
     @Override
@@ -92,6 +96,7 @@ public class BanCommand implements BasicCommand {
         }
 
         TextUtil.broadcast("&c[BAN] &e" + targetName + " &chas been permanently banned! &7Reason: " + reason);
+        discordBroadcaster.broadcast("ban", targetName, sender.getName(), reason, null);
         sender.sendMessage(Component.text("Banned " + targetName + ". Reason: " + reason, NamedTextColor.GREEN));
     }
 

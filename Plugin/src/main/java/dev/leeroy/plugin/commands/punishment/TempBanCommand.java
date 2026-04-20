@@ -5,6 +5,7 @@ import dev.leeroy.plugin.Utils.misc.TabUtil;
 import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.misc.VanishManager;
 import dev.leeroy.plugin.Utils.punishment.BanManager;
+import dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -25,12 +26,15 @@ public class TempBanCommand implements BasicCommand {
     private final PlayerCache playerCache;
     private final JavaPlugin plugin;
     private final VanishManager vanishManager;
+    private final PunishmentDiscordBroadcaster discordBroadcaster;
 
-    public TempBanCommand(BanManager banManager, PlayerCache playerCache, JavaPlugin plugin, VanishManager vanishManager) {
-        this.banManager    = banManager;
-        this.playerCache   = playerCache;
-        this.plugin        = plugin;
-        this.vanishManager = vanishManager;
+    public TempBanCommand(BanManager banManager, PlayerCache playerCache, JavaPlugin plugin,
+                          VanishManager vanishManager, PunishmentDiscordBroadcaster discordBroadcaster) {
+        this.banManager         = banManager;
+        this.playerCache        = playerCache;
+        this.plugin             = plugin;
+        this.vanishManager      = vanishManager;
+        this.discordBroadcaster = discordBroadcaster;
     }
 
     @Override
@@ -104,6 +108,7 @@ public class TempBanCommand implements BasicCommand {
         }
 
         TextUtil.broadcast("&c[TEMPBAN] &e" + targetName + " &chas been temporarily banned! &7Duration: " + durationStr + " | Reason: " + reason);
+        discordBroadcaster.broadcast("tempban", targetName, sender.getName(), reason, durationStr);
         sender.sendMessage(Component.text("Tempbanned " + targetName + " for " + durationStr + ". Reason: " + reason, NamedTextColor.GREEN));
     }
 

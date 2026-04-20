@@ -3,6 +3,7 @@ package dev.leeroy.plugin.commands.punishment;
 import dev.leeroy.plugin.Utils.misc.TabUtil;
 import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.misc.VanishManager;
+import dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -16,9 +17,11 @@ import java.util.Collection;
 public class KickCommand implements BasicCommand {
 
     private final VanishManager vanishManager;
+    private final PunishmentDiscordBroadcaster discordBroadcaster;
 
-    public KickCommand(VanishManager vanishManager) {
-        this.vanishManager = vanishManager;
+    public KickCommand(VanishManager vanishManager, PunishmentDiscordBroadcaster discordBroadcaster) {
+        this.vanishManager      = vanishManager;
+        this.discordBroadcaster = discordBroadcaster;
     }
 
     @Override
@@ -60,5 +63,6 @@ public class KickCommand implements BasicCommand {
                 .append(Component.text("Reason: " + reason, NamedTextColor.WHITE)));
 
         TextUtil.broadcast("&c[KICK] &e" + target.getName() + " &chas been kicked! &7Reason: " + reason);
+        discordBroadcaster.broadcast("kick", target.getName(), sender.getName(), reason, null);
     }
 }

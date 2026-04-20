@@ -1,5 +1,6 @@
 dev\leeroy\plugin\commands\misc\ReloadCommand.class
 dev\leeroy\plugin\Utils\misc\TextUtil.class
+dev\leeroy\plugin\Utils\punishment\PunishmentDiscordBroadcaster.class
 dev\leeroy\plugin\listeners\misc\PlayerCacheListener.class
 dev\leeroy\plugin\listeners\chat\ChatFormatListener.class
 dev\leeroy\plugin\commands\chat\ChatClearCommand.class
@@ -64,6 +65,7 @@ dev\leeroy\plugin\Plugin$1.class
 dev\leeroy\plugin\commands\misc\ReportsCommand.class
 dev\leeroy\plugin\Utils\misc\PlayerHealer.class
 dev\leeroy\plugin\commands\misc\OpenInvCommand.class
+dev\leeroy\plugin\Utils\misc\MessagesConfig.class
 dev\leeroy\plugin\listeners\misc\DiscordSRVChatListener.class
 dev\leeroy\plugin\commands\misc\HealCommand.class
 dev\leeroy\plugin\commands\misc\TPHereCommand.class

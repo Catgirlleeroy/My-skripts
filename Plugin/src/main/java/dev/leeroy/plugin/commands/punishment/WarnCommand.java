@@ -1,9 +1,11 @@
 package dev.leeroy.plugin.commands.punishment;
 
+import dev.leeroy.plugin.Utils.misc.MessagesConfig;
 import dev.leeroy.plugin.Utils.misc.PlayerCache;
 import dev.leeroy.plugin.Utils.misc.TabUtil;
 import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.misc.VanishManager;
+import dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster;
 import dev.leeroy.plugin.Utils.punishment.WarnManager;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -27,14 +29,19 @@ public class WarnCommand implements BasicCommand {
     private final JavaPlugin plugin;
     private final String mode;
     private final VanishManager vanishManager;
+    private final PunishmentDiscordBroadcaster discordBroadcaster;
+    private final MessagesConfig messagesConfig;
 
     public WarnCommand(WarnManager warnManager, PlayerCache playerCache,
-                       JavaPlugin plugin, String mode, VanishManager vanishManager) {
-        this.warnManager   = warnManager;
-        this.playerCache   = playerCache;
-        this.plugin        = plugin;
-        this.mode          = mode;
-        this.vanishManager = vanishManager;
+                       JavaPlugin plugin, String mode, VanishManager vanishManager,
+                       PunishmentDiscordBroadcaster discordBroadcaster, MessagesConfig messagesConfig) {
+        this.warnManager        = warnManager;
+        this.playerCache        = playerCache;
+        this.plugin             = plugin;
+        this.mode               = mode;
+        this.vanishManager      = vanishManager;
+        this.discordBroadcaster = discordBroadcaster;
+        this.messagesConfig     = messagesConfig;
     }
 
     @Override
@@ -74,7 +81,7 @@ public class WarnCommand implements BasicCommand {
         }
 
         String broadcastKey = reason != null ? "warned-broadcast" : "warned-broadcast-no-reason";
-        String msg = plugin.getConfig().getString("warn.messages." + broadcastKey, "")
+        String msg = messagesConfig.get().getString("warn.messages." + broadcastKey, "")
                 .replace("{player}", targetName)
                 .replace("{staff}",  sender.getName())
                 .replace("{reason}", reason != null ? reason : "")
@@ -86,11 +93,12 @@ public class WarnCommand implements BasicCommand {
         Bukkit.broadcast(Component.empty());
         TextUtil.broadcast(msg);
         Bukkit.broadcast(Component.empty());
+        discordBroadcaster.broadcastWarn("warn", targetName, sender.getName(), reason, warns, max);
 
         // Personal message to the warned player
         if (online != null) {
             if (warns >= max) {
-                String maxMsg = plugin.getConfig().getString("warn.messages.personal-warn-max",
+                String maxMsg = messagesConfig.get().getString("warn.messages.personal-warn-max",
                                 "&cYou have reached &4{max}&c warnings and will be punished!")
                         .replace("{warns}", String.valueOf(warns))
                         .replace("{max}",   String.valueOf(max));
@@ -102,7 +110,7 @@ public class WarnCommand implements BasicCommand {
                 String rawCmd = punishments.isEmpty()
                         ? "tempban {player} 1d"
                         : punishments.get(Math.min(offense, punishments.size() - 1));
-                String personalMsg = plugin.getConfig().getString("warn.messages.personal-warn",
+                String personalMsg = messagesConfig.get().getString("warn.messages.personal-warn",
                                 "&7You now have &4{warns}&8/&4{max} &7warnings. &cYou will be &4{punishment} &cif you get too many warnings &8(Offense &4{offense}&8)")
                         .replace("{warns}",      String.valueOf(warns))
                         .replace("{max}",        String.valueOf(max))
@@ -160,7 +168,7 @@ public class WarnCommand implements BasicCommand {
 
         int warns = warnManager.removeWarn(uuid);
 
-        String msg = plugin.getConfig().getString("warn.messages.unwarned-broadcast", "")
+        String msg = messagesConfig.get().getString("warn.messages.unwarned-broadcast", "")
                 .replace("{player}", targetName)
                 .replace("{staff}",  sender.getName())
                 .replace("{warns}",  String.valueOf(warns))
@@ -171,6 +179,7 @@ public class WarnCommand implements BasicCommand {
         Bukkit.broadcast(Component.empty());
         TextUtil.broadcast(msg);
         Bukkit.broadcast(Component.empty());
+        discordBroadcaster.broadcastWarn("unwarn", targetName, sender.getName(), null, warns, max);
     }
 
     private void handleWarns(CommandSender sender, String[] args) {
@@ -180,7 +189,7 @@ public class WarnCommand implements BasicCommand {
             UUID uuid = sender instanceof Player p ? p.getUniqueId() : null;
             if (uuid == null) { sender.sendMessage(Component.text("Usage: /warns <player>", NamedTextColor.YELLOW)); return; }
             int warns = warnManager.getWarns(uuid);
-            sender.sendMessage(TextUtil.parse(plugin.getConfig().getString("warn.messages.check-self", "")
+            sender.sendMessage(TextUtil.parse(messagesConfig.get().getString("warn.messages.check-self", "")
                     .replace("{warns}", String.valueOf(warns))
                     .replace("{max}",   String.valueOf(max))));
             return;
@@ -190,7 +199,7 @@ public class WarnCommand implements BasicCommand {
         if (uuid == null) { sender.sendMessage(Component.text("Player '" + args[0] + "' not found.", NamedTextColor.RED)); return; }
 
         if (sender instanceof Player p && p.getUniqueId().equals(uuid)) {
-            sender.sendMessage(TextUtil.parse(plugin.getConfig().getString("warn.messages.check-self", "")
+            sender.sendMessage(TextUtil.parse(messagesConfig.get().getString("warn.messages.check-self", "")
                     .replace("{warns}", String.valueOf(warnManager.getWarns(uuid)))
                     .replace("{max}",   String.valueOf(max))));
             return;
@@ -198,7 +207,7 @@ public class WarnCommand implements BasicCommand {
 
         String targetName = getName(uuid, args[0]);
         int warns = warnManager.getWarns(uuid);
-        sender.sendMessage(TextUtil.parse(plugin.getConfig().getString("warn.messages.check-other", "")
+        sender.sendMessage(TextUtil.parse(messagesConfig.get().getString("warn.messages.check-other", "")
                 .replace("{player}", targetName)
                 .replace("{warns}",  String.valueOf(warns))
                 .replace("{max}",    String.valueOf(max))));

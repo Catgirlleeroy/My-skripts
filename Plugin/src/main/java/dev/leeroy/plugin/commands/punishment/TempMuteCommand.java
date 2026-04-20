@@ -5,6 +5,7 @@ import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.misc.VanishManager;
 import dev.leeroy.plugin.Utils.punishment.BanManager;
 import dev.leeroy.plugin.Utils.punishment.MuteManager;
+import dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -20,10 +21,13 @@ public class TempMuteCommand implements BasicCommand {
 
     private final MuteManager muteManager;
     private final VanishManager vanishManager;
+    private final PunishmentDiscordBroadcaster discordBroadcaster;
 
-    public TempMuteCommand(MuteManager muteManager, VanishManager vanishManager) {
-        this.muteManager   = muteManager;
-        this.vanishManager = vanishManager;
+    public TempMuteCommand(MuteManager muteManager, VanishManager vanishManager,
+                            PunishmentDiscordBroadcaster discordBroadcaster) {
+        this.muteManager        = muteManager;
+        this.vanishManager      = vanishManager;
+        this.discordBroadcaster = discordBroadcaster;
     }
 
     @Override
@@ -77,5 +81,6 @@ public class TempMuteCommand implements BasicCommand {
         muteManager.tempMute(target.getUniqueId(), target.getName(), reason, sender.getName(), durationMs);
         target.sendMessage(Component.text("You have been muted for " + durationStr + ". Reason: " + reason, NamedTextColor.RED));
         TextUtil.broadcast("&c[TEMPMUTE] &e" + target.getName() + " &chas been muted! &7Duration: " + durationStr + " | Reason: " + reason);
+        discordBroadcaster.broadcast("tempmute", target.getName(), sender.getName(), reason, durationStr);
     }
 }

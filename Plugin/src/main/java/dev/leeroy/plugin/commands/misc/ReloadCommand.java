@@ -2,6 +2,7 @@ package dev.leeroy.plugin.commands.misc;
 
 import dev.leeroy.plugin.Utils.chat.AutoMessageManager;
 import dev.leeroy.plugin.Utils.chat.ChatGameManager;
+import dev.leeroy.plugin.Utils.misc.MessagesConfig;
 import dev.leeroy.plugin.Utils.punishment.BanManager;
 import dev.leeroy.plugin.Utils.punishment.IPBanManager;
 import dev.leeroy.plugin.Utils.punishment.PunishConfig;
@@ -21,16 +22,19 @@ public class ReloadCommand implements BasicCommand {
     private final BanManager banManager;
     private final IPBanManager ipBanManager;
     private final PunishConfig punishConfig;
+    private final MessagesConfig messagesConfig;
     private final AutoMessageManager autoMessageManager;
     private final ChatGameManager chatGameManager;
 
     public ReloadCommand(JavaPlugin plugin, BanManager banManager,
                          IPBanManager ipBanManager, PunishConfig punishConfig,
-                         AutoMessageManager autoMessageManager, ChatGameManager chatGameManager) {
+                         MessagesConfig messagesConfig, AutoMessageManager autoMessageManager,
+                         ChatGameManager chatGameManager) {
         this.plugin             = plugin;
         this.banManager         = banManager;
         this.ipBanManager       = ipBanManager;
         this.punishConfig       = punishConfig;
+        this.messagesConfig     = messagesConfig;
         this.autoMessageManager = autoMessageManager;
         this.chatGameManager    = chatGameManager;
     }
@@ -47,6 +51,7 @@ public class ReloadCommand implements BasicCommand {
         List<String> failed = new ArrayList<>();
 
         attempt(failed, "config",        () -> plugin.reloadConfig());
+        attempt(failed, "messages.yml",  () -> messagesConfig.reload());
         attempt(failed, "ban data",      () -> banManager.reload());
         attempt(failed, "ip-ban data",   () -> ipBanManager.reload());
         attempt(failed, "punish.yml",    () -> punishConfig.reload());

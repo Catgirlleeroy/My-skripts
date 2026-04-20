@@ -2,6 +2,7 @@ package dev.leeroy.plugin.commands.punishment;
 
 import dev.leeroy.plugin.Utils.misc.PlayerCache;
 import dev.leeroy.plugin.Utils.punishment.IPBanManager;
+import dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -16,10 +17,13 @@ public class IPUnbanCommand implements BasicCommand {
 
     private final IPBanManager ipBanManager;
     private final PlayerCache playerCache;
+    private final PunishmentDiscordBroadcaster discordBroadcaster;
 
-    public IPUnbanCommand(IPBanManager ipBanManager, PlayerCache playerCache) {
-        this.ipBanManager = ipBanManager;
-        this.playerCache  = playerCache;
+    public IPUnbanCommand(IPBanManager ipBanManager, PlayerCache playerCache,
+                          PunishmentDiscordBroadcaster discordBroadcaster) {
+        this.ipBanManager       = ipBanManager;
+        this.playerCache        = playerCache;
+        this.discordBroadcaster = discordBroadcaster;
     }
 
     @Override
@@ -50,6 +54,7 @@ public class IPUnbanCommand implements BasicCommand {
         }
 
         ipBanManager.unban(ip);
+        discordBroadcaster.broadcast("ipunban", input, sender.getName(), null, null);
         sender.sendMessage(Component.text("IP " + ip + " (" + input + ") has been unbanned.", NamedTextColor.GREEN));
     }
 

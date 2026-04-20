@@ -1,5 +1,6 @@
 package dev.leeroy.plugin.Utils.chat;
 
+import dev.leeroy.plugin.Utils.misc.MessagesConfig;
 import dev.leeroy.plugin.Utils.misc.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -14,14 +15,16 @@ import java.util.Random;
 public class ChatGameManager {
 
     private final JavaPlugin plugin;
+    private final MessagesConfig messagesConfig;
 
     private String activeWord    = null;   // current reaction word, null if no game running
     private long   startTimeMs   = 0;      // when the current game started
     private BukkitTask timeoutTask = null; // task that fires when game expires
     private BukkitTask intervalTask = null;// recurring auto-start task
 
-    public ChatGameManager(JavaPlugin plugin) {
-        this.plugin = plugin;
+    public ChatGameManager(JavaPlugin plugin, MessagesConfig messagesConfig) {
+        this.plugin         = plugin;
+        this.messagesConfig = messagesConfig;
         startInterval();
     }
 
@@ -61,7 +64,7 @@ public class ChatGameManager {
         startTimeMs = System.currentTimeMillis();
 
         String prefix  = cfg.getString("chat-games.announce-prefix", "");
-        String startMsg = cfg.getString("chat-games.messages.start",
+        String startMsg = messagesConfig.get().getString("chat-games.messages.start",
                         "&7&l| &cA chat game has started! Type &4{word} &cto gain rewards!")
                 .replace("{word}", activeWord);
 
@@ -73,7 +76,7 @@ public class ChatGameManager {
         final String word = activeWord;
         timeoutTask = Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (activeWord != null && activeWord.equals(word)) {
-                String timeoutMsg = cfg.getString("chat-games.messages.timeout",
+                String timeoutMsg = messagesConfig.get().getString("chat-games.messages.timeout",
                                 "&7&l| &fNo one was able to answer &4{word} &fin 40 seconds!")
                         .replace("{word}", word);
                 broadcast(prefix, timeoutMsg);
@@ -100,7 +103,7 @@ public class ChatGameManager {
         String timeTaken = formatElapsed(elapsed);
 
         String prefix = cfg.getString("chat-games.announce-prefix", "");
-        String winMsg = cfg.getString("chat-games.messages.win",
+        String winMsg = messagesConfig.get().getString("chat-games.messages.win",
                         "&7&l| &4{player} &chas gotten &4{word} &cin &4{time}&c!")
                 .replace("{player}", player.getName())
                 .replace("{word}",   activeWord)

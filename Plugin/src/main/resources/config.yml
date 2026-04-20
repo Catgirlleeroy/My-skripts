@@ -15,20 +15,6 @@ chat-format:
   enabled: true
   format: "{prefix}&f {player}&7: &f{message}"
 
-# Messages shown to players
-messages:
-  ban-broadcast: "&c[BAN] &e{player} &chas been permanently banned! &7Reason: {reason}"
-  tempban-broadcast: "&c[TEMPBAN] &e{player} &chas been temporarily banned! &7Duration: {duration} | Reason: {reason}"
-  ipban-broadcast: "&c[IP-BAN] &e{player} &chas been permanently IP banned! &7Reason: {reason}"
-  iptempban-broadcast: "&c[IP-TEMPBAN] &e{player} &chas been temporarily IP banned! &7Duration: {duration} | Reason: {reason}"
-
-# Default reasons if none are provided
-defaults:
-  ban-reason: "You have been banned."
-  tempban-reason: "You have been temporarily banned."
-  ipban-reason: "You have been IP banned."
-  iptempban-reason: "You have been temporarily IP banned."
-
 # Ban file paths (relative to plugin data folder)
 storage:
   ban-file: "bans.yml"
@@ -118,30 +104,6 @@ fly:
         - 10
         - 5
 
-  messages:
-    prefix: "&8[&dFly&8] "
-    fly-enabled: "&aFlight enabled!"
-    fly-disabled: "&cFlight disabled!"
-    fly-enabled-other: "&aEnabled flight for &f{player}&a."
-    fly-disabled-other: "&cDisabled flight for &f{player}&c."
-    no-time: "&cYou have no flight time remaining!"
-    time-info: "&fYou have &e{time} &fof flight time."
-    time-given: "&aYou received &e{time} &aof flight time!"
-    time-given-other: "&aGave &f{player} &e{time} &aof flight time."
-    time-set: "&aYour flight time was set to &e{time}&a."
-    time-set-other: "&aSet &f{player}&a's flight time to &e{time}&a."
-    time-removed: "&cYou lost &e{time} &cof flight time."
-    time-removed-other: "&cRemoved &e{time} &cof flight time from &f{player}&c."
-    daily-bonus: "&aYou received your daily flight bonus of &e{time}&a!"
-    first-join: "&aWelcome! You received &e{time} &aof free flight time!"
-    combat-tagged: "&cFlight disabled — you are in combat!"
-    combat-untagged: "&aYou are no longer combat tagged!"
-    out-of-time: "&cYou ran out of flight time!"
-    idle-drop: "&cFlight disabled — you went idle!"
-    no-permission: "&cYou don't have permission to do that."
-    player-not-found: "&cPlayer &f{player} &cnot found."
-    invalid-time: "&c'{time}' is not a valid duration. Use formats like 30m, 2h, 1d."
-
 # ── Auto Messages ─────────────────────────────────────────────────────────────
 auto-messages:
   # Interval in seconds between broadcasts
@@ -169,11 +131,6 @@ chat-games:
   # Commands run as console when a player wins — {player} = winner name
   rewards:
     - "excellentcrates key give {player} chatgame 1"
-  # Broadcast messages — supports & color codes and {word}, {player}, {time} placeholders
-  messages:
-    start: "&7&l| &cA chat game has started! Type &4{word} &cto gain rewards!"
-    win: "&7&l| &4{player} &chas gotten &4{word} &cin &4{time}&c!"
-    timeout: "&7&l| &fNo one was able to answer &4{word} &fin 40 seconds!"
   # Words used in the reaction game
   words:
     - "Creeper"
@@ -190,8 +147,6 @@ combat-tag:
   enabled: true
   # Seconds before combat tag expires after last hit
   duration: 20
-  # Prefix for combat tag messages
-  prefix: "&8[&c&lCombatTag&8] &7"
   # Commands blocked while in combat (partial match)
   blocked-commands:
     - "spawn"
@@ -205,14 +160,6 @@ combat-tag:
     - "safezone"
   # Whether to broadcast when a player combat-logs
   broadcast-combatlog: true
-  messages:
-    tagged-attacker: "&c&lCombat Tag! &7You may not use blocked commands! You hit {victim}!"
-    tagged-victim: "&c&lCombat Tag! &7You may not use blocked commands! You were hit by {attacker}!"
-    untagged: "&aYou are out of combat! You may now use all commands."
-    combatlog: "&c{player} &7just combat logged!"
-    blocked-command: "&7You may not execute that command while in combat!"
-    blocked-region: "&7You may not enter that region while in combat!"
-    firework-blocked: "&7You cannot use fireworks while in combat!"
 
 # ── Daily Reward ──────────────────────────────────────────────────────────────
 daily-reward:
@@ -222,20 +169,21 @@ daily-reward:
   # Commands run as console when claimed — {player} = player name
   rewards:
     - "excellentcrates key give {player} daily 1"
-  messages:
-    claimed: "&eYou claimed your daily reward!"
-    cooldown: "&4&lYou need to wait &e{time} &4&lbefore claiming again."
-    reset-all: "&aReset all daily rewards."
 
 # ── Full Inventory Warning ─────────────────────────────────────────────────────
 full-inventory-warning:
   enabled: true
   # Cooldown in seconds between warnings
   cooldown: 3
-  # Action bar message
-  message: "&c&lWarning! &7Your inventory is full!"
   # Sound played with the warning (leave empty to disable)
   sound: "BLOCK_NOTE_BLOCK_PLING"
+
+# ── Discord Punishment Broadcasts ─────────────────────────────────────────────
+# Requires DiscordSRV. Set enabled: true and enter your channel ID or name.
+# All message templates are in messages.yml under discord.messages.
+discord:
+  enabled: true
+  channel: "1495884092544385065"
 
 # ── Warn System ───────────────────────────────────────────────────────────────
 warn:
@@ -251,14 +199,3 @@ warn:
     - "tempban {player} 30d Too many warnings! (Offense 4+)"
   # Reset warns after auto-punishment
   reset-on-max: true
-  messages:
-    warned-broadcast: "&c{player} &7HAS BEEN &4&lWARNED &r&7BY &c{staff} &7for &r{reason} &8(&4{warns}&8/&4{max}&8)"
-    warned-broadcast-no-reason: "&c{player} &7HAS BEEN &4&lWARNED &r&7BY &c{staff} &8(&4{warns}&8/&4{max}&8)"
-    unwarned-broadcast: "&a{player} &7HAS BEEN &2&lUN-WARNED &r&7BY &a{staff}&r! &8(&2{warns}&8/&2{max}&8)"
-    no-warns: "&4{player} &chas no warns."
-    check-self: "&cYou have &4{warns}&8/&4{max} &cwarns."
-    check-other: "&4{player} &chas &4{warns}&8/&4{max} &cwarns."
-    # Personal message sent to the warned player.
-    # {punishment} = readable punishment e.g. "tempbanned for 1d", {offense} = offense number
-    personal-warn: "&7You now have &4{warns}&8/&4{max} &7warnings. &cYou will be &4{punishment} &cif you get too many warnings &8(Offense &4{offense}&8)"
-    personal-warn-max: "&cYou have reached &4{max}&c warnings and will be punished!"

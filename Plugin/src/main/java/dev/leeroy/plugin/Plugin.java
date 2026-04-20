@@ -36,6 +36,8 @@ public final class Plugin extends JavaPlugin {
     private CombatManager combatManager;
     private DailyRewardManager dailyRewardManager;
     private WarnManager warnManager;
+    private dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster discordBroadcaster;
+    private dev.leeroy.plugin.Utils.misc.MessagesConfig messagesConfig;
 
     @Override
     public void onEnable() {
@@ -56,6 +58,7 @@ public final class Plugin extends JavaPlugin {
         BobHooks.init(this);
 
         // Systems
+        messagesConfig      = new dev.leeroy.plugin.Utils.misc.MessagesConfig(this);
         banManager         = new BanManager(this);
         ipBanManager       = new IPBanManager(this);
         muteManager        = new MuteManager(this);
@@ -64,14 +67,15 @@ public final class Plugin extends JavaPlugin {
         vanishManager      = new VanishManager(this);
         reportManager      = new ReportManager(this);
         flyDataManager     = new FlyDataManager(this);
-        flyConfig          = new FlyConfig(this);
+        flyConfig          = new FlyConfig(this, messagesConfig);
         flyManager         = new FlyManager(this, flyDataManager, flyConfig);
         autoMessageManager = new AutoMessageManager(this);
-        chatGameManager    = new ChatGameManager(this);
-        combatManager      = new CombatManager(this);
+        chatGameManager    = new ChatGameManager(this, messagesConfig);
+        combatManager      = new CombatManager(this, messagesConfig);
         flyManager.setCombatManager(combatManager);
-        dailyRewardManager = new DailyRewardManager(this);
-        warnManager        = new WarnManager(this);
+        dailyRewardManager  = new DailyRewardManager(this);
+        warnManager         = new WarnManager(this);
+        discordBroadcaster  = new dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster(this, messagesConfig);
 
         // Shared listener instances (needed by both commands and event handlers)
         MuteListener       muteListener       = new MuteListener(muteManager);
@@ -81,14 +85,14 @@ public final class Plugin extends JavaPlugin {
         // Event listeners
         getServer().getPluginManager().registerEvents(muteListener, this);
         getServer().getPluginManager().registerEvents(new PunishListener(this, banManager, ipBanManager,
-                muteManager, punishConfig, warnManager, playerCache), this);
+                muteManager, punishConfig, warnManager, playerCache, discordBroadcaster), this);
         getServer().getPluginManager().registerEvents(new ChatColorListener(), this);
         getServer().getPluginManager().registerEvents(new ChatFormatListener(this), this);
         getServer().getPluginManager().registerEvents(new FlyListener(flyManager, flyDataManager, flyConfig), this);
-        getServer().getPluginManager().registerEvents(new FullInventoryListener(this), this);
+        getServer().getPluginManager().registerEvents(new FullInventoryListener(this, messagesConfig), this);
         getServer().getPluginManager().registerEvents(new VanishListener(vanishManager, this), this);
         getServer().getPluginManager().registerEvents(new DailyRewardListener(dailyRewardManager), this);
-        getServer().getPluginManager().registerEvents(new CombatListener(combatManager, this), this);
+        getServer().getPluginManager().registerEvents(new CombatListener(combatManager, this, messagesConfig), this);
         getServer().getPluginManager().registerEvents(new ChatGameListener(chatGameManager), this);
         getServer().getPluginManager().registerEvents(tpaCommand, this);
         getServer().getPluginManager().registerEvents(new BanListener(banManager, ipBanManager, playerCache), this);
@@ -118,6 +122,8 @@ public final class Plugin extends JavaPlugin {
         final CombatManager      fCombat    = combatManager;
         final DailyRewardManager fDaily     = dailyRewardManager;
         final WarnManager        fWarn      = warnManager;
+        final dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster fDiscord   = discordBroadcaster;
+        final dev.leeroy.plugin.Utils.misc.MessagesConfig                     fMessages  = messagesConfig;
         final MuteListener       fMuteLsr   = muteListener;
         final CommandSpyListener fSpyLsr    = commandSpyListener;
         final TPACommand         fTpa       = tpaCommand;
@@ -136,32 +142,32 @@ public final class Plugin extends JavaPlugin {
             cmds.register("gmsp", perm(new Gamemodes(GameMode.SPECTATOR, "gmsp"), "bob.gamemode.self"));
 
             // Ban / IP Ban
-            cmds.register("ban",        perm(new BanCommand(fBan, fCache, Plugin.this, fVanish),       "bob.ban"));
-            cmds.register("tempban",    perm(new TempBanCommand(fBan, fCache, Plugin.this, fVanish),    "bob.tempban"));
-            cmds.register("unban",      perm(new UnbanCommand(fBan, fCache),                            "bob.unban"));
-            cmds.register("checkban",   perm(new CheckBanCommand(fBan, fCache),                         "bob.checkban"));
-            cmds.register("ipban",      perm(new IPBanCommand(fIPBan, Plugin.this),                     "bob.ipban"));
-            cmds.register("iptempban",  perm(new IPTempBanCommand(fIPBan, Plugin.this),                 "bob.iptempban"));
-            cmds.register("ipunban",    perm(new IPUnbanCommand(fIPBan, fCache),                        "bob.ipunban"));
-            cmds.register("checkipban", perm(new CheckIPBanCommand(fIPBan),                             "bob.checkipban"));
+            cmds.register("ban",        perm(new BanCommand(fBan, fCache, Plugin.this, fVanish, fDiscord),       "bob.ban"));
+            cmds.register("tempban",    perm(new TempBanCommand(fBan, fCache, Plugin.this, fVanish, fDiscord),    "bob.tempban"));
+            cmds.register("unban",      perm(new UnbanCommand(fBan, fCache, fDiscord),                            "bob.unban"));
+            cmds.register("checkban",   perm(new CheckBanCommand(fBan, fCache),                                   "bob.checkban"));
+            cmds.register("ipban",      perm(new IPBanCommand(fIPBan, Plugin.this, fDiscord),                     "bob.ipban"));
+            cmds.register("iptempban",  perm(new IPTempBanCommand(fIPBan, Plugin.this, fDiscord),                 "bob.iptempban"));
+            cmds.register("ipunban",    perm(new IPUnbanCommand(fIPBan, fCache, fDiscord),                        "bob.ipunban"));
+            cmds.register("checkipban", perm(new CheckIPBanCommand(fIPBan),                                       "bob.checkipban"));
 
             // Mute
-            cmds.register("mute",      perm(new MuteCommand(fMute, fVanish),       "bob.mute"));
-            cmds.register("tempmute",  perm(new TempMuteCommand(fMute, fVanish),   "bob.tempmute"));
-            cmds.register("unmute",    perm(new UnmuteCommand(fMute, fCache),       "bob.unmute"));
-            cmds.register("chatmute",  perm(new ChatMuteCommand(fMuteLsr),          "bob.chatmute"));
-            cmds.register("chatclear", perm(new ChatClearCommand(),                 "bob.chatclear"));
+            cmds.register("mute",      perm(new MuteCommand(fMute, fVanish, fDiscord),       "bob.mute"));
+            cmds.register("tempmute",  perm(new TempMuteCommand(fMute, fVanish, fDiscord),   "bob.tempmute"));
+            cmds.register("unmute",    perm(new UnmuteCommand(fMute, fCache, fDiscord),       "bob.unmute"));
+            cmds.register("chatmute",  perm(new ChatMuteCommand(fMuteLsr),                    "bob.chatmute"));
+            cmds.register("chatclear", perm(new ChatClearCommand(),                            "bob.chatclear"));
 
             // Kick
-            cmds.register("kick", perm(new KickCommand(fVanish), "bob.kick"));
+            cmds.register("kick", perm(new KickCommand(fVanish, fDiscord), "bob.kick"));
 
             // Punish GUI
             cmds.register("punish", perm(new PunishCommand(Plugin.this, fPunishCfg, fVanish), "bob.punish"));
 
             // Warn
-            cmds.register("warn",   perm(new WarnCommand(fWarn, fCache, Plugin.this, "warn",   fVanish), "bob.warn"));
-            cmds.register("unwarn", perm(new WarnCommand(fWarn, fCache, Plugin.this, "unwarn", fVanish), "bob.warn"));
-            cmds.register("warns",  new WarnCommand(fWarn, fCache, Plugin.this, "warns", fVanish));
+            cmds.register("warn",   perm(new WarnCommand(fWarn, fCache, Plugin.this, "warn",   fVanish, fDiscord, fMessages), "bob.warn"));
+            cmds.register("unwarn", perm(new WarnCommand(fWarn, fCache, Plugin.this, "unwarn", fVanish, fDiscord, fMessages), "bob.warn"));
+            cmds.register("warns",  new WarnCommand(fWarn, fCache, Plugin.this, "warns", fVanish, fDiscord, fMessages));
 
             // Chat Color
             cmds.register("chatcolor", perm(new ChatColorCommand(), "bob.chatcolor"));
@@ -178,11 +184,11 @@ public final class Plugin extends JavaPlugin {
 
             // Reload
             cmds.register("bobreload", perm(new ReloadCommand(Plugin.this, fBan, fIPBan,
-                    fPunishCfg, fAutoMsg, fChatGame), "bob.reload"));
+                    fPunishCfg, fMessages, fAutoMsg, fChatGame), "bob.reload"));
 
             // Daily Reward
-            cmds.register("daily",    new DailyRewardCommand(fDaily, false));
-            cmds.register("fixdaily", perm(new DailyRewardCommand(fDaily, true), "bob.daily.admin"));
+            cmds.register("daily",    new DailyRewardCommand(fDaily, false, fMessages));
+            cmds.register("fixdaily", perm(new DailyRewardCommand(fDaily, true, fMessages), "bob.daily.admin"));
 
             // Combat Tag
             cmds.register("setcombat",    perm(new CombatCommand(fCombat, true),  "bob.combat.admin"));

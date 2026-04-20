@@ -3,6 +3,7 @@ package dev.leeroy.plugin.commands.punishment;
 import dev.leeroy.plugin.Utils.misc.PlayerCache;
 import dev.leeroy.plugin.Utils.misc.TabUtil;
 import dev.leeroy.plugin.Utils.punishment.MuteManager;
+import dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -18,10 +19,13 @@ public class UnmuteCommand implements BasicCommand {
 
     private final MuteManager muteManager;
     private final PlayerCache playerCache;
+    private final PunishmentDiscordBroadcaster discordBroadcaster;
 
-    public UnmuteCommand(MuteManager muteManager, PlayerCache playerCache) {
-        this.muteManager = muteManager;
-        this.playerCache = playerCache;
+    public UnmuteCommand(MuteManager muteManager, PlayerCache playerCache,
+                         PunishmentDiscordBroadcaster discordBroadcaster) {
+        this.muteManager        = muteManager;
+        this.playerCache        = playerCache;
+        this.discordBroadcaster = discordBroadcaster;
     }
 
     @Override
@@ -57,6 +61,7 @@ public class UnmuteCommand implements BasicCommand {
 
         muteManager.unmute(uuid);
         String name = playerCache.getName(uuid);
+        discordBroadcaster.broadcast("unmute", name != null ? name : uuid.toString(), sender.getName(), null, null);
         sender.sendMessage(Component.text((name != null ? name : uuid.toString()) + " has been unmuted.", NamedTextColor.GREEN));
 
         Player target = Bukkit.getPlayer(uuid);

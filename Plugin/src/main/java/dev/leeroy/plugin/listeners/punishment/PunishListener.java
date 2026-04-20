@@ -6,6 +6,7 @@ import dev.leeroy.plugin.Utils.punishment.BanManager;
 import dev.leeroy.plugin.Utils.punishment.IPBanManager;
 import dev.leeroy.plugin.Utils.punishment.MuteManager;
 import dev.leeroy.plugin.Utils.punishment.PunishConfig;
+import dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster;
 import dev.leeroy.plugin.Utils.punishment.WarnManager;
 import dev.leeroy.plugin.gui.PunishGUI;
 import net.kyori.adventure.text.Component;
@@ -36,20 +37,22 @@ public class PunishListener implements Listener {
     private final PunishConfig punishConfig;
     private final WarnManager warnManager;
     private final PlayerCache playerCache;
+    private final PunishmentDiscordBroadcaster discordBroadcaster;
 
     private final Map<UUID, String> guiState = new HashMap<>();
 
     public PunishListener(JavaPlugin plugin, BanManager banManager,
                           IPBanManager ipBanManager, MuteManager muteManager,
                           PunishConfig punishConfig, WarnManager warnManager,
-                          PlayerCache playerCache) {
-        this.plugin       = plugin;
-        this.banManager   = banManager;
-        this.ipBanManager = ipBanManager;
-        this.muteManager  = muteManager;
-        this.punishConfig = punishConfig;
-        this.warnManager  = warnManager;
-        this.playerCache  = playerCache;
+                          PlayerCache playerCache, PunishmentDiscordBroadcaster discordBroadcaster) {
+        this.plugin             = plugin;
+        this.banManager         = banManager;
+        this.ipBanManager       = ipBanManager;
+        this.muteManager        = muteManager;
+        this.punishConfig       = punishConfig;
+        this.warnManager        = warnManager;
+        this.playerCache        = playerCache;
+        this.discordBroadcaster = discordBroadcaster;
     }
 
     // ── Sneak + hit ───────────────────────────────────────────────────────────
@@ -197,6 +200,7 @@ public class PunishListener implements Listener {
                 Component kickMsg = TextUtil.parse(PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, null));
                 Bukkit.getScheduler().runTaskLater(plugin, () -> target.kick(kickMsg), 10L);
                 TextUtil.broadcast(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, null));
+                discordBroadcaster.broadcast("ban", targetName, staff.getName(), reason, null);
             }
             case "tempban" -> {
                 if (target == null) { staff.sendMessage(Component.text(targetName + " is no longer online.", NamedTextColor.RED)); return; }
@@ -210,6 +214,7 @@ public class PunishListener implements Listener {
                 Component kickMsg = TextUtil.parse(PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, remaining));
                 Bukkit.getScheduler().runTaskLater(plugin, () -> target.kick(kickMsg), 10L);
                 TextUtil.broadcast(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, duration));
+                discordBroadcaster.broadcast("tempban", targetName, staff.getName(), reason, duration);
             }
             case "mute" -> {
                 if (target == null) { staff.sendMessage(Component.text(targetName + " is no longer online.", NamedTextColor.RED)); return; }
@@ -217,6 +222,7 @@ public class PunishListener implements Listener {
                 muteManager.mute(target.getUniqueId(), target.getName(), reason, staff.getName());
                 target.sendMessage(TextUtil.parse(PunishGUI.formatMessage(cfg, selfPath, targetName, staff.getName(), reason, null)));
                 TextUtil.broadcast(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, null));
+                discordBroadcaster.broadcast("mute", targetName, staff.getName(), reason, null);
             }
             case "tempmute" -> {
                 if (target == null) { staff.sendMessage(Component.text(targetName + " is no longer online.", NamedTextColor.RED)); return; }
@@ -226,11 +232,13 @@ public class PunishListener implements Listener {
                 muteManager.tempMute(target.getUniqueId(), target.getName(), reason, staff.getName(), ms);
                 target.sendMessage(TextUtil.parse(PunishGUI.formatMessage(cfg, selfPath, targetName, staff.getName(), reason, duration)));
                 TextUtil.broadcast(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, duration));
+                discordBroadcaster.broadcast("tempmute", targetName, staff.getName(), reason, duration);
             }
             case "kick" -> {
                 if (target == null) { staff.sendMessage(Component.text(targetName + " is no longer online.", NamedTextColor.RED)); return; }
                 target.kick(TextUtil.parse(PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, null)));
                 TextUtil.broadcast(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, null));
+                discordBroadcaster.broadcast("kick", targetName, staff.getName(), reason, null);
             }
             case "ipban" -> {
                 if (target == null) { staff.sendMessage(Component.text(targetName + " is no longer online.", NamedTextColor.RED)); return; }
@@ -242,6 +250,7 @@ public class PunishListener implements Listener {
                 Component kickMsg = TextUtil.parse(PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, null));
                 Bukkit.getScheduler().runTaskLater(plugin, () -> target.kick(kickMsg), 10L);
                 TextUtil.broadcast(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, null));
+                discordBroadcaster.broadcast("ipban", targetName, staff.getName(), reason, null);
             }
             case "tempipban" -> {
                 if (target == null) { staff.sendMessage(Component.text(targetName + " is no longer online.", NamedTextColor.RED)); return; }
@@ -256,6 +265,7 @@ public class PunishListener implements Listener {
                 Component kickMsg = TextUtil.parse(PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, remaining));
                 Bukkit.getScheduler().runTaskLater(plugin, () -> target.kick(kickMsg), 10L);
                 TextUtil.broadcast(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, duration));
+                discordBroadcaster.broadcast("iptempban", targetName, staff.getName(), reason, duration);
             }
             case "warn" -> {
                 int max      = plugin.getConfig().getInt("warn.max-warns", 3);
@@ -271,6 +281,7 @@ public class PunishListener implements Listener {
                 TextUtil.broadcast("");
                 TextUtil.broadcast(msg);
                 TextUtil.broadcast("");
+                discordBroadcaster.broadcastWarn("warn", targetName, staff.getName(), reason.isEmpty() ? null : reason, warns, max);
                 if (warns >= max) {
                     final int offense = warnManager.getOffenses(warnUUID);
                     warnManager.incrementOffenses(warnUUID);

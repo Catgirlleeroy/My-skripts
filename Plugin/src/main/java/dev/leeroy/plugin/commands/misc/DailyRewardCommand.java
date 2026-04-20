@@ -1,6 +1,7 @@
 package dev.leeroy.plugin.commands.misc;
 
 import dev.leeroy.plugin.Utils.misc.DailyRewardManager;
+import dev.leeroy.plugin.Utils.misc.MessagesConfig;
 import dev.leeroy.plugin.Utils.misc.TextUtil;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -15,11 +16,13 @@ import java.util.List;
 public class DailyRewardCommand implements BasicCommand {
 
     private final DailyRewardManager dailyManager;
+    private final MessagesConfig messagesConfig;
     private final boolean fixMode;
 
-    public DailyRewardCommand(DailyRewardManager dailyManager, boolean fixMode) {
-        this.dailyManager = dailyManager;
-        this.fixMode      = fixMode;
+    public DailyRewardCommand(DailyRewardManager dailyManager, boolean fixMode, MessagesConfig messagesConfig) {
+        this.dailyManager   = dailyManager;
+        this.fixMode        = fixMode;
+        this.messagesConfig = messagesConfig;
     }
 
     @Override
@@ -32,7 +35,7 @@ public class DailyRewardCommand implements BasicCommand {
                 return;
             }
             dailyManager.resetAll();
-            sender.sendMessage(TextUtil.parse(dailyManager.plugin().getConfig()
+            sender.sendMessage(TextUtil.parse(messagesConfig.get()
                     .getString("daily-reward.messages.reset-all", "&aReset all daily rewards.")));
             return;
         }
@@ -61,7 +64,7 @@ public class DailyRewardCommand implements BasicCommand {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{player}", playerName));
             }
 
-            player.sendMessage(TextUtil.parse(dailyManager.plugin().getConfig()
+            player.sendMessage(TextUtil.parse(messagesConfig.get()
                     .getString("daily-reward.messages.claimed", "&eYou claimed your daily reward!")));
         } else {
             int[] remaining = dailyManager.getTimeRemaining(player.getUniqueId());
@@ -72,7 +75,7 @@ public class DailyRewardCommand implements BasicCommand {
                     ? hours + "h " + minutes + "m"
                     : minutes + "m";
 
-            String msg = dailyManager.plugin().getConfig()
+            String msg = messagesConfig.get()
                     .getString("daily-reward.messages.cooldown",
                             "&4&lYou need to wait &e{time} &4&lbefore claiming again.")
                     .replace("{hours}",   String.valueOf(hours))

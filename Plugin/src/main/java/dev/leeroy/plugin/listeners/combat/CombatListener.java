@@ -2,6 +2,7 @@ package dev.leeroy.plugin.listeners.combat;
 
 import dev.leeroy.plugin.Utils.misc.BobHooks;
 import dev.leeroy.plugin.Utils.combat.CombatManager;
+import dev.leeroy.plugin.Utils.misc.MessagesConfig;
 import dev.leeroy.plugin.Utils.misc.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -26,6 +27,7 @@ public class CombatListener implements Listener {
 
     private final CombatManager combatManager;
     private final JavaPlugin plugin;
+    private final MessagesConfig messagesConfig;
 
     private final Map<UUID, Long> regionMsgCooldown   = new HashMap<>();
     private final Map<UUID, Long> fireworkMsgCooldown  = new HashMap<>();
@@ -33,9 +35,10 @@ public class CombatListener implements Listener {
 
     private static final long MSG_COOLDOWN_MS = 3000;
 
-    public CombatListener(CombatManager combatManager, JavaPlugin plugin) {
-        this.combatManager = combatManager;
-        this.plugin        = plugin;
+    public CombatListener(CombatManager combatManager, JavaPlugin plugin, MessagesConfig messagesConfig) {
+        this.combatManager  = combatManager;
+        this.plugin         = plugin;
+        this.messagesConfig = messagesConfig;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -52,12 +55,12 @@ public class CombatListener implements Listener {
 
         if (!attackerWasTagged) {
             attacker.sendMessage(TextUtil.parse(
-                    plugin.getConfig().getString("combat-tag.messages.tagged-attacker", "")
+                    messagesConfig.get().getString("combat-tag.messages.tagged-attacker", "")
                             .replace("{victim}", victim.getName())));
         }
         if (!victimWasTagged) {
             victim.sendMessage(TextUtil.parse(
-                    plugin.getConfig().getString("combat-tag.messages.tagged-victim", "")
+                    messagesConfig.get().getString("combat-tag.messages.tagged-victim", "")
                             .replace("{attacker}", attacker.getName())));
         }
     }
@@ -75,7 +78,7 @@ public class CombatListener implements Listener {
         combatManager.untag(player);
 
         if (plugin.getConfig().getBoolean("combat-tag.broadcast-combatlog", true)) {
-            String raw = plugin.getConfig()
+            String raw = messagesConfig.get()
                     .getString("combat-tag.messages.combatlog", "&c{player} &7just combat logged!")
                     .replace("{player}", player.getName());
             TextUtil.broadcast(raw);

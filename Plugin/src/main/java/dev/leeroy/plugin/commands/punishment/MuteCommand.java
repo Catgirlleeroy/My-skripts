@@ -4,6 +4,7 @@ import dev.leeroy.plugin.Utils.misc.TabUtil;
 import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.misc.VanishManager;
 import dev.leeroy.plugin.Utils.punishment.MuteManager;
+import dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -18,10 +19,13 @@ public class MuteCommand implements BasicCommand {
 
     private final MuteManager muteManager;
     private final VanishManager vanishManager;
+    private final PunishmentDiscordBroadcaster discordBroadcaster;
 
-    public MuteCommand(MuteManager muteManager, VanishManager vanishManager) {
-        this.muteManager   = muteManager;
-        this.vanishManager = vanishManager;
+    public MuteCommand(MuteManager muteManager, VanishManager vanishManager,
+                       PunishmentDiscordBroadcaster discordBroadcaster) {
+        this.muteManager        = muteManager;
+        this.vanishManager      = vanishManager;
+        this.discordBroadcaster = discordBroadcaster;
     }
 
     @Override
@@ -67,5 +71,6 @@ public class MuteCommand implements BasicCommand {
         muteManager.mute(target.getUniqueId(), target.getName(), reason, sender.getName());
         target.sendMessage(Component.text("You have been permanently muted. Reason: " + reason, NamedTextColor.RED));
         TextUtil.broadcast("&c[MUTE] &e" + target.getName() + " &chas been muted! &7Reason: " + reason);
+        discordBroadcaster.broadcast("mute", target.getName(), sender.getName(), reason, null);
     }
 }

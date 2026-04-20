@@ -1,5 +1,6 @@
 package dev.leeroy.plugin.Utils.combat;
 
+import dev.leeroy.plugin.Utils.misc.MessagesConfig;
 import dev.leeroy.plugin.Utils.misc.TextUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -14,10 +15,12 @@ import java.util.UUID;
 public class CombatManager {
 
     private final JavaPlugin plugin;
+    private final MessagesConfig messagesConfig;
     private final Map<UUID, BukkitTask> combatTasks = new HashMap<>();
 
-    public CombatManager(JavaPlugin plugin) {
-        this.plugin = plugin;
+    public CombatManager(JavaPlugin plugin, MessagesConfig messagesConfig) {
+        this.plugin         = plugin;
+        this.messagesConfig = messagesConfig;
     }
 
     public void tag(Player player) {
@@ -50,8 +53,8 @@ public class CombatManager {
     }
 
     public Component msg(String key) {
-        String prefix = plugin.getConfig().getString("combat-tag.prefix", "&8[&c&lCombatTag&8] &7");
-        String raw    = plugin.getConfig().getString("combat-tag.messages." + key, "&cMissing: " + key);
+        String prefix = messagesConfig.get().getString("combat-tag.prefix", "&8[&c&lCombatTag&8] &7");
+        String raw    = messagesConfig.get().getString("combat-tag.messages." + key, "&cMissing: " + key);
         return TextUtil.parse(prefix + raw);
     }
 }
