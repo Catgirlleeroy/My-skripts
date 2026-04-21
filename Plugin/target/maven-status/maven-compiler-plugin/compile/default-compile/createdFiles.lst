@@ -16,6 +16,7 @@ dev\leeroy\plugin\Utils\punishment\MuteManager.class
 dev\leeroy\plugin\Utils\chat\AutoMessageManager.class
 dev\leeroy\plugin\commands\punishment\IPUnbanCommand.class
 dev\leeroy\plugin\Utils\punishment\BanManager.class
+dev\leeroy\plugin\Utils\punishment\UnbanManager.class
 dev\leeroy\plugin\listeners\chat\ChatColorListener$1.class
 dev\leeroy\plugin\Utils\misc\ReportManager.class
 dev\leeroy\plugin\commands\misc\VanishCommand.class
@@ -48,6 +49,7 @@ dev\leeroy\plugin\commands\chat\ChatMuteCommand.class
 dev\leeroy\plugin\Utils\punishment\IPBanManager.class
 dev\leeroy\plugin\commands\misc\Gamemodes$1.class
 dev\leeroy\plugin\commands\punishment\CheckBanCommand.class
+dev\leeroy\plugin\commands\punishment\WhoUnbannedCommand.class
 dev\leeroy\plugin\Utils\misc\FlyConfig.class
 dev\leeroy\plugin\Utils\punishment\PunishConfig.class
 dev\leeroy\plugin\commands\combat\CombatCommand.class
@@ -55,6 +57,7 @@ dev\leeroy\plugin\listeners\punishment\BanListener.class
 dev\leeroy\plugin\listeners\punishment\PunishListener.class
 dev\leeroy\plugin\Utils\combat\CombatManager.class
 dev\leeroy\plugin\listeners\chat\ChatGameListener.class
+dev\leeroy\plugin\Utils\punishment\PunishmentHistoryManager.class
 dev\leeroy\plugin\Plugin.class
 dev\leeroy\plugin\commands\chat\ChatColorCommand.class
 dev\leeroy\plugin\commands\punishment\CheckIPBanCommand.class
@@ -73,3 +76,4 @@ dev\leeroy\plugin\commands\punishment\IPTempBanCommand.class
 dev\leeroy\plugin\commands\punishment\TempBanCommand.class
 dev\leeroy\plugin\commands\misc\TPACommand.class
 dev\leeroy\plugin\commands\punishment\UnbanCommand.class
+dev\leeroy\plugin\commands\punishment\PunishHistoryCommand.class

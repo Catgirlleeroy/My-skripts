@@ -6,6 +6,7 @@ import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.misc.VanishManager;
 import dev.leeroy.plugin.Utils.punishment.BanManager;
 import dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster;
+import dev.leeroy.plugin.Utils.punishment.PunishmentHistoryManager;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -27,14 +28,17 @@ public class BanCommand implements BasicCommand {
     private final JavaPlugin plugin;
     private final VanishManager vanishManager;
     private final PunishmentDiscordBroadcaster discordBroadcaster;
+    private final PunishmentHistoryManager historyManager;
 
     public BanCommand(BanManager banManager, PlayerCache playerCache, JavaPlugin plugin,
-                      VanishManager vanishManager, PunishmentDiscordBroadcaster discordBroadcaster) {
+                      VanishManager vanishManager, PunishmentDiscordBroadcaster discordBroadcaster,
+                      PunishmentHistoryManager historyManager) {
         this.banManager          = banManager;
         this.playerCache         = playerCache;
         this.plugin              = plugin;
         this.vanishManager       = vanishManager;
         this.discordBroadcaster  = discordBroadcaster;
+        this.historyManager      = historyManager;
     }
 
     @Override
@@ -85,6 +89,7 @@ public class BanCommand implements BasicCommand {
         }
 
         banManager.ban(uuid, targetName, reason, sender.getName());
+        historyManager.log(uuid, targetName, "ban", reason, sender.getName(), null);
 
         if (onlineTarget != null) {
             onlineTarget.getWorld().strikeLightningEffect(onlineTarget.getLocation());

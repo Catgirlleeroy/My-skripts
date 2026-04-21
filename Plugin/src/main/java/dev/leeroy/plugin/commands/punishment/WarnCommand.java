@@ -6,6 +6,7 @@ import dev.leeroy.plugin.Utils.misc.TabUtil;
 import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.misc.VanishManager;
 import dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster;
+import dev.leeroy.plugin.Utils.punishment.PunishmentHistoryManager;
 import dev.leeroy.plugin.Utils.punishment.WarnManager;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -31,10 +32,12 @@ public class WarnCommand implements BasicCommand {
     private final VanishManager vanishManager;
     private final PunishmentDiscordBroadcaster discordBroadcaster;
     private final MessagesConfig messagesConfig;
+    private final PunishmentHistoryManager historyManager;
 
     public WarnCommand(WarnManager warnManager, PlayerCache playerCache,
                        JavaPlugin plugin, String mode, VanishManager vanishManager,
-                       PunishmentDiscordBroadcaster discordBroadcaster, MessagesConfig messagesConfig) {
+                       PunishmentDiscordBroadcaster discordBroadcaster, MessagesConfig messagesConfig,
+                       PunishmentHistoryManager historyManager) {
         this.warnManager        = warnManager;
         this.playerCache        = playerCache;
         this.plugin             = plugin;
@@ -42,6 +45,7 @@ public class WarnCommand implements BasicCommand {
         this.vanishManager      = vanishManager;
         this.discordBroadcaster = discordBroadcaster;
         this.messagesConfig     = messagesConfig;
+        this.historyManager     = historyManager;
     }
 
     @Override
@@ -74,6 +78,7 @@ public class WarnCommand implements BasicCommand {
         String reason     = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length)) : null;
         int max           = plugin.getConfig().getInt("warn.max-warns", 3);
         int warns         = warnManager.addWarn(uuid);
+        historyManager.log(uuid, targetName, "warn", reason != null ? reason : "No reason", sender.getName(), null);
 
         Player online = Bukkit.getPlayer(uuid);
         if (online != null) {

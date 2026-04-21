@@ -7,6 +7,7 @@ import dev.leeroy.plugin.Utils.punishment.IPBanManager;
 import dev.leeroy.plugin.Utils.punishment.MuteManager;
 import dev.leeroy.plugin.Utils.punishment.PunishConfig;
 import dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster;
+import dev.leeroy.plugin.Utils.punishment.PunishmentHistoryManager;
 import dev.leeroy.plugin.Utils.punishment.WarnManager;
 import dev.leeroy.plugin.gui.PunishGUI;
 import net.kyori.adventure.text.Component;
@@ -38,13 +39,15 @@ public class PunishListener implements Listener {
     private final WarnManager warnManager;
     private final PlayerCache playerCache;
     private final PunishmentDiscordBroadcaster discordBroadcaster;
+    private final PunishmentHistoryManager historyManager;
 
     private final Map<UUID, String> guiState = new HashMap<>();
 
     public PunishListener(JavaPlugin plugin, BanManager banManager,
                           IPBanManager ipBanManager, MuteManager muteManager,
                           PunishConfig punishConfig, WarnManager warnManager,
-                          PlayerCache playerCache, PunishmentDiscordBroadcaster discordBroadcaster) {
+                          PlayerCache playerCache, PunishmentDiscordBroadcaster discordBroadcaster,
+                          PunishmentHistoryManager historyManager) {
         this.plugin             = plugin;
         this.banManager         = banManager;
         this.ipBanManager       = ipBanManager;
@@ -53,6 +56,7 @@ public class PunishListener implements Listener {
         this.warnManager        = warnManager;
         this.playerCache        = playerCache;
         this.discordBroadcaster = discordBroadcaster;
+        this.historyManager     = historyManager;
     }
 
     // ── Sneak + hit ───────────────────────────────────────────────────────────
@@ -195,6 +199,7 @@ public class PunishListener implements Listener {
                 if (target == null) { staff.sendMessage(Component.text(targetName + " is no longer online.", NamedTextColor.RED)); return; }
                 if (banManager.isBanned(target.getUniqueId())) { staff.sendMessage(Component.text(targetName + " is already banned.", NamedTextColor.RED)); return; }
                 banManager.ban(target.getUniqueId(), target.getName(), reason, staff.getName());
+                historyManager.log(target.getUniqueId(), target.getName(), "ban", reason, staff.getName(), null);
                 target.getWorld().strikeLightningEffect(target.getLocation());
                 org.bukkit.Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f));
                 Component kickMsg = TextUtil.parse(PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, null));
@@ -208,6 +213,7 @@ public class PunishListener implements Listener {
                 if (ms == -1) { staff.sendMessage(Component.text("Invalid duration.", NamedTextColor.RED)); return; }
                 if (banManager.isBanned(target.getUniqueId())) { staff.sendMessage(Component.text(targetName + " is already banned.", NamedTextColor.RED)); return; }
                 banManager.tempBan(target.getUniqueId(), target.getName(), reason, staff.getName(), ms);
+                historyManager.log(target.getUniqueId(), target.getName(), "tempban", reason, staff.getName(), duration);
                 target.getWorld().strikeLightningEffect(target.getLocation());
                 org.bukkit.Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f));
                 String remaining = BanManager.formatRemaining(System.currentTimeMillis() + ms);
@@ -220,6 +226,7 @@ public class PunishListener implements Listener {
                 if (target == null) { staff.sendMessage(Component.text(targetName + " is no longer online.", NamedTextColor.RED)); return; }
                 if (muteManager.isMuted(target.getUniqueId())) { staff.sendMessage(Component.text(targetName + " is already muted.", NamedTextColor.RED)); return; }
                 muteManager.mute(target.getUniqueId(), target.getName(), reason, staff.getName());
+                historyManager.log(target.getUniqueId(), target.getName(), "mute", reason, staff.getName(), null);
                 target.sendMessage(TextUtil.parse(PunishGUI.formatMessage(cfg, selfPath, targetName, staff.getName(), reason, null)));
                 TextUtil.broadcast(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, null));
                 discordBroadcaster.broadcast("mute", targetName, staff.getName(), reason, null);
@@ -230,6 +237,7 @@ public class PunishListener implements Listener {
                 if (ms == -1) { staff.sendMessage(Component.text("Invalid duration.", NamedTextColor.RED)); return; }
                 if (muteManager.isMuted(target.getUniqueId())) { staff.sendMessage(Component.text(targetName + " is already muted.", NamedTextColor.RED)); return; }
                 muteManager.tempMute(target.getUniqueId(), target.getName(), reason, staff.getName(), ms);
+                historyManager.log(target.getUniqueId(), target.getName(), "tempmute", reason, staff.getName(), duration);
                 target.sendMessage(TextUtil.parse(PunishGUI.formatMessage(cfg, selfPath, targetName, staff.getName(), reason, duration)));
                 TextUtil.broadcast(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, duration));
                 discordBroadcaster.broadcast("tempmute", targetName, staff.getName(), reason, duration);
@@ -237,6 +245,7 @@ public class PunishListener implements Listener {
             case "kick" -> {
                 if (target == null) { staff.sendMessage(Component.text(targetName + " is no longer online.", NamedTextColor.RED)); return; }
                 target.kick(TextUtil.parse(PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, null)));
+                historyManager.log(target.getUniqueId(), target.getName(), "kick", reason, staff.getName(), null);
                 TextUtil.broadcast(PunishGUI.formatMessage(cfg, broadcastPath, targetName, staff.getName(), reason, null));
                 discordBroadcaster.broadcast("kick", targetName, staff.getName(), reason, null);
             }
@@ -245,6 +254,7 @@ public class PunishListener implements Listener {
                 String ip = target.getAddress().getAddress().getHostAddress();
                 if (ipBanManager.isBanned(ip)) { staff.sendMessage(Component.text(targetName + "'s IP is already banned.", NamedTextColor.RED)); return; }
                 ipBanManager.ban(ip, reason, staff.getName());
+                historyManager.log(target.getUniqueId(), target.getName(), "ipban", reason, staff.getName(), null);
                 target.getWorld().strikeLightningEffect(target.getLocation());
                 org.bukkit.Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f));
                 Component kickMsg = TextUtil.parse(PunishGUI.formatMessage(cfg, kickPath, targetName, staff.getName(), reason, null));
@@ -259,6 +269,7 @@ public class PunishListener implements Listener {
                 String ip = target.getAddress().getAddress().getHostAddress();
                 if (ipBanManager.isBanned(ip)) { staff.sendMessage(Component.text(targetName + "'s IP is already banned.", NamedTextColor.RED)); return; }
                 ipBanManager.tempBan(ip, reason, staff.getName(), ms);
+                historyManager.log(target.getUniqueId(), target.getName(), "tempipban", reason, staff.getName(), duration);
                 target.getWorld().strikeLightningEffect(target.getLocation());
                 org.bukkit.Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f));
                 String remaining = BanManager.formatRemaining(System.currentTimeMillis() + ms);
@@ -271,6 +282,7 @@ public class PunishListener implements Listener {
                 int max      = plugin.getConfig().getInt("warn.max-warns", 3);
                 UUID warnUUID = resolveUUIDFromName(targetName);
                 int warns    = warnManager.addWarn(warnUUID);
+                historyManager.log(warnUUID, targetName, "warn", reason, staff.getName(), null);
                 if (target != null) target.playSound(target.getLocation(), Sound.ENTITY_WARDEN_SONIC_BOOM, 1.0f, 1.0f);
                 String broadcastKey = "actions.warn.messages." + (reason.isEmpty() ? "broadcast-no-reason" : "broadcast");
                 String msg = PunishGUI.formatMessage(cfg, broadcastKey, targetName, staff.getName(), reason, null)

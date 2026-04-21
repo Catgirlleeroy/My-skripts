@@ -3,6 +3,7 @@ package dev.leeroy.plugin.commands.punishment;
 import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.punishment.IPBanManager;
 import dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster;
+import dev.leeroy.plugin.Utils.punishment.PunishmentHistoryManager;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -20,12 +21,15 @@ public class IPBanCommand implements BasicCommand {
     private final IPBanManager ipBanManager;
     private final JavaPlugin plugin;
     private final PunishmentDiscordBroadcaster discordBroadcaster;
+    private final PunishmentHistoryManager historyManager;
 
     public IPBanCommand(IPBanManager ipBanManager, JavaPlugin plugin,
-                        PunishmentDiscordBroadcaster discordBroadcaster) {
+                        PunishmentDiscordBroadcaster discordBroadcaster,
+                        PunishmentHistoryManager historyManager) {
         this.ipBanManager       = ipBanManager;
         this.plugin             = plugin;
         this.discordBroadcaster = discordBroadcaster;
+        this.historyManager     = historyManager;
     }
 
     @Override
@@ -64,6 +68,7 @@ public class IPBanCommand implements BasicCommand {
         }
 
         ipBanManager.ban(ip, reason, sender.getName());
+        historyManager.log(target.getUniqueId(), target.getName(), "ipban", reason, sender.getName(), null);
 
         final String finalReason = reason;
         final String finalIp = ip;

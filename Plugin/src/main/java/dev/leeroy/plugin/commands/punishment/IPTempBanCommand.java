@@ -4,6 +4,7 @@ import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.punishment.BanManager;
 import dev.leeroy.plugin.Utils.punishment.IPBanManager;
 import dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster;
+import dev.leeroy.plugin.Utils.punishment.PunishmentHistoryManager;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -21,12 +22,15 @@ public class IPTempBanCommand implements BasicCommand {
     private final IPBanManager ipBanManager;
     private final JavaPlugin plugin;
     private final PunishmentDiscordBroadcaster discordBroadcaster;
+    private final PunishmentHistoryManager historyManager;
 
     public IPTempBanCommand(IPBanManager ipBanManager, JavaPlugin plugin,
-                             PunishmentDiscordBroadcaster discordBroadcaster) {
+                             PunishmentDiscordBroadcaster discordBroadcaster,
+                             PunishmentHistoryManager historyManager) {
         this.ipBanManager       = ipBanManager;
         this.plugin             = plugin;
         this.discordBroadcaster = discordBroadcaster;
+        this.historyManager     = historyManager;
     }
 
     @Override
@@ -73,6 +77,7 @@ public class IPTempBanCommand implements BasicCommand {
         }
 
         ipBanManager.tempBan(ip, reason, sender.getName(), durationMs);
+        historyManager.log(target.getUniqueId(), target.getName(), "tempipban", reason, sender.getName(), durationStr);
 
         final String finalReason    = reason;
         final long   finalDurationMs = durationMs;

@@ -4,6 +4,7 @@ import dev.leeroy.plugin.Utils.misc.PlayerCache;
 import dev.leeroy.plugin.Utils.misc.TabUtil;
 import dev.leeroy.plugin.Utils.punishment.BanManager;
 import dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster;
+import dev.leeroy.plugin.Utils.punishment.UnbanManager;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -20,12 +21,14 @@ public class UnbanCommand implements BasicCommand {
     private final BanManager banManager;
     private final PlayerCache playerCache;
     private final PunishmentDiscordBroadcaster discordBroadcaster;
+    private final UnbanManager unbanManager;
 
     public UnbanCommand(BanManager banManager, PlayerCache playerCache,
-                        PunishmentDiscordBroadcaster discordBroadcaster) {
+                        PunishmentDiscordBroadcaster discordBroadcaster, UnbanManager unbanManager) {
         this.banManager         = banManager;
         this.playerCache        = playerCache;
         this.discordBroadcaster = discordBroadcaster;
+        this.unbanManager       = unbanManager;
     }
 
     @Override
@@ -61,8 +64,10 @@ public class UnbanCommand implements BasicCommand {
 
         banManager.unban(uuid);
         String name = playerCache.getName(uuid);
-        discordBroadcaster.broadcast("unban", name != null ? name : uuid.toString(), sender.getName(), null, null);
-        sender.sendMessage(Component.text((name != null ? name : uuid.toString()) + " has been unbanned.", NamedTextColor.GREEN));
+        String displayName = name != null ? name : uuid.toString();
+        unbanManager.log(uuid, displayName, sender.getName());
+        discordBroadcaster.broadcast("unban", displayName, sender.getName(), null, null);
+        sender.sendMessage(Component.text(displayName + " has been unbanned.", NamedTextColor.GREEN));
     }
 
     private UUID resolveUUID(String input) {
