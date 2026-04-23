@@ -1,54 +1,21 @@
 package dev.leeroy.plugin.Utils.punishment;
 
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.Bukkit;
+import dev.leeroy.plugin.Utils.misc.YamlDataStore;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class IPBanManager {
-
-    private final JavaPlugin plugin;
-    private final File ipBanFile;
-    private YamlConfiguration config;
+public class IPBanManager extends YamlDataStore {
 
     public IPBanManager(JavaPlugin plugin) {
-        this.plugin = plugin;
-        this.ipBanFile = new File(plugin.getDataFolder(), "ipbans.yml");
-        load();
+        super(plugin, "ipbans.yml");
     }
 
-    // ── Internal load/save ───────────────────────────────────────────────────
-
-    private void load() {
-        if (!ipBanFile.exists()) {
-            plugin.getDataFolder().mkdirs();
-            try { ipBanFile.createNewFile(); } catch (IOException e) { e.printStackTrace(); }
-        }
-        config = YamlConfiguration.loadConfiguration(ipBanFile);
-    }
-
-    /** Reloads ipbans.yml from disk, discarding any cached state. */
-    public void reload() {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, this::load);
-    }
-
-    private void save() {
-        final YamlConfiguration snapshot = config;
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            try { snapshot.save(ipBanFile); } catch (IOException e) { e.printStackTrace(); }
-        });
-    }
-
-    // ── Key helper — dots in IPs break YAML keys so we replace them ──────────
+    // Dots in IPs break YAML keys so we replace them
     private String toKey(String ip) {
         return ip.replace(".", "_");
     }
-
-    // ── Public API ───────────────────────────────────────────────────────────
 
     public void ban(String ip, String reason, String bannedBy) {
         String key = toKey(ip);

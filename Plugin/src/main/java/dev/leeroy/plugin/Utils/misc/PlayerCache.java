@@ -2,6 +2,7 @@ package dev.leeroy.plugin.Utils.misc;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -74,6 +75,14 @@ public class PlayerCache {
 
     public Collection<String> getAllNames() {
         return names.values();
+    }
+
+    /** Resolves a name, UUID string, or online player to a UUID. Returns null if not found. */
+    public UUID resolveUUID(String input) {
+        Player online = Bukkit.getPlayerExact(input);
+        if (online != null) return online.getUniqueId();
+        try { return UUID.fromString(input); } catch (IllegalArgumentException ignored) {}
+        return getUUID(input);
     }
 
     // -------------------------------------------------------------------------

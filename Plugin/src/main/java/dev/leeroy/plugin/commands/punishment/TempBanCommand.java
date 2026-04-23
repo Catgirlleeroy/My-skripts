@@ -76,8 +76,7 @@ public class TempBanCommand implements BasicCommand {
             uuid       = onlineTarget.getUniqueId();
             targetName = onlineTarget.getName();
         } else {
-            uuid = tryParseUUID(input);
-            if (uuid == null) uuid = playerCache.getUUID(input);
+            uuid = playerCache.resolveUUID(input);
             if (uuid == null) {
                 sender.sendMessage(Component.text("Player '" + input + "' not found. They must have joined before, or provide a UUID.", NamedTextColor.RED));
                 return;
@@ -123,7 +122,4 @@ public class TempBanCommand implements BasicCommand {
         return java.util.Collections.emptyList();
     }
 
-    private UUID tryParseUUID(String input) {
-        try { return UUID.fromString(input); } catch (IllegalArgumentException e) { return null; }
-    }
 }

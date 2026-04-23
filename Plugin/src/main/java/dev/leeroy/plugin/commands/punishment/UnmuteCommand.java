@@ -48,7 +48,7 @@ public class UnmuteCommand implements BasicCommand {
             return;
         }
 
-        UUID uuid = resolveUUID(args[0]);
+        UUID uuid = playerCache.resolveUUID(args[0]);
         if (uuid == null) {
             sender.sendMessage(Component.text("Could not find '" + args[0] + "'. Use their UUID or make sure their name is in the cache.", NamedTextColor.RED));
             return;
@@ -61,17 +61,11 @@ public class UnmuteCommand implements BasicCommand {
 
         muteManager.unmute(uuid);
         String name = playerCache.getName(uuid);
-        discordBroadcaster.broadcast("unmute", name != null ? name : uuid.toString(), sender.getName(), null, null);
-        sender.sendMessage(Component.text((name != null ? name : uuid.toString()) + " has been unmuted.", NamedTextColor.GREEN));
+        String displayName = name != null ? name : uuid.toString();
+        discordBroadcaster.broadcast("unmute", displayName, sender.getName(), null, null);
+        sender.sendMessage(Component.text(displayName + " has been unmuted.", NamedTextColor.GREEN));
 
         Player target = Bukkit.getPlayer(uuid);
         if (target != null) target.sendMessage(Component.text("You have been unmuted.", NamedTextColor.GREEN));
-    }
-
-    private UUID resolveUUID(String input) {
-        Player online = Bukkit.getPlayerExact(input);
-        if (online != null) return online.getUniqueId();
-        try { return UUID.fromString(input); } catch (IllegalArgumentException ignored) {}
-        return playerCache.getUUID(input);
     }
 }

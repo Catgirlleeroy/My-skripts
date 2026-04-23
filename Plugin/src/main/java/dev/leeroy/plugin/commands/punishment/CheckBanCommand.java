@@ -8,9 +8,7 @@ import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.Map;
@@ -46,7 +44,7 @@ public class CheckBanCommand implements BasicCommand {
             return;
         }
 
-        UUID uuid = resolveUUID(args[0]);
+        UUID uuid = playerCache.resolveUUID(args[0]);
         if (uuid == null) {
             sender.sendMessage(Component.text("Could not find '" + args[0] + "'. Use their UUID or make sure their name is in the cache.", NamedTextColor.RED));
             return;
@@ -73,12 +71,5 @@ public class CheckBanCommand implements BasicCommand {
         if (expiry != -1L) {
             sender.sendMessage(TextUtil.parse("&eExpires in: &f" + BanManager.formatRemaining(expiry)));
         }
-    }
-
-    private UUID resolveUUID(String input) {
-        Player online = Bukkit.getPlayerExact(input);
-        if (online != null) return online.getUniqueId();
-        try { return UUID.fromString(input); } catch (IllegalArgumentException ignored) {}
-        return playerCache.getUUID(input);
     }
 }

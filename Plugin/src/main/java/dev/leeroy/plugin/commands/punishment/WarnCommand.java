@@ -219,10 +219,7 @@ public class WarnCommand implements BasicCommand {
     }
 
     private UUID resolveUUID(String input) {
-        Player online = Bukkit.getPlayerExact(input);
-        if (online != null) return online.getUniqueId();
-        try { return UUID.fromString(input); } catch (IllegalArgumentException ignored) {}
-        return playerCache.getUUID(input);
+        return playerCache.resolveUUID(input);
     }
 
     private String getName(UUID uuid, String fallback) {

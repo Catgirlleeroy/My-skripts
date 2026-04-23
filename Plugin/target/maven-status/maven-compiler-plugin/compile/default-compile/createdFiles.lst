@@ -64,6 +64,7 @@ dev\leeroy\plugin\commands\punishment\CheckIPBanCommand.class
 dev\leeroy\plugin\commands\punishment\WarnCommand.class
 dev\leeroy\plugin\listeners\chat\ChatColorListener.class
 dev\leeroy\plugin\Utils\misc\FlyDataManager.class
+dev\leeroy\plugin\Utils\misc\YamlDataStore.class
 dev\leeroy\plugin\Plugin$1.class
 dev\leeroy\plugin\commands\misc\ReportsCommand.class
 dev\leeroy\plugin\Utils\misc\PlayerHealer.class

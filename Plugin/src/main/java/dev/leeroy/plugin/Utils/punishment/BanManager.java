@@ -1,50 +1,19 @@
 package dev.leeroy.plugin.Utils.punishment;
 
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.Bukkit;
+import dev.leeroy.plugin.Utils.misc.YamlDataStore;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
-public class BanManager {
-
-    private final JavaPlugin plugin;
-    private final File banFile;
-    private YamlConfiguration config;
+public class BanManager extends YamlDataStore {
 
     public BanManager(JavaPlugin plugin) {
-        this.plugin = plugin;
-        this.banFile = new File(plugin.getDataFolder(), "bans.yml");
-        load();
+        super(plugin, "bans.yml");
     }
-
-    // ── Internal load/save ───────────────────────────────────────────────────
-
-    private void load() {
-        if (!banFile.exists()) {
-            plugin.getDataFolder().mkdirs();
-            try { banFile.createNewFile(); } catch (IOException e) { e.printStackTrace(); }
-        }
-        config = YamlConfiguration.loadConfiguration(banFile);
-    }
-
-    private void save() {
-        final YamlConfiguration snapshot = config;
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            try { snapshot.save(banFile); } catch (IOException e) { e.printStackTrace(); }
-        });
-    }
-
-    /** Reloads bans.yml from disk, discarding any cached state. */
-    public void reload() {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, this::load);
-    }
-
-    // ── Public API ───────────────────────────────────────────────────────────
 
     public void ban(UUID uuid, String name, String reason, String bannedBy) {
         String key = uuid.toString();
@@ -97,9 +66,8 @@ public class BanManager {
         return details;
     }
 
-    /** Returns all currently banned UUIDs. */
-    public java.util.Set<UUID> getAllBannedUUIDs() {
-        java.util.Set<UUID> uuids = new java.util.HashSet<>();
+    public Set<UUID> getAllBannedUUIDs() {
+        Set<UUID> uuids = new HashSet<>();
         for (String key : config.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
@@ -109,7 +77,7 @@ public class BanManager {
         return uuids;
     }
 
-    // ── Duration parser ──────────────────────────────────────────────────────
+    // ── Duration utilities ───────────────────────────────────────────────────
 
     public static long parseDuration(String input) {
         long total = 0;

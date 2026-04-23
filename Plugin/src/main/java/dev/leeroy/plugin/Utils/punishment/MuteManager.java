@@ -1,44 +1,16 @@
 package dev.leeroy.plugin.Utils.punishment;
 
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.Bukkit;
+import dev.leeroy.plugin.Utils.misc.YamlDataStore;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class MuteManager {
-
-    private final JavaPlugin plugin;
-    private final File muteFile;
-    private YamlConfiguration config;
+public class MuteManager extends YamlDataStore {
 
     public MuteManager(JavaPlugin plugin) {
-        this.plugin = plugin;
-        this.muteFile = new File(plugin.getDataFolder(), "mutes.yml");
-        load();
-    }
-
-    private void load() {
-        if (!muteFile.exists()) {
-            plugin.getDataFolder().mkdirs();
-            try { muteFile.createNewFile(); } catch (IOException e) { e.printStackTrace(); }
-        }
-        config = YamlConfiguration.loadConfiguration(muteFile);
-    }
-
-    private void save() {
-        final YamlConfiguration snapshot = config;
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            try { snapshot.save(muteFile); } catch (IOException e) { e.printStackTrace(); }
-        });
-    }
-
-    public void reload() {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, this::load);
+        super(plugin, "mutes.yml");
     }
 
     public void mute(UUID uuid, String name, String reason, String mutedBy) {

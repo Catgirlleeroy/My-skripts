@@ -53,8 +53,7 @@ public class WhoUnbannedCommand implements BasicCommand {
             uuid       = online.getUniqueId();
             targetName = online.getName();
         } else {
-            uuid = tryParseUUID(input);
-            if (uuid == null) uuid = playerCache.getUUID(input);
+            uuid = playerCache.resolveUUID(input);
             if (uuid == null) {
                 sender.sendMessage(Component.text("Player '" + input + "' not found.", NamedTextColor.RED));
                 return;
@@ -105,7 +104,4 @@ public class WhoUnbannedCommand implements BasicCommand {
         return Collections.emptyList();
     }
 
-    private UUID tryParseUUID(String input) {
-        try { return UUID.fromString(input); } catch (IllegalArgumentException e) { return null; }
-    }
 }
