@@ -1,5 +1,6 @@
 package dev.leeroy.plugin.commands.misc;
 
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.listeners.misc.CommandSpyListener;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -21,21 +22,21 @@ public class CommandSpyCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("Only players can use this command.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Only players can use this command.", NamedTextColor.RED)));
             return;
         }
 
         if (!sender.hasPermission("bob.commandspy")) {
-            sender.sendMessage(Component.text("You don't have permission to use CommandSpy.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to use CommandSpy.", NamedTextColor.RED)));
             return;
         }
 
         boolean isNowEnabled = commandSpyListener.toggle(player);
 
         if (isNowEnabled) {
-            player.sendMessage(Component.text("CommandSpy enabled. You will now see commands run by others.", NamedTextColor.GREEN));
+            player.sendMessage(TextUtil.prefixed(Component.text("CommandSpy enabled. You will now see commands run by others.", NamedTextColor.GREEN)));
         } else {
-            player.sendMessage(Component.text("CommandSpy disabled.", NamedTextColor.YELLOW));
+            player.sendMessage(TextUtil.prefixed(Component.text("CommandSpy disabled.", NamedTextColor.YELLOW)));
         }
     }
 }

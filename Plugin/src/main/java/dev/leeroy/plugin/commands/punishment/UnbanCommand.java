@@ -2,6 +2,7 @@ package dev.leeroy.plugin.commands.punishment;
 
 import dev.leeroy.plugin.Utils.misc.PlayerCache;
 import dev.leeroy.plugin.Utils.misc.TabUtil;
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.punishment.BanManager;
 import dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster;
 import dev.leeroy.plugin.Utils.punishment.UnbanManager;
@@ -40,23 +41,23 @@ public class UnbanCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
 
         if (!sender.hasPermission("bob.unban")) {
-            sender.sendMessage(Component.text("You don't have permission to unban players.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to unban players.", NamedTextColor.RED)));
             return;
         }
 
         if (args.length < 1) {
-            sender.sendMessage(Component.text("Usage: /unban <player|uuid>", NamedTextColor.YELLOW));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /unban <player|uuid>", NamedTextColor.YELLOW)));
             return;
         }
 
         UUID uuid = playerCache.resolveUUID(args[0]);
         if (uuid == null) {
-            sender.sendMessage(Component.text("Could not find '" + args[0] + "'. Use their UUID or make sure their name is in the cache.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Could not find '" + args[0] + "'. Use their UUID or make sure their name is in the cache.", NamedTextColor.RED)));
             return;
         }
 
         if (!banManager.isBanned(uuid)) {
-            sender.sendMessage(Component.text(args[0] + " is not currently banned.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text(args[0] + " is not currently banned.", NamedTextColor.RED)));
             return;
         }
 
@@ -65,6 +66,6 @@ public class UnbanCommand implements BasicCommand {
         String displayName = name != null ? name : uuid.toString();
         unbanManager.log(uuid, displayName, sender.getName());
         discordBroadcaster.broadcast("unban", displayName, sender.getName(), null, null);
-        sender.sendMessage(Component.text(displayName + " has been unbanned.", NamedTextColor.GREEN));
+        sender.sendMessage(TextUtil.prefixed(Component.text(displayName + " has been unbanned.", NamedTextColor.GREEN)));
     }
 }

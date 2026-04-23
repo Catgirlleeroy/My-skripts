@@ -1,6 +1,7 @@
 package dev.leeroy.plugin.commands.misc;
 
 import dev.leeroy.plugin.Utils.misc.TabUtil;
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.misc.VanishManager;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -72,7 +73,7 @@ public class TPACommand implements Listener {
     private Player requirePlayer(CommandSourceStack stack) {
         CommandSender sender = stack.getSender();
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("Only players can use this command.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Only players can use this command.", NamedTextColor.RED)));
             return null;
         }
         return player;
@@ -82,35 +83,35 @@ public class TPACommand implements Listener {
 
     private void handleTPA(Player sender, String[] args) {
         if (!sender.hasPermission("bob.tpa")) {
-            sender.sendMessage(Component.text("You don't have permission to send teleport requests.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to send teleport requests.", NamedTextColor.RED)));
             return;
         }
 
         if (args.length < 1) {
-            sender.sendMessage(Component.text("Usage: /tpa <player>", NamedTextColor.YELLOW));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /tpa <player>", NamedTextColor.YELLOW)));
             return;
         }
 
         Player target = Bukkit.getPlayerExact(args[0]);
         if (target == null) {
-            sender.sendMessage(Component.text("Player '" + args[0] + "' not found or is offline.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Player '" + args[0] + "' not found or is offline.", NamedTextColor.RED)));
             return;
         }
 
         if (target.equals(sender)) {
-            sender.sendMessage(Component.text("You can't send a teleport request to yourself.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You can't send a teleport request to yourself.", NamedTextColor.RED)));
             return;
         }
 
         pendingRequests.put(target.getUniqueId(), sender.getUniqueId());
 
-        sender.sendMessage(Component.text("Teleport request sent to " + target.getName() + ". Expires in 60 seconds.", NamedTextColor.GREEN));
-        target.sendMessage(Component.text(sender.getName(), NamedTextColor.YELLOW)
+        sender.sendMessage(TextUtil.prefixed(Component.text("Teleport request sent to " + target.getName() + ". Expires in 60 seconds.", NamedTextColor.GREEN)));
+        target.sendMessage(TextUtil.prefixed(Component.text(sender.getName(), NamedTextColor.YELLOW)
                 .append(Component.text(" wants to teleport to you. Type ", NamedTextColor.WHITE))
                 .append(Component.text("/tpaccept", NamedTextColor.GREEN))
                 .append(Component.text(" or ", NamedTextColor.WHITE))
                 .append(Component.text("/tpdeny", NamedTextColor.RED))
-                .append(Component.text(".", NamedTextColor.WHITE)));
+                .append(Component.text(".", NamedTextColor.WHITE))));
 
         final UUID targetId = target.getUniqueId();
         final UUID senderId = sender.getUniqueId();
@@ -121,10 +122,10 @@ public class TPACommand implements Listener {
                 pendingRequests.remove(targetId);
                 Player t = Bukkit.getPlayer(targetId);
                 Player s = Bukkit.getPlayer(senderId);
-                if (s != null) s.sendMessage(Component.text("Your teleport request to "
-                        + (t != null ? t.getName() : "that player") + " expired.", NamedTextColor.RED));
-                if (t != null) t.sendMessage(Component.text("Teleport request from "
-                        + (s != null ? s.getName() : "a player") + " expired.", NamedTextColor.GRAY));
+                if (s != null) s.sendMessage(TextUtil.prefixed(Component.text("Your teleport request to "
+                        + (t != null ? t.getName() : "that player") + " expired.", NamedTextColor.RED)));
+                if (t != null) t.sendMessage(TextUtil.prefixed(Component.text("Teleport request from "
+                        + (s != null ? s.getName() : "a player") + " expired.", NamedTextColor.GRAY)));
             }
         }, REQUEST_TIMEOUT_TICKS);
     }
@@ -133,19 +134,19 @@ public class TPACommand implements Listener {
 
     private void handleAccept(Player target) {
         if (!target.hasPermission("bob.tpa")) {
-            target.sendMessage(Component.text("You don't have permission to accept teleport requests.", NamedTextColor.RED));
+            target.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to accept teleport requests.", NamedTextColor.RED)));
             return;
         }
 
         UUID requesterID = pendingRequests.remove(target.getUniqueId());
         if (requesterID == null) {
-            target.sendMessage(Component.text("You have no pending teleport requests.", NamedTextColor.RED));
+            target.sendMessage(TextUtil.prefixed(Component.text("You have no pending teleport requests.", NamedTextColor.RED)));
             return;
         }
 
         Player requester = Bukkit.getPlayer(requesterID);
         if (requester == null) {
-            target.sendMessage(Component.text("The player who requested teleport is no longer online.", NamedTextColor.RED));
+            target.sendMessage(TextUtil.prefixed(Component.text("The player who requested teleport is no longer online.", NamedTextColor.RED)));
             return;
         }
 
@@ -153,14 +154,14 @@ public class TPACommand implements Listener {
 
         if (delaySecs <= 0) {
             requester.teleport(target.getLocation());
-            requester.sendMessage(Component.text("Teleporting to " + target.getName() + "!", NamedTextColor.GREEN));
-            target.sendMessage(Component.text("Accepted teleport request from " + requester.getName() + ".", NamedTextColor.GREEN));
+            requester.sendMessage(TextUtil.prefixed(Component.text("Teleporting to " + target.getName() + "!", NamedTextColor.GREEN)));
+            target.sendMessage(TextUtil.prefixed(Component.text("Accepted teleport request from " + requester.getName() + ".", NamedTextColor.GREEN)));
             return;
         }
 
-        requester.sendMessage(Component.text("Teleporting to " + target.getName()
-                + " in " + delaySecs + " seconds. Don't move or take damage!", NamedTextColor.GREEN));
-        target.sendMessage(Component.text("Accepted teleport request from " + requester.getName() + ".", NamedTextColor.GREEN));
+        requester.sendMessage(TextUtil.prefixed(Component.text("Teleporting to " + target.getName()
+                + " in " + delaySecs + " seconds. Don't move or take damage!", NamedTextColor.GREEN)));
+        target.sendMessage(TextUtil.prefixed(Component.text("Accepted teleport request from " + requester.getName() + ".", NamedTextColor.GREEN)));
 
         warmupLocations.put(requester.getUniqueId(), requester.getLocation().clone());
 
@@ -177,7 +178,7 @@ public class TPACommand implements Listener {
             if (r == null || t == null) return;
 
             r.teleport(t.getLocation());
-            r.sendMessage(Component.text("Teleported to " + t.getName() + "!", NamedTextColor.GREEN));
+            r.sendMessage(TextUtil.prefixed(Component.text("Teleported to " + t.getName() + "!", NamedTextColor.GREEN)));
         }, delaySecs * 20L);
 
         warmupTasks.put(requester.getUniqueId(), task);
@@ -188,14 +189,14 @@ public class TPACommand implements Listener {
     private void handleDeny(Player target) {
         UUID requesterID = pendingRequests.remove(target.getUniqueId());
         if (requesterID == null) {
-            target.sendMessage(Component.text("You have no pending teleport requests.", NamedTextColor.RED));
+            target.sendMessage(TextUtil.prefixed(Component.text("You have no pending teleport requests.", NamedTextColor.RED)));
             return;
         }
 
         Player requester = Bukkit.getPlayer(requesterID);
-        target.sendMessage(Component.text("Teleport request denied.", NamedTextColor.RED));
+        target.sendMessage(TextUtil.prefixed(Component.text("Teleport request denied.", NamedTextColor.RED)));
         if (requester != null) {
-            requester.sendMessage(Component.text(target.getName() + " denied your teleport request.", NamedTextColor.RED));
+            requester.sendMessage(TextUtil.prefixed(Component.text(target.getName() + " denied your teleport request.", NamedTextColor.RED)));
         }
     }
 
@@ -206,7 +207,7 @@ public class TPACommand implements Listener {
         if (task != null) {
             task.cancel();
             warmupLocations.remove(player.getUniqueId());
-            player.sendMessage(Component.text("Teleport cancelled: " + reason, NamedTextColor.RED));
+            player.sendMessage(TextUtil.prefixed(Component.text("Teleport cancelled: " + reason, NamedTextColor.RED)));
         }
     }
 

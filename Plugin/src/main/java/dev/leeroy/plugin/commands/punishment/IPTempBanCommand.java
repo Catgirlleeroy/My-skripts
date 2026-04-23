@@ -38,19 +38,19 @@ public class IPTempBanCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
 
         if (!sender.hasPermission("bob.iptempban")) {
-            sender.sendMessage(Component.text("You don't have permission to IP tempban players.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to IP tempban players.", NamedTextColor.RED)));
             return;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(Component.text("Usage: /iptempban <player> <duration> [reason]", NamedTextColor.YELLOW));
-            sender.sendMessage(Component.text("Duration examples: 30m, 2h, 1d, 1d12h", NamedTextColor.GRAY));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /iptempban <player> <duration> [reason]", NamedTextColor.YELLOW)));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Duration examples: 30m, 2h, 1d, 1d12h", NamedTextColor.GRAY)));
             return;
         }
 
         Player target = Bukkit.getPlayerExact(args[0]);
         if (target == null) {
-            sender.sendMessage(Component.text("Player '" + args[0] + "' must be online to IP tempban.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Player '" + args[0] + "' must be online to IP tempban.", NamedTextColor.RED)));
             return;
         }
 
@@ -61,18 +61,18 @@ public class IPTempBanCommand implements BasicCommand {
                 : "You have been temporarily IP banned.";
 
         if (target.hasPermission("bob.exempt") || target.hasPermission("bob.exempt.iptempban")) {
-            sender.sendMessage(Component.text(target.getName() + " is exempt from this punishment.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text(target.getName() + " is exempt from this punishment.", NamedTextColor.RED)));
             return;
         }
 
         long durationMs = BanManager.parseDuration(durationStr);
         if (durationMs == -1) {
-            sender.sendMessage(Component.text("Invalid duration '" + durationStr + "'. Use formats like 30m, 2h, 1d.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Invalid duration '" + durationStr + "'. Use formats like 30m, 2h, 1d.", NamedTextColor.RED)));
             return;
         }
 
         if (ipBanManager.isBanned(ip)) {
-            sender.sendMessage(Component.text(target.getName() + "'s IP is already banned.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text(target.getName() + "'s IP is already banned.", NamedTextColor.RED)));
             return;
         }
 

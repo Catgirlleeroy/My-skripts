@@ -1,5 +1,6 @@
 package dev.leeroy.plugin.commands.misc;
 
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -51,29 +52,29 @@ public class OpenInvCommand implements BasicCommand {
     public void execute(CommandSourceStack stack, String[] args) {
         CommandSender sender = stack.getSender();
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("Only players can use this command.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Only players can use this command.", NamedTextColor.RED)));
             return;
         }
         if (args.length == 0) {
-            player.sendMessage(Component.text("Usage: /openinv <player>", NamedTextColor.RED));
+            player.sendMessage(TextUtil.prefixed(Component.text("Usage: /openinv <player>", NamedTextColor.RED)));
             return;
         }
 
         Player target = Bukkit.getPlayer(args[0]);
         if (target == null || !target.isOnline()) {
-            player.sendMessage(Component.text("Player not found or not online.", NamedTextColor.RED));
+            player.sendMessage(TextUtil.prefixed(Component.text("Player not found or not online.", NamedTextColor.RED)));
             return;
         }
         if (target.equals(player)) {
-            player.sendMessage(Component.text("You cannot open your own inventory.", NamedTextColor.RED));
+            player.sendMessage(TextUtil.prefixed(Component.text("You cannot open your own inventory.", NamedTextColor.RED)));
             return;
         }
 
         openViews.put(player.getUniqueId(), target.getUniqueId());
         player.openInventory(buildMirror(target));
-        player.sendMessage(Component.text("Opened inventory of ", NamedTextColor.GRAY)
+        player.sendMessage(TextUtil.prefixed(Component.text("Opened inventory of ", NamedTextColor.GRAY)
                 .append(Component.text(target.getName(), NamedTextColor.YELLOW))
-                .append(Component.text(".", NamedTextColor.GRAY)));
+                .append(Component.text(".", NamedTextColor.GRAY))));
     }
 
     @Override

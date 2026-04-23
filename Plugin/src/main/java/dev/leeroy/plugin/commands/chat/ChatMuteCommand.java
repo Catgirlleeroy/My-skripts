@@ -23,7 +23,7 @@ public class ChatMuteCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
 
         if (!sender.hasPermission("bob.chatmute")) {
-            sender.sendMessage(Component.text("You don't have permission to toggle chat mute.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to toggle chat mute.", NamedTextColor.RED)));
             return;
         }
 

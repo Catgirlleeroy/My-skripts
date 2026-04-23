@@ -1,6 +1,7 @@
 package dev.leeroy.plugin.commands.misc;
 
 import dev.leeroy.plugin.Utils.misc.ReportManager;
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -26,18 +27,18 @@ public class ReportsCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
 
         if (!sender.hasPermission("bob.reports")) {
-            sender.sendMessage(Component.text("You don't have permission to view reports.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to view reports.", NamedTextColor.RED)));
             return;
         }
 
         if (args.length == 2 && args[0].equalsIgnoreCase("delete")) {
             String id = args[1];
             if (reportManager.deleteReport(id)) {
-                sender.sendMessage(Component.text("✦ Report ", NamedTextColor.GREEN)
+                sender.sendMessage(TextUtil.prefixed(Component.text("✦ Report ", NamedTextColor.GREEN)
                         .append(Component.text(id, NamedTextColor.DARK_GRAY))
-                        .append(Component.text(" has been dismissed.", NamedTextColor.GREEN)));
+                        .append(Component.text(" has been dismissed.", NamedTextColor.GREEN))));
             } else {
-                sender.sendMessage(Component.text("Report '" + id + "' not found.", NamedTextColor.RED));
+                sender.sendMessage(TextUtil.prefixed(Component.text("Report '" + id + "' not found.", NamedTextColor.RED)));
             }
             return;
         }
@@ -45,12 +46,12 @@ public class ReportsCommand implements BasicCommand {
         List<Map<String, String>> reports = reportManager.getReports();
 
         if (reports.isEmpty()) {
-            sender.sendMessage(Component.text("✦ No pending reports.", NamedTextColor.GREEN));
+            sender.sendMessage(TextUtil.prefixed(Component.text("✦ No pending reports.", NamedTextColor.GREEN)));
             return;
         }
 
         sender.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.RED));
-        sender.sendMessage(Component.text("Pending Reports (" + reports.size() + ")", NamedTextColor.YELLOW));
+        sender.sendMessage(TextUtil.prefixed(Component.text("Pending Reports (" + reports.size() + ")", NamedTextColor.YELLOW)));
         sender.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.RED));
 
         for (Map<String, String> report : reports) {

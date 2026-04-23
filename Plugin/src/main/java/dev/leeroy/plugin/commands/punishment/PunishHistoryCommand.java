@@ -2,6 +2,7 @@ package dev.leeroy.plugin.commands.punishment;
 
 import dev.leeroy.plugin.Utils.misc.PlayerCache;
 import dev.leeroy.plugin.Utils.misc.TabUtil;
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.punishment.PunishmentHistoryManager;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -37,7 +38,7 @@ public class PunishHistoryCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
 
         if (args.length < 1) {
-            sender.sendMessage(Component.text("Usage: /history <player> [page]", NamedTextColor.YELLOW));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /history <player> [page]", NamedTextColor.YELLOW)));
             return;
         }
 
@@ -59,7 +60,7 @@ public class PunishHistoryCommand implements BasicCommand {
             uuid = tryParseUUID(input);
             if (uuid == null) uuid = playerCache.getUUID(input);
             if (uuid == null) {
-                sender.sendMessage(Component.text("Player '" + input + "' not found.", NamedTextColor.RED));
+                sender.sendMessage(TextUtil.prefixed(Component.text("Player '" + input + "' not found.", NamedTextColor.RED)));
                 return;
             }
             String cached = playerCache.getName(uuid);
@@ -69,7 +70,7 @@ public class PunishHistoryCommand implements BasicCommand {
         List<Map<String, Object>> history = historyManager.getHistory(uuid);
 
         if (history.isEmpty()) {
-            sender.sendMessage(Component.text(targetName + " has no punishment history.", NamedTextColor.GRAY));
+            sender.sendMessage(TextUtil.prefixed(Component.text(targetName + " has no punishment history.", NamedTextColor.GRAY)));
             return;
         }
 
@@ -79,7 +80,7 @@ public class PunishHistoryCommand implements BasicCommand {
         int end   = Math.min(start + PAGE_SIZE, history.size());
 
         sender.sendMessage(Component.text(""));
-        sender.sendMessage(Component.text("━━━ Punishment History: " + targetName + " (Page " + page + "/" + totalPages + ") ━━━", NamedTextColor.GOLD));
+        sender.sendMessage(TextUtil.prefixed(Component.text("━━━ Punishment History: " + targetName + " (Page " + page + "/" + totalPages + ") ━━━", NamedTextColor.GOLD)));
 
         for (int i = start; i < end; i++) {
             Map<String, Object> entry = history.get(i);

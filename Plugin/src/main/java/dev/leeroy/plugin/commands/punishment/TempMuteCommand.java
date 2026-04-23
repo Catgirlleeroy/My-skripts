@@ -45,19 +45,19 @@ public class TempMuteCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
 
         if (!sender.hasPermission("bob.tempmute")) {
-            sender.sendMessage(Component.text("You don't have permission to tempmute players.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to tempmute players.", NamedTextColor.RED)));
             return;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(Component.text("Usage: /tempmute <player> <duration> [reason]", NamedTextColor.YELLOW));
-            sender.sendMessage(Component.text("Duration examples: 30m, 2h, 1d", NamedTextColor.GRAY));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /tempmute <player> <duration> [reason]", NamedTextColor.YELLOW)));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Duration examples: 30m, 2h, 1d", NamedTextColor.GRAY)));
             return;
         }
 
         Player target = Bukkit.getPlayerExact(args[0]);
         if (target == null) {
-            sender.sendMessage(Component.text("Player '" + args[0] + "' not found or is offline.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Player '" + args[0] + "' not found or is offline.", NamedTextColor.RED)));
             return;
         }
 
@@ -68,23 +68,23 @@ public class TempMuteCommand implements BasicCommand {
 
         long durationMs = BanManager.parseDuration(durationStr);
         if (durationMs == -1) {
-            sender.sendMessage(Component.text("Invalid duration '" + durationStr + "'. Use formats like 30m, 2h, 1d.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Invalid duration '" + durationStr + "'. Use formats like 30m, 2h, 1d.", NamedTextColor.RED)));
             return;
         }
 
         if (target.hasPermission("bob.exempt") || target.hasPermission("bob.exempt.tempmute")) {
-            sender.sendMessage(Component.text(target.getName() + " is exempt from this punishment.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text(target.getName() + " is exempt from this punishment.", NamedTextColor.RED)));
             return;
         }
 
         if (muteManager.isMuted(target.getUniqueId())) {
-            sender.sendMessage(Component.text(target.getName() + " is already muted.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text(target.getName() + " is already muted.", NamedTextColor.RED)));
             return;
         }
 
         muteManager.tempMute(target.getUniqueId(), target.getName(), reason, sender.getName(), durationMs);
         historyManager.log(target.getUniqueId(), target.getName(), "tempmute", reason, sender.getName(), durationStr);
-        target.sendMessage(Component.text("You have been muted for " + durationStr + ". Reason: " + reason, NamedTextColor.RED));
+        target.sendMessage(TextUtil.prefixed(Component.text("You have been muted for " + durationStr + ". Reason: " + reason, NamedTextColor.RED)));
         TextUtil.broadcast("&c[TEMPMUTE] &e" + target.getName() + " &chas been muted! &7Duration: " + durationStr + " | Reason: " + reason);
         discordBroadcaster.broadcast("tempmute", target.getName(), sender.getName(), reason, durationStr);
     }

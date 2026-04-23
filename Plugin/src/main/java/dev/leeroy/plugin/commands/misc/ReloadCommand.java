@@ -3,6 +3,7 @@ package dev.leeroy.plugin.commands.misc;
 import dev.leeroy.plugin.Utils.chat.AutoMessageManager;
 import dev.leeroy.plugin.Utils.chat.ChatGameManager;
 import dev.leeroy.plugin.Utils.misc.MessagesConfig;
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.punishment.BanManager;
 import dev.leeroy.plugin.Utils.punishment.IPBanManager;
 import dev.leeroy.plugin.Utils.punishment.PunishConfig;
@@ -44,7 +45,7 @@ public class ReloadCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
 
         if (!sender.hasPermission("bob.reload")) {
-            sender.sendMessage(Component.text("You don't have permission to reload Bob.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to reload Bob.", NamedTextColor.RED)));
             return;
         }
 
@@ -59,14 +60,14 @@ public class ReloadCommand implements BasicCommand {
         attempt(failed, "chat-games",    () -> chatGameManager.restart());
 
         if (failed.isEmpty()) {
-            sender.sendMessage(Component.text("✔ Bob reloaded successfully — all components OK.", NamedTextColor.GREEN));
+            sender.sendMessage(TextUtil.prefixed(Component.text("✔ Bob reloaded successfully — all components OK.", NamedTextColor.GREEN)));
             plugin.getLogger().info("Bob reloaded by " + sender.getName() + " — all OK.");
         } else {
-            sender.sendMessage(Component.text("⚠ Bob reloaded with " + failed.size() + " error(s):", NamedTextColor.YELLOW));
+            sender.sendMessage(TextUtil.prefixed(Component.text("⚠ Bob reloaded with " + failed.size() + " error(s):", NamedTextColor.YELLOW)));
             for (String f : failed) {
-                sender.sendMessage(Component.text("  ✘ " + f + " failed — check console for details.", NamedTextColor.RED));
+                sender.sendMessage(TextUtil.prefixed(Component.text("  ✘ " + f + " failed — check console for details.", NamedTextColor.RED)));
             }
-            sender.sendMessage(Component.text("Everything else reloaded fine.", NamedTextColor.YELLOW));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Everything else reloaded fine.", NamedTextColor.YELLOW)));
         }
     }
 

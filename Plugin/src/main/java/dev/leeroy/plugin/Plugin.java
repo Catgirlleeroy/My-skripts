@@ -44,6 +44,7 @@ public final class Plugin extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        dev.leeroy.plugin.Utils.misc.TextUtil.init(this);
 
         // Startup banner
         String version = getDescription().getVersion();

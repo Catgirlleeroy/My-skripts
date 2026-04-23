@@ -15,7 +15,7 @@ public class ChatClearCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
 
         if (!sender.hasPermission("bob.chatclear")) {
-            sender.sendMessage(Component.text("You don't have permission to clear chat.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to clear chat.", NamedTextColor.RED)));
             return;
         }
 

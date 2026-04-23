@@ -64,7 +64,7 @@ public class FlyCommand implements BasicCommand {
 
         if (args.length == 0) {
             if (!(sender instanceof Player p)) {
-                sender.sendMessage(Component.text("Only players can toggle fly.", NamedTextColor.RED));
+                sender.sendMessage(TextUtil.prefixed(Component.text("Only players can toggle fly.", NamedTextColor.RED)));
                 return;
             }
             if (!p.hasPermission("bob.fly")) {
@@ -88,7 +88,7 @@ public class FlyCommand implements BasicCommand {
 
             case "time" -> {
                 Player target = args.length > 1 ? Bukkit.getPlayerExact(args[1]) : (sender instanceof Player ? (Player) sender : null);
-                if (target == null) { sender.sendMessage(Component.text("Player not found or not online.", NamedTextColor.RED)); return; }
+                if (target == null) { sender.sendMessage(TextUtil.prefixed(Component.text("Player not found or not online.", NamedTextColor.RED))); return; }
                 if (!sender.hasPermission("bob.fly") && !sender.getName().equals(target.getName())) {
                     sender.sendMessage(TextUtil.parse(flyConfig.msg("no-permission"))); return;
                 }
@@ -102,7 +102,7 @@ public class FlyCommand implements BasicCommand {
 
             case "give" -> {
                 if (!sender.hasPermission("bob.fly.admin")) { sender.sendMessage(TextUtil.parse(flyConfig.msg("no-permission"))); return; }
-                if (args.length < 3) { sender.sendMessage(Component.text("Usage: /fly give <player> <time>", NamedTextColor.YELLOW)); return; }
+                if (args.length < 3) { sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /fly give <player> <time>", NamedTextColor.YELLOW))); return; }
                 UUID uuid = resolveUUID(args[1]);
                 if (uuid == null) { sender.sendMessage(TextUtil.parse(flyConfig.msg("player-not-found").replace("{player}", args[1]))); return; }
                 long seconds = parseTime(args[2]);
@@ -116,7 +116,7 @@ public class FlyCommand implements BasicCommand {
 
             case "set" -> {
                 if (!sender.hasPermission("bob.fly.admin")) { sender.sendMessage(TextUtil.parse(flyConfig.msg("no-permission"))); return; }
-                if (args.length < 3) { sender.sendMessage(Component.text("Usage: /fly set <player> <time>", NamedTextColor.YELLOW)); return; }
+                if (args.length < 3) { sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /fly set <player> <time>", NamedTextColor.YELLOW))); return; }
                 UUID uuid = resolveUUID(args[1]);
                 if (uuid == null) { sender.sendMessage(TextUtil.parse(flyConfig.msg("player-not-found").replace("{player}", args[1]))); return; }
                 long seconds = parseTime(args[2]);
@@ -130,7 +130,7 @@ public class FlyCommand implements BasicCommand {
 
             case "remove" -> {
                 if (!sender.hasPermission("bob.fly.admin")) { sender.sendMessage(TextUtil.parse(flyConfig.msg("no-permission"))); return; }
-                if (args.length < 3) { sender.sendMessage(Component.text("Usage: /fly remove <player> <time>", NamedTextColor.YELLOW)); return; }
+                if (args.length < 3) { sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /fly remove <player> <time>", NamedTextColor.YELLOW))); return; }
                 UUID uuid = resolveUUID(args[1]);
                 if (uuid == null) { sender.sendMessage(TextUtil.parse(flyConfig.msg("player-not-found").replace("{player}", args[1]))); return; }
                 long seconds = parseTime(args[2]);
@@ -144,7 +144,7 @@ public class FlyCommand implements BasicCommand {
 
             case "perm" -> {
                 if (!sender.hasPermission("bob.fly.admin")) { sender.sendMessage(TextUtil.parse(flyConfig.msg("no-permission"))); return; }
-                if (args.length < 2) { sender.sendMessage(Component.text("Usage: /fly perm <player> [true|false]", NamedTextColor.YELLOW)); return; }
+                if (args.length < 2) { sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /fly perm <player> [true|false]", NamedTextColor.YELLOW))); return; }
                 UUID uuid = resolveUUID(args[1]);
                 if (uuid == null) { sender.sendMessage(TextUtil.parse(flyConfig.msg("player-not-found").replace("{player}", args[1]))); return; }
                 boolean value = args.length < 3 || !args[2].equalsIgnoreCase("false");
@@ -169,7 +169,7 @@ public class FlyCommand implements BasicCommand {
             }
 
             case "bypass" -> {
-                if (!(sender instanceof Player p)) { sender.sendMessage(Component.text("Players only.", NamedTextColor.RED)); return; }
+                if (!(sender instanceof Player p)) { sender.sendMessage(TextUtil.prefixed(Component.text("Players only.", NamedTextColor.RED))); return; }
                 if (!p.hasPermission("bob.fly.bypass")) { p.sendMessage(TextUtil.parse(flyConfig.msg("no-permission"))); return; }
                 boolean current = flyData.hasPermanentFly(p.getUniqueId());
                 flyData.setPermanentFly(p.getUniqueId(), !current);
@@ -183,7 +183,7 @@ public class FlyCommand implements BasicCommand {
                 }
             }
 
-            default -> sender.sendMessage(Component.text("Usage: /fly [time|give|set|remove|perm|bypass]", NamedTextColor.YELLOW));
+            default -> sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /fly [time|give|set|remove|perm|bypass]", NamedTextColor.YELLOW)));
         }
     }
 

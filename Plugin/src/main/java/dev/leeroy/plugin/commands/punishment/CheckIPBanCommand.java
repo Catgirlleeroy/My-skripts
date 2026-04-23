@@ -26,12 +26,12 @@ public class CheckIPBanCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
 
         if (!sender.hasPermission("bob.checkipban")) {
-            sender.sendMessage(Component.text("You don't have permission to check IP bans.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to check IP bans.", NamedTextColor.RED)));
             return;
         }
 
         if (args.length < 1) {
-            sender.sendMessage(Component.text("Usage: /checkipban <player|ip>", NamedTextColor.YELLOW));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /checkipban <player|ip>", NamedTextColor.YELLOW)));
             return;
         }
 
@@ -42,7 +42,7 @@ public class CheckIPBanCommand implements BasicCommand {
 
         Map<String, Object> details = ipBanManager.getBanDetails(ip);
         if (details == null) {
-            sender.sendMessage(Component.text("IP " + ip + " is not currently banned.", NamedTextColor.GREEN));
+            sender.sendMessage(TextUtil.prefixed(Component.text("IP " + ip + " is not currently banned.", NamedTextColor.GREEN)));
             return;
         }
 
@@ -51,12 +51,12 @@ public class CheckIPBanCommand implements BasicCommand {
         String bannedBy = (String) details.get("bannedBy");
         long   expiry   = (long)   details.get("expiry");
 
-        sender.sendMessage(TextUtil.parse("&6━━━ IP Ban Info: " + ip + " ━━━"));
-        sender.sendMessage(TextUtil.parse("&eType: &f"      + (type.equals("permanent") ? "Permanent" : "Temporary")));
-        sender.sendMessage(TextUtil.parse("&eReason: &f"    + reason));
-        sender.sendMessage(TextUtil.parse("&eBanned by: &f" + bannedBy));
+        sender.sendMessage(TextUtil.prefixed("&6━━━ IP Ban Info: " + ip + " ━━━"));
+        sender.sendMessage(TextUtil.prefixed("&eType: &f"      + (type.equals("permanent") ? "Permanent" : "Temporary")));
+        sender.sendMessage(TextUtil.prefixed("&eReason: &f"    + reason));
+        sender.sendMessage(TextUtil.prefixed("&eBanned by: &f" + bannedBy));
         if (expiry != -1L) {
-            sender.sendMessage(TextUtil.parse("&eExpires in: &f" + BanManager.formatRemaining(expiry)));
+            sender.sendMessage(TextUtil.prefixed("&eExpires in: &f" + BanManager.formatRemaining(expiry)));
         }
     }
 }

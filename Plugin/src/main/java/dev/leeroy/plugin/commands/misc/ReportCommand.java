@@ -2,6 +2,7 @@ package dev.leeroy.plugin.commands.misc;
 
 import dev.leeroy.plugin.Utils.misc.ReportManager;
 import dev.leeroy.plugin.Utils.misc.TabUtil;
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.misc.VanishManager;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -37,17 +38,17 @@ public class ReportCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
 
         if (!(sender instanceof Player reporter)) {
-            sender.sendMessage(Component.text("Only players can use this command.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Only players can use this command.", NamedTextColor.RED)));
             return;
         }
 
         if (!reporter.hasPermission("bob.report")) {
-            reporter.sendMessage(Component.text("You don't have permission to report players.", NamedTextColor.RED));
+            reporter.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to report players.", NamedTextColor.RED)));
             return;
         }
 
         if (args.length < 2) {
-            reporter.sendMessage(Component.text("Usage: /report <player> <reason>", NamedTextColor.YELLOW));
+            reporter.sendMessage(TextUtil.prefixed(Component.text("Usage: /report <player> <reason>", NamedTextColor.YELLOW)));
             return;
         }
 
@@ -56,20 +57,20 @@ public class ReportCommand implements BasicCommand {
 
         Player target = Bukkit.getPlayerExact(targetName);
         if (target == null) {
-            reporter.sendMessage(Component.text("Player '" + targetName + "' not found or is offline.", NamedTextColor.RED));
+            reporter.sendMessage(TextUtil.prefixed(Component.text("Player '" + targetName + "' not found or is offline.", NamedTextColor.RED)));
             return;
         }
 
         if (target.equals(reporter)) {
-            reporter.sendMessage(Component.text("You cannot report yourself.", NamedTextColor.RED));
+            reporter.sendMessage(TextUtil.prefixed(Component.text("You cannot report yourself.", NamedTextColor.RED)));
             return;
         }
 
         String id = reportManager.addReport(reporter.getName(), target.getName(), reason);
 
-        reporter.sendMessage(Component.text("✦ Your report against ", NamedTextColor.GREEN)
+        reporter.sendMessage(TextUtil.prefixed(Component.text("✦ Your report against ", NamedTextColor.GREEN)
                 .append(Component.text(target.getName(), NamedTextColor.YELLOW))
-                .append(Component.text(" has been submitted.", NamedTextColor.GREEN)));
+                .append(Component.text(" has been submitted.", NamedTextColor.GREEN))));
 
         for (Player staff : Bukkit.getOnlinePlayers()) {
             if (!staff.hasPermission("bob.reports")) continue;

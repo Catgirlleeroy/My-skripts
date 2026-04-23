@@ -35,25 +35,25 @@ public class CheckBanCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
 
         if (!sender.hasPermission("bob.checkban")) {
-            sender.sendMessage(Component.text("You don't have permission to check bans.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to check bans.", NamedTextColor.RED)));
             return;
         }
 
         if (args.length < 1) {
-            sender.sendMessage(Component.text("Usage: /checkban <player|uuid>", NamedTextColor.YELLOW));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /checkban <player|uuid>", NamedTextColor.YELLOW)));
             return;
         }
 
         UUID uuid = playerCache.resolveUUID(args[0]);
         if (uuid == null) {
-            sender.sendMessage(Component.text("Could not find '" + args[0] + "'. Use their UUID or make sure their name is in the cache.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Could not find '" + args[0] + "'. Use their UUID or make sure their name is in the cache.", NamedTextColor.RED)));
             return;
         }
 
         Map<String, Object> details = banManager.getBanDetails(uuid);
         if (details == null) {
             String name = playerCache.getName(uuid);
-            sender.sendMessage(Component.text((name != null ? name : args[0]) + " is not currently banned.", NamedTextColor.GREEN));
+            sender.sendMessage(TextUtil.prefixed(Component.text((name != null ? name : args[0]) + " is not currently banned.", NamedTextColor.GREEN)));
             return;
         }
 
@@ -63,13 +63,13 @@ public class CheckBanCommand implements BasicCommand {
         String bannedBy = (String) details.get("bannedBy");
         long   expiry   = (long)   details.get("expiry");
 
-        sender.sendMessage(TextUtil.parse("&6━━━ Ban Info: " + name + " ━━━"));
-        sender.sendMessage(TextUtil.parse("&eUUID: &f"      + uuid));
-        sender.sendMessage(TextUtil.parse("&eType: &f"      + (type.equals("permanent") ? "Permanent" : "Temporary")));
-        sender.sendMessage(TextUtil.parse("&eReason: &f"    + reason));
-        sender.sendMessage(TextUtil.parse("&eBanned by: &f" + bannedBy));
+        sender.sendMessage(TextUtil.prefixed("&6━━━ Ban Info: " + name + " ━━━"));
+        sender.sendMessage(TextUtil.prefixed("&eUUID: &f"      + uuid));
+        sender.sendMessage(TextUtil.prefixed("&eType: &f"      + (type.equals("permanent") ? "Permanent" : "Temporary")));
+        sender.sendMessage(TextUtil.prefixed("&eReason: &f"    + reason));
+        sender.sendMessage(TextUtil.prefixed("&eBanned by: &f" + bannedBy));
         if (expiry != -1L) {
-            sender.sendMessage(TextUtil.parse("&eExpires in: &f" + BanManager.formatRemaining(expiry)));
+            sender.sendMessage(TextUtil.prefixed("&eExpires in: &f" + BanManager.formatRemaining(expiry)));
         }
     }
 }

@@ -1,6 +1,7 @@
 package dev.leeroy.plugin.commands.combat;
 
 import dev.leeroy.plugin.Utils.combat.CombatManager;
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -39,7 +40,7 @@ public class CombatCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
 
         if (!sender.hasPermission("bob.combat.admin")) {
-            sender.sendMessage(Component.text("You don't have permission.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission.", NamedTextColor.RED)));
             return;
         }
 
@@ -47,12 +48,12 @@ public class CombatCommand implements BasicCommand {
         if (args.length > 0) {
             target = Bukkit.getPlayerExact(args[0]);
             if (target == null) {
-                sender.sendMessage(Component.text("Player '" + args[0] + "' not found or is offline.", NamedTextColor.RED));
+                sender.sendMessage(TextUtil.prefixed(Component.text("Player '" + args[0] + "' not found or is offline.", NamedTextColor.RED)));
                 return;
             }
         } else {
             if (!(sender instanceof Player)) {
-                sender.sendMessage(Component.text("Console must specify a player.", NamedTextColor.RED));
+                sender.sendMessage(TextUtil.prefixed(Component.text("Console must specify a player.", NamedTextColor.RED)));
                 return;
             }
             target = (Player) sender;
@@ -60,10 +61,10 @@ public class CombatCommand implements BasicCommand {
 
         if (setMode) {
             combatManager.tag(target);
-            sender.sendMessage(Component.text(target.getName() + " is now combat tagged.", NamedTextColor.GREEN));
+            sender.sendMessage(TextUtil.prefixed(Component.text(target.getName() + " is now combat tagged.", NamedTextColor.GREEN)));
         } else {
             combatManager.untag(target);
-            sender.sendMessage(Component.text(target.getName() + " is no longer combat tagged.", NamedTextColor.GREEN));
+            sender.sendMessage(TextUtil.prefixed(Component.text(target.getName() + " is no longer combat tagged.", NamedTextColor.GREEN)));
         }
     }
 }

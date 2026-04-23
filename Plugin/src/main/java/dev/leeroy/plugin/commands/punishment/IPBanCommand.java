@@ -37,18 +37,18 @@ public class IPBanCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
 
         if (!sender.hasPermission("bob.ipban")) {
-            sender.sendMessage(Component.text("You don't have permission to IP ban players.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to IP ban players.", NamedTextColor.RED)));
             return;
         }
 
         if (args.length < 1) {
-            sender.sendMessage(Component.text("Usage: /ipban <player> [reason]", NamedTextColor.YELLOW));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /ipban <player> [reason]", NamedTextColor.YELLOW)));
             return;
         }
 
         Player target = Bukkit.getPlayerExact(args[0]);
         if (target == null) {
-            sender.sendMessage(Component.text("Player '" + args[0] + "' must be online to IP ban.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Player '" + args[0] + "' must be online to IP ban.", NamedTextColor.RED)));
             return;
         }
 
@@ -58,12 +58,12 @@ public class IPBanCommand implements BasicCommand {
                 : "You have been IP banned.";
 
         if (target.hasPermission("bob.exempt") || target.hasPermission("bob.exempt.ipban")) {
-            sender.sendMessage(Component.text(target.getName() + " is exempt from this punishment.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text(target.getName() + " is exempt from this punishment.", NamedTextColor.RED)));
             return;
         }
 
         if (ipBanManager.isBanned(ip)) {
-            sender.sendMessage(Component.text(target.getName() + "'s IP is already banned.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text(target.getName() + "'s IP is already banned.", NamedTextColor.RED)));
             return;
         }
 

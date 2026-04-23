@@ -43,18 +43,18 @@ public class MuteCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
 
         if (!sender.hasPermission("bob.mute")) {
-            sender.sendMessage(Component.text("You don't have permission to mute players.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to mute players.", NamedTextColor.RED)));
             return;
         }
 
         if (args.length < 1) {
-            sender.sendMessage(Component.text("Usage: /mute <player> [reason]", NamedTextColor.YELLOW));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /mute <player> [reason]", NamedTextColor.YELLOW)));
             return;
         }
 
         Player target = Bukkit.getPlayerExact(args[0]);
         if (target == null) {
-            sender.sendMessage(Component.text("Player '" + args[0] + "' not found or is offline.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Player '" + args[0] + "' not found or is offline.", NamedTextColor.RED)));
             return;
         }
 
@@ -63,18 +63,18 @@ public class MuteCommand implements BasicCommand {
                 : "You have been muted.";
 
         if (target.hasPermission("bob.exempt") || target.hasPermission("bob.exempt.mute")) {
-            sender.sendMessage(Component.text(target.getName() + " is exempt from this punishment.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text(target.getName() + " is exempt from this punishment.", NamedTextColor.RED)));
             return;
         }
 
         if (muteManager.isMuted(target.getUniqueId())) {
-            sender.sendMessage(Component.text(target.getName() + " is already muted.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text(target.getName() + " is already muted.", NamedTextColor.RED)));
             return;
         }
 
         muteManager.mute(target.getUniqueId(), target.getName(), reason, sender.getName());
         historyManager.log(target.getUniqueId(), target.getName(), "mute", reason, sender.getName(), null);
-        target.sendMessage(Component.text("You have been permanently muted. Reason: " + reason, NamedTextColor.RED));
+        target.sendMessage(TextUtil.prefixed(Component.text("You have been permanently muted. Reason: " + reason, NamedTextColor.RED)));
         TextUtil.broadcast("&c[MUTE] &e" + target.getName() + " &chas been muted! &7Reason: " + reason);
         discordBroadcaster.broadcast("mute", target.getName(), sender.getName(), reason, null);
     }

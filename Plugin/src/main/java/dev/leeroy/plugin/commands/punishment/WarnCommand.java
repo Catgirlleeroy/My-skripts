@@ -66,13 +66,13 @@ public class WarnCommand implements BasicCommand {
 
     private void handleWarn(CommandSender sender, String[] args) {
         if (!sender.hasPermission("bob.warn")) {
-            sender.sendMessage(Component.text("You don't have permission to warn players.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to warn players.", NamedTextColor.RED)));
             return;
         }
-        if (args.length < 1) { sender.sendMessage(Component.text("Usage: /warn <player> [reason]", NamedTextColor.YELLOW)); return; }
+        if (args.length < 1) { sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /warn <player> [reason]", NamedTextColor.YELLOW))); return; }
 
         UUID uuid = resolveUUID(args[0]);
-        if (uuid == null) { sender.sendMessage(Component.text("Player '" + args[0] + "' not found.", NamedTextColor.RED)); return; }
+        if (uuid == null) { sender.sendMessage(TextUtil.prefixed(Component.text("Player '" + args[0] + "' not found.", NamedTextColor.RED))); return; }
 
         String targetName = getName(uuid, args[0]);
         String reason     = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length)) : null;
@@ -107,7 +107,7 @@ public class WarnCommand implements BasicCommand {
                                 "&cYou have reached &4{max}&c warnings and will be punished!")
                         .replace("{warns}", String.valueOf(warns))
                         .replace("{max}",   String.valueOf(max));
-                online.sendMessage(TextUtil.parse(maxMsg));
+                online.sendMessage(TextUtil.prefixed(maxMsg));
             } else {
                 List<String> punishments = plugin.getConfig().getStringList("warn.stacked-punishments");
                 int offense = warnManager.getOffenses(uuid);
@@ -121,7 +121,7 @@ public class WarnCommand implements BasicCommand {
                         .replace("{max}",        String.valueOf(max))
                         .replace("{punishment}", describePunishment(rawCmd))
                         .replace("{offense}",    String.valueOf(offenseDisplay));
-                online.sendMessage(TextUtil.parse(personalMsg));
+                online.sendMessage(TextUtil.prefixed(personalMsg));
             }
         }
 
@@ -153,19 +153,19 @@ public class WarnCommand implements BasicCommand {
 
     private void handleUnwarn(CommandSender sender, String[] args) {
         if (!sender.hasPermission("bob.warn")) {
-            sender.sendMessage(Component.text("You don't have permission.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission.", NamedTextColor.RED)));
             return;
         }
-        if (args.length < 1) { sender.sendMessage(Component.text("Usage: /unwarn <player>", NamedTextColor.YELLOW)); return; }
+        if (args.length < 1) { sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /unwarn <player>", NamedTextColor.YELLOW))); return; }
 
         UUID uuid = resolveUUID(args[0]);
-        if (uuid == null) { sender.sendMessage(Component.text("Player '" + args[0] + "' not found.", NamedTextColor.RED)); return; }
+        if (uuid == null) { sender.sendMessage(TextUtil.prefixed(Component.text("Player '" + args[0] + "' not found.", NamedTextColor.RED))); return; }
 
         String targetName = getName(uuid, args[0]);
         int max           = plugin.getConfig().getInt("warn.max-warns", 3);
 
         if (warnManager.getWarns(uuid) <= 0) {
-            sender.sendMessage(TextUtil.parse(plugin.getConfig()
+            sender.sendMessage(TextUtil.prefixed(plugin.getConfig()
                     .getString("warn.messages.no-warns", "&4{player} &chas no warns.")
                     .replace("{player}", targetName)));
             return;
@@ -192,19 +192,19 @@ public class WarnCommand implements BasicCommand {
 
         if (args.length == 0 || !(sender instanceof Player)) {
             UUID uuid = sender instanceof Player p ? p.getUniqueId() : null;
-            if (uuid == null) { sender.sendMessage(Component.text("Usage: /warns <player>", NamedTextColor.YELLOW)); return; }
+            if (uuid == null) { sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /warns <player>", NamedTextColor.YELLOW))); return; }
             int warns = warnManager.getWarns(uuid);
-            sender.sendMessage(TextUtil.parse(messagesConfig.get().getString("warn.messages.check-self", "")
+            sender.sendMessage(TextUtil.prefixed(messagesConfig.get().getString("warn.messages.check-self", "")
                     .replace("{warns}", String.valueOf(warns))
                     .replace("{max}",   String.valueOf(max))));
             return;
         }
 
         UUID uuid = resolveUUID(args[0]);
-        if (uuid == null) { sender.sendMessage(Component.text("Player '" + args[0] + "' not found.", NamedTextColor.RED)); return; }
+        if (uuid == null) { sender.sendMessage(TextUtil.prefixed(Component.text("Player '" + args[0] + "' not found.", NamedTextColor.RED))); return; }
 
         if (sender instanceof Player p && p.getUniqueId().equals(uuid)) {
-            sender.sendMessage(TextUtil.parse(messagesConfig.get().getString("warn.messages.check-self", "")
+            sender.sendMessage(TextUtil.prefixed(messagesConfig.get().getString("warn.messages.check-self", "")
                     .replace("{warns}", String.valueOf(warnManager.getWarns(uuid)))
                     .replace("{max}",   String.valueOf(max))));
             return;
@@ -212,7 +212,7 @@ public class WarnCommand implements BasicCommand {
 
         String targetName = getName(uuid, args[0]);
         int warns = warnManager.getWarns(uuid);
-        sender.sendMessage(TextUtil.parse(messagesConfig.get().getString("warn.messages.check-other", "")
+        sender.sendMessage(TextUtil.prefixed(messagesConfig.get().getString("warn.messages.check-other", "")
                 .replace("{player}", targetName)
                 .replace("{warns}",  String.valueOf(warns))
                 .replace("{max}",    String.valueOf(max))));

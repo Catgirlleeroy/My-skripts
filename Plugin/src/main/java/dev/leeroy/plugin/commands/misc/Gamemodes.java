@@ -1,5 +1,6 @@
 package dev.leeroy.plugin.commands.misc;
 
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -40,19 +41,19 @@ public class Gamemodes implements BasicCommand {
 
         if (args.length == 0) {
             if (!(sender instanceof Player player)) {
-                sender.sendMessage(Component.text("Console must specify a player: /" + cmdLabel + " <player>", NamedTextColor.RED));
+                sender.sendMessage(TextUtil.prefixed(Component.text("Console must specify a player: /" + cmdLabel + " <player>", NamedTextColor.RED)));
                 return;
             }
 
             String selfPerm = "bob.gamemode.self." + mode.name().toLowerCase();
 
             if (!player.hasPermission(selfPerm) && !player.hasPermission("bob.gamemode.self")) {
-                player.sendMessage(Component.text("You don't have permission to change your gamemode to " + formatGameMode(mode) + ".", NamedTextColor.RED));
+                player.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to change your gamemode to " + formatGameMode(mode) + ".", NamedTextColor.RED)));
                 return;
             }
 
             player.setGameMode(mode);
-            player.sendMessage(Component.text("Your gamemode has been set to " + formatGameMode(mode) + ".", NamedTextColor.GREEN));
+            player.sendMessage(TextUtil.prefixed(Component.text("Your gamemode has been set to " + formatGameMode(mode) + ".", NamedTextColor.GREEN)));
             return;
         }
 
@@ -60,23 +61,23 @@ public class Gamemodes implements BasicCommand {
             String othersPerm = "bob.gamemode.others." + mode.name().toLowerCase();
 
             if (!sender.hasPermission(othersPerm) && !sender.hasPermission("bob.gamemode.others")) {
-                sender.sendMessage(Component.text("You don't have permission to change other players' gamemode to " + formatGameMode(mode) + ".", NamedTextColor.RED));
+                sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to change other players' gamemode to " + formatGameMode(mode) + ".", NamedTextColor.RED)));
                 return;
             }
 
             Player target = Bukkit.getPlayerExact(args[0]);
             if (target == null) {
-                sender.sendMessage(Component.text("Player '" + args[0] + "' not found or is offline.", NamedTextColor.RED));
+                sender.sendMessage(TextUtil.prefixed(Component.text("Player '" + args[0] + "' not found or is offline.", NamedTextColor.RED)));
                 return;
             }
 
             target.setGameMode(mode);
-            target.sendMessage(Component.text("Your gamemode has been set to " + formatGameMode(mode) + " by " + sender.getName() + ".", NamedTextColor.GREEN));
-            sender.sendMessage(Component.text("Set " + target.getName() + "'s gamemode to " + formatGameMode(mode) + ".", NamedTextColor.GREEN));
+            target.sendMessage(TextUtil.prefixed(Component.text("Your gamemode has been set to " + formatGameMode(mode) + " by " + sender.getName() + ".", NamedTextColor.GREEN)));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Set " + target.getName() + "'s gamemode to " + formatGameMode(mode) + ".", NamedTextColor.GREEN)));
             return;
         }
 
-        sender.sendMessage(Component.text("Usage: /" + cmdLabel + " [player]", NamedTextColor.YELLOW));
+        sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /" + cmdLabel + " [player]", NamedTextColor.YELLOW)));
     }
 
     private String formatGameMode(GameMode gm) {

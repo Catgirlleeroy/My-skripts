@@ -1,5 +1,9 @@
 # Bob Plugin Configuration
 
+# ── Command Prefix ─────────────────────────────────────────────────────────────
+# Shown before every command response. Use & for color codes.
+prefix: "&8[&6Bob&8] &r"
+
 # =============================================================================
 # CHAT FORMAT
 # Requires LuckPerms. If LuckPerms is not installed, chat appears without prefix.

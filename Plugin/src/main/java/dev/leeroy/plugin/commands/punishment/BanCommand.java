@@ -46,12 +46,12 @@ public class BanCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
 
         if (!sender.hasPermission("bob.ban")) {
-            sender.sendMessage(Component.text("You don't have permission to ban players.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to ban players.", NamedTextColor.RED)));
             return;
         }
 
         if (args.length < 1) {
-            sender.sendMessage(Component.text("Usage: /ban <player|uuid> [reason]", NamedTextColor.YELLOW));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /ban <player|uuid> [reason]", NamedTextColor.YELLOW)));
             return;
         }
 
@@ -70,7 +70,7 @@ public class BanCommand implements BasicCommand {
         } else {
             uuid = playerCache.resolveUUID(input);
             if (uuid == null) {
-                sender.sendMessage(Component.text("Player '" + input + "' not found. They must have joined before, or provide a UUID.", NamedTextColor.RED));
+                sender.sendMessage(TextUtil.prefixed(Component.text("Player '" + input + "' not found. They must have joined before, or provide a UUID.", NamedTextColor.RED)));
                 return;
             }
             String cached = playerCache.getName(uuid);
@@ -78,12 +78,12 @@ public class BanCommand implements BasicCommand {
         }
 
         if (onlineTarget != null && (onlineTarget.hasPermission("bob.exempt") || onlineTarget.hasPermission("bob.exempt.ban"))) {
-            sender.sendMessage(Component.text(onlineTarget.getName() + " is exempt from this punishment.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text(onlineTarget.getName() + " is exempt from this punishment.", NamedTextColor.RED)));
             return;
         }
 
         if (banManager.isBanned(uuid)) {
-            sender.sendMessage(Component.text(targetName + " is already banned.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text(targetName + " is already banned.", NamedTextColor.RED)));
             return;
         }
 
@@ -101,7 +101,7 @@ public class BanCommand implements BasicCommand {
 
         TextUtil.broadcast("&c[BAN] &e" + targetName + " &chas been permanently banned! &7Reason: " + reason);
         discordBroadcaster.broadcast("ban", targetName, sender.getName(), reason, null);
-        sender.sendMessage(Component.text("Banned " + targetName + ". Reason: " + reason, NamedTextColor.GREEN));
+        sender.sendMessage(TextUtil.prefixed(Component.text("Banned " + targetName + ". Reason: " + reason, NamedTextColor.GREEN)));
     }
 
     @Override

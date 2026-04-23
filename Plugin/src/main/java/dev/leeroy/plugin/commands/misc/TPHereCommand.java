@@ -1,6 +1,7 @@
 package dev.leeroy.plugin.commands.misc;
 
 import dev.leeroy.plugin.Utils.misc.TabUtil;
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.misc.VanishManager;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -31,39 +32,39 @@ public class TPHereCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
 
         if (!(sender instanceof Player self)) {
-            sender.sendMessage(Component.text("Only players can use /tphere.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Only players can use /tphere.", NamedTextColor.RED)));
             return;
         }
 
         if (!sender.hasPermission("bob.tp.here")) {
-            sender.sendMessage(Component.text("You don't have permission to use /tphere.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to use /tphere.", NamedTextColor.RED)));
             return;
         }
 
         if (args.length != 1) {
-            sender.sendMessage(Component.text("Usage: /tphere <player>", NamedTextColor.YELLOW));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /tphere <player>", NamedTextColor.YELLOW)));
             return;
         }
 
         Player target = Bukkit.getPlayerExact(args[0]);
 
         if (target == null) {
-            sender.sendMessage(Component.text("Player '" + args[0] + "' not found or is offline.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Player '" + args[0] + "' not found or is offline.", NamedTextColor.RED)));
             return;
         }
 
         if (target.equals(self)) {
-            sender.sendMessage(Component.text("You cannot teleport yourself to yourself.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You cannot teleport yourself to yourself.", NamedTextColor.RED)));
             return;
         }
 
         if (vanishManager.isVanished(self.getUniqueId()) && !target.hasPermission("bob.vanish.see")) {
-            sender.sendMessage(Component.text("You cannot pull players while vanished.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You cannot pull players while vanished.", NamedTextColor.RED)));
             return;
         }
 
         target.teleport(self.getLocation());
-        target.sendMessage(Component.text("You have been teleported to " + self.getName() + ".", NamedTextColor.GREEN));
-        sender.sendMessage(Component.text("Teleported " + target.getName() + " to you.", NamedTextColor.GREEN));
+        target.sendMessage(TextUtil.prefixed(Component.text("You have been teleported to " + self.getName() + ".", NamedTextColor.GREEN)));
+        sender.sendMessage(TextUtil.prefixed(Component.text("Teleported " + target.getName() + " to you.", NamedTextColor.GREEN)));
     }
 }

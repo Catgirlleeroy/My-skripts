@@ -1,5 +1,6 @@
 package dev.leeroy.plugin.commands.chat;
 
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -25,12 +26,12 @@ public class ChatColorCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("Only players can use this command.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Only players can use this command.", NamedTextColor.RED)));
             return;
         }
 
         if (!player.hasPermission("bob.chatcolor")) {
-            player.sendMessage(Component.text("You don't have permission to use chat colors.", NamedTextColor.RED));
+            player.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to use chat colors.", NamedTextColor.RED)));
             return;
         }
 

@@ -1,6 +1,7 @@
 package dev.leeroy.plugin.commands.punishment;
 
 import dev.leeroy.plugin.Utils.misc.PlayerCache;
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.punishment.IPBanManager;
 import dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster;
 import io.papermc.paper.command.brigadier.BasicCommand;
@@ -31,12 +32,12 @@ public class IPUnbanCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
 
         if (!sender.hasPermission("bob.ipunban")) {
-            sender.sendMessage(Component.text("You don't have permission to unban IPs.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to unban IPs.", NamedTextColor.RED)));
             return;
         }
 
         if (args.length < 1) {
-            sender.sendMessage(Component.text("Usage: /ipunban <player|uuid|ip>", NamedTextColor.YELLOW));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /ipunban <player|uuid|ip>", NamedTextColor.YELLOW)));
             return;
         }
 
@@ -44,18 +45,18 @@ public class IPUnbanCommand implements BasicCommand {
         String ip = resolveToIP(input);
 
         if (ip == null) {
-            sender.sendMessage(Component.text("Could not resolve '" + input + "' to an IP. Player must be online, in cache, or provide a raw IP.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Could not resolve '" + input + "' to an IP. Player must be online, in cache, or provide a raw IP.", NamedTextColor.RED)));
             return;
         }
 
         if (!ipBanManager.isBanned(ip)) {
-            sender.sendMessage(Component.text("IP " + ip + " is not currently banned.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("IP " + ip + " is not currently banned.", NamedTextColor.RED)));
             return;
         }
 
         ipBanManager.unban(ip);
         discordBroadcaster.broadcast("ipunban", input, sender.getName(), null, null);
-        sender.sendMessage(Component.text("IP " + ip + " (" + input + ") has been unbanned.", NamedTextColor.GREEN));
+        sender.sendMessage(TextUtil.prefixed(Component.text("IP " + ip + " (" + input + ") has been unbanned.", NamedTextColor.GREEN)));
     }
 
     private String resolveToIP(String input) {

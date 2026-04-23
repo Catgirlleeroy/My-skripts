@@ -31,22 +31,22 @@ public class DailyRewardCommand implements BasicCommand {
 
         if (fixMode) {
             if (!sender.hasPermission("bob.daily.admin")) {
-                sender.sendMessage(Component.text("You don't have permission.", NamedTextColor.RED));
+                sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission.", NamedTextColor.RED)));
                 return;
             }
             dailyManager.resetAll();
-            sender.sendMessage(TextUtil.parse(messagesConfig.get()
+            sender.sendMessage(TextUtil.prefixed(messagesConfig.get()
                     .getString("daily-reward.messages.reset-all", "&aReset all daily rewards.")));
             return;
         }
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("Only players can use this command.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Only players can use this command.", NamedTextColor.RED)));
             return;
         }
 
         if (!dailyManager.plugin().getConfig().getBoolean("daily-reward.enabled", true)) {
-            player.sendMessage(Component.text("Daily rewards are currently disabled.", NamedTextColor.RED));
+            player.sendMessage(TextUtil.prefixed(Component.text("Daily rewards are currently disabled.", NamedTextColor.RED)));
             return;
         }
 
@@ -55,7 +55,7 @@ public class DailyRewardCommand implements BasicCommand {
 
             String playerName = player.getName();
             if (!playerName.matches("[a-zA-Z0-9_]{1,16}")) {
-                player.sendMessage(Component.text("Your username contains invalid characters.", NamedTextColor.RED));
+                player.sendMessage(TextUtil.prefixed(Component.text("Your username contains invalid characters.", NamedTextColor.RED)));
                 return;
             }
 
@@ -64,7 +64,7 @@ public class DailyRewardCommand implements BasicCommand {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{player}", playerName));
             }
 
-            player.sendMessage(TextUtil.parse(messagesConfig.get()
+            player.sendMessage(TextUtil.prefixed(messagesConfig.get()
                     .getString("daily-reward.messages.claimed", "&eYou claimed your daily reward!")));
         } else {
             int[] remaining = dailyManager.getTimeRemaining(player.getUniqueId());
@@ -82,7 +82,7 @@ public class DailyRewardCommand implements BasicCommand {
                     .replace("{minutes}", String.valueOf(minutes))
                     .replace("{time}",    timeLeft);
 
-            player.sendMessage(TextUtil.parse(msg));
+            player.sendMessage(TextUtil.prefixed(msg));
         }
     }
 }

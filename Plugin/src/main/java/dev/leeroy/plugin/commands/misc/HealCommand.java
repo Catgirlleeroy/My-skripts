@@ -2,6 +2,7 @@ package dev.leeroy.plugin.commands.misc;
 
 import dev.leeroy.plugin.Utils.misc.PlayerHealer;
 import dev.leeroy.plugin.Utils.misc.TabUtil;
+import dev.leeroy.plugin.Utils.misc.TextUtil;
 import dev.leeroy.plugin.Utils.misc.VanishManager;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -33,38 +34,38 @@ public class HealCommand implements BasicCommand {
 
         if (args.length == 0) {
             if (!(sender instanceof Player player)) {
-                sender.sendMessage(Component.text("Console must specify a player: /heal <player>", NamedTextColor.RED));
+                sender.sendMessage(TextUtil.prefixed(Component.text("Console must specify a player: /heal <player>", NamedTextColor.RED)));
                 return;
             }
 
             if (!player.hasPermission("bob.heal")) {
-                player.sendMessage(Component.text("You don't have permission to use this command.", NamedTextColor.RED));
+                player.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to use this command.", NamedTextColor.RED)));
                 return;
             }
 
             PlayerHealer.heal(player);
-            player.sendMessage(Component.text("You have been healed!", NamedTextColor.GREEN));
+            player.sendMessage(TextUtil.prefixed(Component.text("You have been healed!", NamedTextColor.GREEN)));
             return;
         }
 
         if (args.length == 1) {
             if (!sender.hasPermission("bob.heal.others")) {
-                sender.sendMessage(Component.text("You don't have permission to heal other players.", NamedTextColor.RED));
+                sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to heal other players.", NamedTextColor.RED)));
                 return;
             }
 
             Player target = Bukkit.getPlayerExact(args[0]);
             if (target == null) {
-                sender.sendMessage(Component.text("Player '" + args[0] + "' not found or is offline.", NamedTextColor.RED));
+                sender.sendMessage(TextUtil.prefixed(Component.text("Player '" + args[0] + "' not found or is offline.", NamedTextColor.RED)));
                 return;
             }
 
             PlayerHealer.heal(target);
-            target.sendMessage(Component.text("You have been healed by " + sender.getName() + "!", NamedTextColor.GREEN));
-            sender.sendMessage(Component.text("Healed " + target.getName() + ".", NamedTextColor.GREEN));
+            target.sendMessage(TextUtil.prefixed(Component.text("You have been healed by " + sender.getName() + "!", NamedTextColor.GREEN)));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Healed " + target.getName() + ".", NamedTextColor.GREEN)));
             return;
         }
 
-        sender.sendMessage(Component.text("Usage: /heal [player]", NamedTextColor.YELLOW));
+        sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /heal [player]", NamedTextColor.YELLOW)));
     }
 }

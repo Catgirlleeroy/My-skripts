@@ -46,13 +46,13 @@ public class TempBanCommand implements BasicCommand {
         CommandSender sender = stack.getSender();
 
         if (!sender.hasPermission("bob.tempban")) {
-            sender.sendMessage(Component.text("You don't have permission to tempban players.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("You don't have permission to tempban players.", NamedTextColor.RED)));
             return;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(Component.text("Usage: /tempban <player|uuid> <duration> [reason]", NamedTextColor.YELLOW));
-            sender.sendMessage(Component.text("Duration examples: 30m, 2h, 1d, 1d12h", NamedTextColor.GRAY));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Usage: /tempban <player|uuid> <duration> [reason]", NamedTextColor.YELLOW)));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Duration examples: 30m, 2h, 1d, 1d12h", NamedTextColor.GRAY)));
             return;
         }
 
@@ -64,7 +64,7 @@ public class TempBanCommand implements BasicCommand {
 
         long durationMs = BanManager.parseDuration(durationStr);
         if (durationMs == -1) {
-            sender.sendMessage(Component.text("Invalid duration '" + durationStr + "'. Use formats like 30m, 2h, 1d.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text("Invalid duration '" + durationStr + "'. Use formats like 30m, 2h, 1d.", NamedTextColor.RED)));
             return;
         }
 
@@ -78,7 +78,7 @@ public class TempBanCommand implements BasicCommand {
         } else {
             uuid = playerCache.resolveUUID(input);
             if (uuid == null) {
-                sender.sendMessage(Component.text("Player '" + input + "' not found. They must have joined before, or provide a UUID.", NamedTextColor.RED));
+                sender.sendMessage(TextUtil.prefixed(Component.text("Player '" + input + "' not found. They must have joined before, or provide a UUID.", NamedTextColor.RED)));
                 return;
             }
             String cached = playerCache.getName(uuid);
@@ -86,12 +86,12 @@ public class TempBanCommand implements BasicCommand {
         }
 
         if (onlineTarget != null && (onlineTarget.hasPermission("bob.exempt") || onlineTarget.hasPermission("bob.exempt.tempban"))) {
-            sender.sendMessage(Component.text(onlineTarget.getName() + " is exempt from this punishment.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text(onlineTarget.getName() + " is exempt from this punishment.", NamedTextColor.RED)));
             return;
         }
 
         if (banManager.isBanned(uuid)) {
-            sender.sendMessage(Component.text(targetName + " is already banned.", NamedTextColor.RED));
+            sender.sendMessage(TextUtil.prefixed(Component.text(targetName + " is already banned.", NamedTextColor.RED)));
             return;
         }
 
@@ -113,7 +113,7 @@ public class TempBanCommand implements BasicCommand {
 
         TextUtil.broadcast("&c[TEMPBAN] &e" + targetName + " &chas been temporarily banned! &7Duration: " + durationStr + " | Reason: " + reason);
         discordBroadcaster.broadcast("tempban", targetName, sender.getName(), reason, durationStr);
-        sender.sendMessage(Component.text("Tempbanned " + targetName + " for " + durationStr + ". Reason: " + reason, NamedTextColor.GREEN));
+        sender.sendMessage(TextUtil.prefixed(Component.text("Tempbanned " + targetName + " for " + durationStr + ". Reason: " + reason, NamedTextColor.GREEN)));
     }
 
     @Override
