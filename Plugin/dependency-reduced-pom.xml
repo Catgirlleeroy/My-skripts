@@ -4,7 +4,7 @@
   <groupId>dev.leeroy</groupId>
   <artifactId>Bob</artifactId>
   <name>Bob</name>
-  <version>1.2</version>
+  <version>1.2.001-DEV</version>
   <build>
     <defaultGoal>clean package</defaultGoal>
     <resources>
@@ -32,16 +32,6 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-              <relocations>
-                <relocation>
-                  <pattern>com.github.retrooper.packetevents</pattern>
-                  <shadedPattern>dev.leeroy.plugin.libs.packetevents</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>io.github.retrooper.packetevents</pattern>
-                  <shadedPattern>dev.leeroy.plugin.libs.ipacketevents</shadedPattern>
-                </relocation>
-              </relocations>
               <filters>
                 <filter>
                   <artifact>*:*</artifact>
@@ -102,7 +92,7 @@
     <dependency>
       <groupId>com.discordsrv</groupId>
       <artifactId>discordsrv</artifactId>
-      <version>1.28.0</version>
+      <version>1.30.5</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
