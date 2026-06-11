@@ -19,11 +19,6 @@ chat-format:
   enabled: true
   format: "{prefix}&f {player}&7: &f{message}"
 
-# Ban file paths (relative to plugin data folder)
-storage:
-  ban-file: "bans.yml"
-  ipban-file: "ipbans.yml"
-
 # Staff notification settings
 staff:
   notify-on-join-attempt: true

@@ -1,83 +1,72 @@
 package dev.leeroy.plugin.Utils.misc;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.sql.*;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerCache {
 
     private final JavaPlugin plugin;
-    private final File cacheFile;
+    private final DatabaseManager db;
 
-    // Real in-memory maps — all reads/writes are instant, no YAML overhead
-    // ConcurrentHashMap so async save thread can iterate safely while main
-    // thread makes updates
-    private final ConcurrentHashMap<UUID, String> names       = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<UUID, String> ips         = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, UUID> nameToUUID  = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, String> names      = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, String> ips        = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, UUID> nameToUUID = new ConcurrentHashMap<>();
 
-    // Dirty flag — true means unsaved changes exist
-    // Avoids unnecessary disk writes if nothing changed
-    private volatile boolean dirty = false;
-
-    public PlayerCache(JavaPlugin plugin) {
-        this.plugin   = plugin;
-        this.cacheFile = new File(plugin.getDataFolder(), "playercache.yml");
-
-        // Load synchronously on startup — safe, happens before server accepts players
+    public PlayerCache(JavaPlugin plugin, DatabaseManager db) {
+        this.plugin = plugin;
+        this.db     = db;
         load();
-
-        // Autosave every 5 minutes (6000 ticks) — batch writes instead of per-player
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::asyncSave, 6000L, 6000L);
     }
 
-    // -------------------------------------------------------------------------
-    // Public API
-    // -------------------------------------------------------------------------
+    // ── Public API ────────────────────────────────────────────────────────────
 
     public void store(UUID uuid, String name) {
         names.put(uuid, name);
         nameToUUID.put(name.toLowerCase(), uuid);
-        dirty = true;
-        // No disk write here — autosave handles it
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try (Connection c = db.getConnection();
+                 PreparedStatement ps = c.prepareStatement(
+                     "MERGE INTO player_cache (uuid, name) KEY (uuid) VALUES (?, ?)")) {
+                ps.setString(1, uuid.toString());
+                ps.setString(2, name);
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                plugin.getLogger().warning("[PlayerCache] Failed to store name: " + e.getMessage());
+            }
+        });
     }
 
     public void storeIP(UUID uuid, String ip) {
         ips.put(uuid, ip);
-        dirty = true;
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try (Connection c = db.getConnection();
+                 PreparedStatement ps = c.prepareStatement(
+                     "MERGE INTO player_cache (uuid, name, ip) KEY (uuid) VALUES (?, ?, ?)")) {
+                ps.setString(1, uuid.toString());
+                ps.setString(2, names.getOrDefault(uuid, "Unknown"));
+                ps.setString(3, ip);
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                plugin.getLogger().warning("[PlayerCache] Failed to store IP: " + e.getMessage());
+            }
+        });
     }
 
-    public String getName(UUID uuid) {
-        return names.get(uuid);
-    }
-
-    public String getIP(UUID uuid) {
-        return ips.get(uuid);
-    }
-
-    public UUID getUUID(String name) {
-        return nameToUUID.get(name.toLowerCase());
-    }
+    public String getName(UUID uuid)         { return names.get(uuid); }
+    public String getIP(UUID uuid)           { return ips.get(uuid); }
+    public UUID   getUUID(String name)       { return nameToUUID.get(name.toLowerCase()); }
+    public Collection<String> getAllNames()  { return names.values(); }
 
     public String getIPByName(String name) {
         UUID uuid = getUUID(name);
         return uuid != null ? getIP(uuid) : null;
     }
 
-    public Collection<String> getAllNames() {
-        return names.values();
-    }
-
-    /** Resolves a name, UUID string, or online player to a UUID. Returns null if not found. */
     public UUID resolveUUID(String input) {
         Player online = Bukkit.getPlayerExact(input);
         if (online != null) return online.getUniqueId();
@@ -85,87 +74,29 @@ public class PlayerCache {
         return getUUID(input);
     }
 
-    // -------------------------------------------------------------------------
-    // Persistence
-    // -------------------------------------------------------------------------
+    // ── Persistence ────────────────────────────────────────────────────────────
 
-    /**
-     * Load from disk into memory maps.
-     * Always called synchronously — YAML loading is not thread-safe.
-     */
     private void load() {
-        if (!cacheFile.exists()) return;
-
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(cacheFile);
-
-        if (config.isConfigurationSection("players")) {
-            for (String key : config.getConfigurationSection("players").getKeys(false)) {
-                try {
-                    UUID uuid = UUID.fromString(key);
-                    String name = config.getString("players." + key + ".name");
-                    String ip   = config.getString("players." + key + ".ip");
-
-                    if (name != null) {
-                        names.put(uuid, name);
-                        nameToUUID.put(name.toLowerCase(), uuid);
-                    }
-                    if (ip != null) {
-                        ips.put(uuid, ip);
-                    }
-                } catch (IllegalArgumentException ignored) {
-                    // Skip malformed UUID keys
-                }
+        try (Connection c = db.getConnection();
+             Statement s = c.createStatement();
+             ResultSet rs = s.executeQuery("SELECT uuid, name, ip FROM player_cache")) {
+            while (rs.next()) {
+                UUID uuid   = UUID.fromString(rs.getString("uuid"));
+                String name = rs.getString("name");
+                String ip   = rs.getString("ip");
+                names.put(uuid, name);
+                nameToUUID.put(name.toLowerCase(), uuid);
+                if (ip != null) ips.put(uuid, ip);
             }
-        }
-
-        plugin.getLogger().info("[PlayerCache] Loaded " + names.size() + " players into memory.");
-    }
-
-    /**
-     * Serialize current Maps into a fresh YamlConfiguration and save to disk.
-     * Safe to call from async thread — we snapshot the Maps into a NEW config
-     * object, so the main thread's Maps are never blocked or corrupted.
-     */
-    private void asyncSave() {
-        if (!dirty) return; // Nothing changed — skip disk write entirely
-
-        // Snapshot Maps into local variables first so we iterate a consistent state
-        Map<UUID, String> nameSnap = new HashMap<>(names);
-        Map<UUID, String> ipSnap   = new HashMap<>(ips);
-
-        // Build a brand new YamlConfiguration — never touch the main thread's data
-        YamlConfiguration snapshot = new YamlConfiguration();
-
-        for (Map.Entry<UUID, String> entry : nameSnap.entrySet()) {
-            String path = "players." + entry.getKey().toString();
-            snapshot.set(path + ".name", entry.getValue());
-            snapshot.set("index." + entry.getValue().toLowerCase(), entry.getKey().toString());
-
-            String ip = ipSnap.get(entry.getKey());
-            if (ip != null) snapshot.set(path + ".ip", ip);
-        }
-
-        try {
-            snapshot.save(cacheFile);
-            dirty = false;
-        } catch (IOException e) {
-            plugin.getLogger().warning("[PlayerCache] Failed to save: " + e.getMessage());
+            plugin.getLogger().info("[PlayerCache] Loaded " + names.size() + " players from H2.");
+        } catch (SQLException e) {
+            plugin.getLogger().severe("[PlayerCache] Failed to load from H2: " + e.getMessage());
         }
     }
 
-    /**
-     * Final save on server shutdown — synchronous so data isn't lost.
-     * Called from Plugin.onDisable() on the main thread.
-     */
-    public void saveNow() {
-        dirty = true; // Force save regardless
-        asyncSave();  // asyncSave() builds a new config so it's safe here too
-    }
+    /** No-op — writes go directly to H2 on every update. */
+    public void saveNow() {}
 
-    /**
-     * Reload from disk — synchronous and safe.
-     * Clears Maps first to avoid stale data.
-     */
     public void reload() {
         names.clear();
         ips.clear();

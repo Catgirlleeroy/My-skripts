@@ -1,92 +1,79 @@
 package dev.leeroy.plugin.Utils.punishment;
 
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.leeroy.plugin.Utils.misc.DatabaseManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
+import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class PunishmentHistoryManager {
 
     private static final SimpleDateFormat DATE_FMT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private final JavaPlugin plugin;
-    private final File historyFile;
-    private YamlConfiguration config;
+    private final DatabaseManager db;
 
-    public PunishmentHistoryManager(JavaPlugin plugin) {
+    public PunishmentHistoryManager(JavaPlugin plugin, DatabaseManager db) {
         this.plugin = plugin;
-        this.historyFile = new File(plugin.getDataFolder(), "history.yml");
-        load();
+        this.db     = db;
     }
 
-    private void load() {
-        if (!historyFile.exists()) {
-            plugin.getDataFolder().mkdirs();
-            try { historyFile.createNewFile(); } catch (IOException e) { e.printStackTrace(); }
-        }
-        config = YamlConfiguration.loadConfiguration(historyFile);
-    }
-
-    private void save() {
-        final YamlConfiguration snapshot = config;
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            try { snapshot.save(historyFile); } catch (IOException e) { e.printStackTrace(); }
-        });
-    }
+    public void reload() { /* H2 is always current */ }
 
     public void log(UUID uuid, String targetName, String type, String reason, String punisher, String duration) {
-        String base = uuid.toString();
-        int count = config.getInt(base + ".count", 0);
-        String entryBase = base + "." + count;
-
-        config.set(entryBase + ".name",      targetName);
-        config.set(entryBase + ".type",      type);
-        config.set(entryBase + ".reason",    reason);
-        config.set(entryBase + ".punisher",  punisher);
-        config.set(entryBase + ".duration",  duration != null ? duration : "permanent");
-        config.set(entryBase + ".timestamp", System.currentTimeMillis());
-        config.set(base + ".count",          count + 1);
-        save();
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement(
+                 "INSERT INTO punishment_history (uuid, target_name, type, reason, punisher, duration, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
+            ps.setString(1, uuid.toString());
+            ps.setString(2, targetName);
+            ps.setString(3, type);
+            ps.setString(4, reason);
+            ps.setString(5, punisher);
+            ps.setString(6, duration != null ? duration : "permanent");
+            ps.setLong(7, System.currentTimeMillis());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("[PunishmentHistoryManager] log failed: " + e.getMessage());
+        }
     }
 
     public List<Map<String, Object>> getHistory(UUID uuid) {
-        String base = uuid.toString();
-        int count = config.getInt(base + ".count", 0);
         List<Map<String, Object>> entries = new ArrayList<>();
-
-        for (int i = 0; i < count; i++) {
-            String entryBase = base + "." + i;
-            if (!config.contains(entryBase + ".type")) continue;
-
-            Map<String, Object> entry = new LinkedHashMap<>();
-            entry.put("index",     i + 1);
-            entry.put("name",      config.getString(entryBase + ".name", "Unknown"));
-            entry.put("type",      config.getString(entryBase + ".type", "?"));
-            entry.put("reason",    config.getString(entryBase + ".reason", "No reason"));
-            entry.put("punisher",  config.getString(entryBase + ".punisher", "Console"));
-            entry.put("duration",  config.getString(entryBase + ".duration", "permanent"));
-            long ts = config.getLong(entryBase + ".timestamp", 0L);
-            entry.put("timestamp", ts > 0 ? DATE_FMT.format(new Date(ts)) : "Unknown");
-            entries.add(entry);
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement(
+                 "SELECT target_name, type, reason, punisher, duration, timestamp " +
+                 "FROM punishment_history WHERE uuid = ? ORDER BY id ASC")) {
+            ps.setString(1, uuid.toString());
+            try (ResultSet rs = ps.executeQuery()) {
+                int index = 1;
+                while (rs.next()) {
+                    Map<String, Object> entry = new LinkedHashMap<>();
+                    entry.put("index",     index++);
+                    entry.put("name",      rs.getString("target_name"));
+                    entry.put("type",      rs.getString("type"));
+                    entry.put("reason",    rs.getString("reason"));
+                    entry.put("punisher",  rs.getString("punisher"));
+                    entry.put("duration",  rs.getString("duration"));
+                    long ts = rs.getLong("timestamp");
+                    entry.put("timestamp", ts > 0 ? DATE_FMT.format(new java.util.Date(ts)) : "Unknown");
+                    entries.add(entry);
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("[PunishmentHistoryManager] getHistory failed: " + e.getMessage());
         }
         return entries;
     }
 
     public void clearHistory(UUID uuid) {
-        config.set(uuid.toString(), null);
-        save();
-    }
-
-    public void reload() {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, this::load);
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement(
+                 "DELETE FROM punishment_history WHERE uuid = ?")) {
+            ps.setString(1, uuid.toString());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("[PunishmentHistoryManager] clearHistory failed: " + e.getMessage());
+        }
     }
 }

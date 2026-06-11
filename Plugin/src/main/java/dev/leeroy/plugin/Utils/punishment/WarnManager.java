@@ -1,82 +1,98 @@
 package dev.leeroy.plugin.Utils.punishment;
 
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.leeroy.plugin.Utils.misc.DatabaseManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
+import java.sql.*;
 import java.util.UUID;
 
 public class WarnManager {
 
     private final JavaPlugin plugin;
-    private final File dataFile;
-    private YamlConfiguration config;
+    private final DatabaseManager db;
 
-    public WarnManager(JavaPlugin plugin) {
-        this.plugin   = plugin;
-        this.dataFile = new File(plugin.getDataFolder(), "warns.yml");
-        load();
+    public WarnManager(JavaPlugin plugin, DatabaseManager db) {
+        this.plugin = plugin;
+        this.db     = db;
     }
 
-    private void load() {
-        if (!dataFile.exists()) {
-            plugin.getDataFolder().mkdirs();
-            try { dataFile.createNewFile(); } catch (IOException e) { e.printStackTrace(); }
-        }
-        config = YamlConfiguration.loadConfiguration(dataFile);
-    }
-
-    private void save() {
-        final YamlConfiguration snapshot = config;
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            try { snapshot.save(dataFile); } catch (IOException e) { e.printStackTrace(); }
-        });
-    }
-
-    public void reload() {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, this::load);
-    }
+    public void reload() { /* H2 is always current */ }
 
     public int getWarns(UUID uuid) {
-        String key = uuid.toString();
-        // Migrate flat format (old) → nested format (new)
-        if (config.isInt(key)) {
-            int old = config.getInt(key);
-            config.set(key, null);
-            config.set(key + ".warns", old);
-            config.set(key + ".offenses", 0);
-            save();
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement("SELECT warns FROM warns WHERE uuid = ?")) {
+            ps.setString(1, uuid.toString());
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt("warns") : 0;
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().warning("[WarnManager] getWarns failed: " + e.getMessage());
+            return 0;
         }
-        return config.getInt(key + ".warns", 0);
     }
 
     public int addWarn(UUID uuid) {
         int current = getWarns(uuid) + 1;
-        config.set(uuid + ".warns", current);
-        save();
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement(
+                 "MERGE INTO warns (uuid, warns) KEY (uuid) VALUES (?, ?)")) {
+            ps.setString(1, uuid.toString());
+            ps.setInt(2, current);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().warning("[WarnManager] addWarn failed: " + e.getMessage());
+        }
         return current;
     }
 
     public int removeWarn(UUID uuid) {
         int current = Math.max(0, getWarns(uuid) - 1);
-        config.set(uuid + ".warns", current);
-        save();
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement(
+                 "MERGE INTO warns (uuid, warns) KEY (uuid) VALUES (?, ?)")) {
+            ps.setString(1, uuid.toString());
+            ps.setInt(2, current);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().warning("[WarnManager] removeWarn failed: " + e.getMessage());
+        }
         return current;
     }
 
     public void resetWarns(UUID uuid) {
-        config.set(uuid + ".warns", 0);
-        save();
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement(
+                 "MERGE INTO warns (uuid, warns) KEY (uuid) VALUES (?, 0)")) {
+            ps.setString(1, uuid.toString());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().warning("[WarnManager] resetWarns failed: " + e.getMessage());
+        }
     }
 
     public int getOffenses(UUID uuid) {
-        return config.getInt(uuid + ".offenses", 0);
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement("SELECT offenses FROM warns WHERE uuid = ?")) {
+            ps.setString(1, uuid.toString());
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt("offenses") : 0;
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().warning("[WarnManager] getOffenses failed: " + e.getMessage());
+            return 0;
+        }
     }
 
     public void incrementOffenses(UUID uuid) {
-        config.set(uuid + ".offenses", getOffenses(uuid) + 1);
-        save();
+        int current = getOffenses(uuid) + 1;
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement(
+                 "MERGE INTO warns (uuid, offenses) KEY (uuid) VALUES (?, ?)")) {
+            ps.setString(1, uuid.toString());
+            ps.setInt(2, current);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().warning("[WarnManager] incrementOffenses failed: " + e.getMessage());
+        }
     }
 }

@@ -19,8 +19,11 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.GameMode;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import static github.scarsz.discordsrv.DiscordSRV.version;
+
 public final class Plugin extends JavaPlugin {
 
+    private dev.leeroy.plugin.Utils.misc.DatabaseManager database;
     private BanManager banManager;
     private IPBanManager ipBanManager;
     private MuteManager muteManager;
@@ -61,26 +64,27 @@ public final class Plugin extends JavaPlugin {
         BobHooks.init(this);
 
         // Systems
+        database            = new dev.leeroy.plugin.Utils.misc.DatabaseManager(this);
         messagesConfig      = new dev.leeroy.plugin.Utils.misc.MessagesConfig(this);
-        banManager         = new BanManager(this);
-        ipBanManager       = new IPBanManager(this);
-        muteManager        = new MuteManager(this);
-        playerCache        = new PlayerCache(this);
+        banManager         = new BanManager(this, database);
+        ipBanManager       = new IPBanManager(this, database);
+        muteManager        = new MuteManager(this, database);
+        playerCache        = new PlayerCache(this, database);
         punishConfig       = new PunishConfig(this);
         vanishManager      = new VanishManager(this);
         reportManager      = new ReportManager(this);
-        flyDataManager     = new FlyDataManager(this);
+        flyDataManager     = new FlyDataManager(this, database);
         flyConfig          = new FlyConfig(this, messagesConfig);
         flyManager         = new FlyManager(this, flyDataManager, flyConfig);
         autoMessageManager = new AutoMessageManager(this);
         chatGameManager    = new ChatGameManager(this, messagesConfig);
         combatManager      = new CombatManager(this, messagesConfig);
         flyManager.setCombatManager(combatManager);
-        dailyRewardManager  = new DailyRewardManager(this);
-        warnManager         = new WarnManager(this);
+        dailyRewardManager  = new DailyRewardManager(this, database);
+        warnManager         = new WarnManager(this, database);
         discordBroadcaster  = new dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster(this, messagesConfig);
-        historyManager      = new dev.leeroy.plugin.Utils.punishment.PunishmentHistoryManager(this);
-        unbanManager        = new dev.leeroy.plugin.Utils.punishment.UnbanManager(this);
+        historyManager      = new dev.leeroy.plugin.Utils.punishment.PunishmentHistoryManager(this, database);
+        unbanManager        = new dev.leeroy.plugin.Utils.punishment.UnbanManager(this, database);
 
         // Shared listener instances (needed by both commands and event handlers)
         MuteListener       muteListener       = new MuteListener(muteManager);
@@ -235,5 +239,15 @@ public final class Plugin extends JavaPlugin {
     @Override
     public void onDisable() {
         playerCache.saveNow();
+        database.close();
+        getLogger().info(" ");
+        getLogger().info(" ██████╗  ██████╗ ██████╗ ");
+        getLogger().info(" ██╔══██╗██╔═══██╗██╔══██╗");
+        getLogger().info(" ██████╔╝██║   ██║██████╔╝");
+        getLogger().info(" ██╔══██╗██║   ██║██╔══██╗");
+        getLogger().info(" ██████╔╝╚██████╔╝██████╔╝");
+        getLogger().info(" ╚═════╝  ╚═════╝ ╚═════╝  v" + version);
+        getLogger().info(" ");
+        getLogger().info("GOODBYE!!");
     }
 }

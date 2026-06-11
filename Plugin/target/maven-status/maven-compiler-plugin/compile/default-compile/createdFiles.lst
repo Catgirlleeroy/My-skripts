@@ -6,6 +6,7 @@ dev\leeroy\plugin\listeners\chat\ChatFormatListener.class
 dev\leeroy\plugin\commands\chat\ChatClearCommand.class
 dev\leeroy\plugin\listeners\misc\FlyListener.class
 dev\leeroy\plugin\listeners\misc\OpenInvListener.class
+dev\leeroy\plugin\Utils\misc\DatabaseManager.class
 dev\leeroy\plugin\Utils\punishment\WarnManager.class
 dev\leeroy\plugin\Utils\misc\VanishManager.class
 dev\leeroy\plugin\commands\punishment\UnmuteCommand.class

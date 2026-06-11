@@ -1,66 +1,105 @@
 package dev.leeroy.plugin.Utils.punishment;
 
-import dev.leeroy.plugin.Utils.misc.YamlDataStore;
+import dev.leeroy.plugin.Utils.misc.DatabaseManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.sql.*;
+import java.util.*;
 
-public class MuteManager extends YamlDataStore {
+public class MuteManager {
 
-    public MuteManager(JavaPlugin plugin) {
-        super(plugin, "mutes.yml");
+    private final JavaPlugin plugin;
+    private final DatabaseManager db;
+
+    public MuteManager(JavaPlugin plugin, DatabaseManager db) {
+        this.plugin = plugin;
+        this.db     = db;
     }
 
     public void mute(UUID uuid, String name, String reason, String mutedBy) {
-        String key = uuid.toString();
-        config.set(key + ".name",     name);
-        config.set(key + ".type",     "permanent");
-        config.set(key + ".reason",   reason);
-        config.set(key + ".mutedBy",  mutedBy);
-        config.set(key + ".expiry",   -1L);
-        save();
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement(
+                 "MERGE INTO mutes (uuid, name, type, reason, muted_by, expiry) KEY (uuid) VALUES (?, ?, 'permanent', ?, ?, -1)")) {
+            ps.setString(1, uuid.toString());
+            ps.setString(2, name);
+            ps.setString(3, reason);
+            ps.setString(4, mutedBy);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("[MuteManager] mute failed: " + e.getMessage());
+        }
     }
 
     public void tempMute(UUID uuid, String name, String reason, String mutedBy, long durationMs) {
-        String key = uuid.toString();
         long expiry = System.currentTimeMillis() + durationMs;
-        config.set(key + ".name",     name);
-        config.set(key + ".type",     "temp");
-        config.set(key + ".reason",   reason);
-        config.set(key + ".mutedBy",  mutedBy);
-        config.set(key + ".expiry",   expiry);
-        save();
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement(
+                 "MERGE INTO mutes (uuid, name, type, reason, muted_by, expiry) KEY (uuid) VALUES (?, ?, 'temp', ?, ?, ?)")) {
+            ps.setString(1, uuid.toString());
+            ps.setString(2, name);
+            ps.setString(3, reason);
+            ps.setString(4, mutedBy);
+            ps.setLong(5, expiry);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("[MuteManager] tempMute failed: " + e.getMessage());
+        }
     }
 
     public void unmute(UUID uuid) {
-        config.set(uuid.toString(), null);
-        save();
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement("DELETE FROM mutes WHERE uuid = ?")) {
+            ps.setString(1, uuid.toString());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("[MuteManager] unmute failed: " + e.getMessage());
+        }
     }
 
     public boolean isMuted(UUID uuid) {
-        String key = uuid.toString();
-        if (!config.contains(key)) return false;
-
-        long expiry = config.getLong(key + ".expiry", -1L);
-        if (expiry != -1L && System.currentTimeMillis() > expiry) {
-            unmute(uuid);
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement("SELECT expiry FROM mutes WHERE uuid = ?")) {
+            ps.setString(1, uuid.toString());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return false;
+                long expiry = rs.getLong("expiry");
+                if (expiry != -1L && System.currentTimeMillis() > expiry) {
+                    unmute(uuid);
+                    return false;
+                }
+                return true;
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("[MuteManager] isMuted failed: " + e.getMessage());
             return false;
         }
-        return true;
     }
 
     public Map<String, Object> getMuteDetails(UUID uuid) {
-        String key = uuid.toString();
-        if (!isMuted(uuid)) return null;
-
-        Map<String, Object> details = new HashMap<>();
-        details.put("name",    config.getString(key + ".name"));
-        details.put("type",    config.getString(key + ".type"));
-        details.put("reason",  config.getString(key + ".reason"));
-        details.put("mutedBy", config.getString(key + ".mutedBy"));
-        details.put("expiry",  config.getLong(key + ".expiry", -1L));
-        return details;
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement(
+                 "SELECT name, type, reason, muted_by, expiry FROM mutes WHERE uuid = ?")) {
+            ps.setString(1, uuid.toString());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return null;
+                long expiry = rs.getLong("expiry");
+                if (expiry != -1L && System.currentTimeMillis() > expiry) {
+                    unmute(uuid);
+                    return null;
+                }
+                Map<String, Object> details = new HashMap<>();
+                details.put("name",    rs.getString("name"));
+                details.put("type",    rs.getString("type"));
+                details.put("reason",  rs.getString("reason"));
+                details.put("mutedBy", rs.getString("muted_by"));
+                details.put("expiry",  expiry);
+                return details;
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("[MuteManager] getMuteDetails failed: " + e.getMessage());
+            return null;
+        }
     }
+
+    public void reload() { /* H2 is always current */ }
 }
