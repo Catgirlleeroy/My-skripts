@@ -19,7 +19,6 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.GameMode;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import static github.scarsz.discordsrv.DiscordSRV.version;
 
 public final class Plugin extends JavaPlugin {
 
@@ -50,7 +49,7 @@ public final class Plugin extends JavaPlugin {
         dev.leeroy.plugin.Utils.misc.TextUtil.init(this);
 
         // Startup banner
-        String version = getDescription().getVersion();
+        String version = getPluginMeta().getVersion();
         getLogger().info(" ");
         getLogger().info(" ██████╗  ██████╗ ██████╗ ");
         getLogger().info(" ██╔══██╗██╔═══██╗██╔══██╗");
@@ -72,7 +71,7 @@ public final class Plugin extends JavaPlugin {
         playerCache        = new PlayerCache(this, database);
         punishConfig       = new PunishConfig(this);
         vanishManager      = new VanishManager(this);
-        reportManager      = new ReportManager(this);
+        reportManager      = new ReportManager(database);
         flyDataManager     = new FlyDataManager(this, database);
         flyConfig          = new FlyConfig(this, messagesConfig);
         flyManager         = new FlyManager(this, flyDataManager, flyConfig);
@@ -238,7 +237,6 @@ public final class Plugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        playerCache.saveNow();
         database.close();
         getLogger().info(" ");
         getLogger().info(" ██████╗  ██████╗ ██████╗ ");
@@ -246,7 +244,7 @@ public final class Plugin extends JavaPlugin {
         getLogger().info(" ██████╔╝██║   ██║██████╔╝");
         getLogger().info(" ██╔══██╗██║   ██║██╔══██╗");
         getLogger().info(" ██████╔╝╚██████╔╝██████╔╝");
-        getLogger().info(" ╚═════╝  ╚═════╝ ╚═════╝  v" + version);
+        getLogger().info(" ╚═════╝  ╚═════╝ ╚═════╝  v" + getPluginMeta().getVersion());
         getLogger().info(" ");
         getLogger().info("GOODBYE!!");
     }

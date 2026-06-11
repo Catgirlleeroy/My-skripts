@@ -65,15 +65,4 @@ public class PunishmentHistoryManager {
         }
         return entries;
     }
-
-    public void clearHistory(UUID uuid) {
-        try (Connection c = db.getConnection();
-             PreparedStatement ps = c.prepareStatement(
-                 "DELETE FROM punishment_history WHERE uuid = ?")) {
-            ps.setString(1, uuid.toString());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            plugin.getLogger().severe("[PunishmentHistoryManager] clearHistory failed: " + e.getMessage());
-        }
-    }
 }

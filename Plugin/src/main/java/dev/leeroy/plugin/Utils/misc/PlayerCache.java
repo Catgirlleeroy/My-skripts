@@ -94,9 +94,6 @@ public class PlayerCache {
         }
     }
 
-    /** No-op — writes go directly to H2 on every update. */
-    public void saveNow() {}
-
     public void reload() {
         names.clear();
         ips.clear();

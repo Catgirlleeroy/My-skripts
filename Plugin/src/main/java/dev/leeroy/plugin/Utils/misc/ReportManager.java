@@ -1,93 +1,65 @@
 package dev.leeroy.plugin.Utils.misc;
 
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.File;
-import java.io.IOException;
+import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ReportManager {
 
-    private final JavaPlugin plugin;
-    private final File reportFile;
-    private YamlConfiguration config;
+    private final DatabaseManager db;
 
-    public ReportManager(JavaPlugin plugin) {
-        this.plugin = plugin;
-        this.reportFile = new File(plugin.getDataFolder(), "reports.yml");
-        load();
+    public ReportManager(DatabaseManager db) {
+        this.db = db;
     }
 
-    private void load() {
-        if (!reportFile.exists()) {
-            plugin.getDataFolder().mkdirs();
-            try { reportFile.createNewFile(); } catch (IOException e) { e.printStackTrace(); }
-        }
-        config = YamlConfiguration.loadConfiguration(reportFile);
-    }
-
-    private void save() {
-        final YamlConfiguration snapshot = config;
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            try { snapshot.save(reportFile); } catch (IOException e) { e.printStackTrace(); }
-        });
-    }
-
-    public void reload() {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, this::load);
-    }
-
-    /**
-     * Adds a new report. Returns the report ID.
-     */
     public String addReport(String reporterName, String targetName, String reason) {
-        String id = String.valueOf(System.currentTimeMillis());
-        String timestamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date());
-
-        config.set(id + ".reporter", reporterName);
-        config.set(id + ".target",   targetName);
-        config.set(id + ".reason",   reason);
-        config.set(id + ".time",     timestamp);
-        config.set(id + ".resolved", false);
-        save();
-        return id;
+        String time = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date());
+        String sql = "INSERT INTO reports (reporter, target, reason, time) VALUES (?, ?, ?, ?)";
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, reporterName);
+            ps.setString(2, targetName);
+            ps.setString(3, reason);
+            ps.setString(4, time);
+            ps.executeUpdate();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) return String.valueOf(rs.getLong(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return String.valueOf(System.currentTimeMillis());
     }
 
-    /**
-     * Deletes a report by ID.
-     */
     public boolean deleteReport(String id) {
-        if (!config.contains(id)) return false;
-        config.set(id, null);
-        save();
-        return true;
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement("DELETE FROM reports WHERE id = ?")) {
+            ps.setLong(1, Long.parseLong(id));
+            return ps.executeUpdate() > 0;
+        } catch (SQLException | NumberFormatException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    /**
-     * Returns all unresolved reports as a list of maps.
-     */
     public List<Map<String, String>> getReports() {
         List<Map<String, String>> reports = new ArrayList<>();
-        for (String key : config.getKeys(false)) {
-            Map<String, String> report = new LinkedHashMap<>();
-            report.put("id",       key);
-            report.put("reporter", config.getString(key + ".reporter"));
-            report.put("target",   config.getString(key + ".target"));
-            report.put("reason",   config.getString(key + ".reason"));
-            report.put("time",     config.getString(key + ".time"));
-            reports.add(report);
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement("SELECT id, reporter, target, reason, time FROM reports ORDER BY id ASC");
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Map<String, String> report = new LinkedHashMap<>();
+                report.put("id",       String.valueOf(rs.getLong("id")));
+                report.put("reporter", rs.getString("reporter"));
+                report.put("target",   rs.getString("target"));
+                report.put("reason",   rs.getString("reason"));
+                report.put("time",     rs.getString("time"));
+                reports.add(report);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return reports;
     }
-
-    public boolean reportExists(String id) {
-        return config.contains(id);
-    }
+}
 }

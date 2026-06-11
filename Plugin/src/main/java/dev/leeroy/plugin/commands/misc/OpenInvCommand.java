@@ -132,15 +132,6 @@ public class OpenInvCommand implements BasicCommand {
         return glass;
     }
 
-    private static ItemStack readonlyLabel(String name) {
-        ItemStack glass = new ItemStack(Material.LIGHT_BLUE_STAINED_GLASS_PANE);
-        ItemMeta meta = glass.getItemMeta();
-        meta.displayName(Component.text("[ " + name + " ]", NamedTextColor.AQUA));
-        meta.getPersistentDataContainer().set(PLACEHOLDER, PersistentDataType.BYTE, (byte) 1);
-        glass.setItemMeta(meta);
-        return glass;
-    }
-
     public static boolean isPlaceholder(ItemStack item) {
         if (item == null || !item.hasItemMeta()) return false;
         return item.getItemMeta().getPersistentDataContainer().has(PLACEHOLDER, PersistentDataType.BYTE);

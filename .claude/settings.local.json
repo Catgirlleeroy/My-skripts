@@ -15,7 +15,11 @@
       "Bash(rm listeners/ChatColorListener.java listeners/ChatFormatListener.java listeners/ChatGameListener.java listeners/CombatListener.java listeners/CommandSpyListener.java listeners/DailyRewardListener.java listeners/FlyListener.java listeners/FullInventoryListener.java listeners/GlowListener.java listeners/PlayerCacheListener.java listeners/VanishListener.java listeners/VaultHook.java)",
       "Bash(rm Utils/AutoMessageManager.java Utils/BobHooks.java Utils/ChatGameManager.java Utils/CombatManager.java Utils/DailyRewardManager.java Utils/FlyConfig.java Utils/FlyDataManager.java Utils/FlyManager.java Utils/PlayerCache.java Utils/PlayerHealer.java Utils/ReportManager.java Utils/VanishManager.java)",
       "WebSearch",
-      "WebFetch(domain:docs.papermc.io)"
+      "WebFetch(domain:docs.papermc.io)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\leero\\\\Documents\\\\GitHub\\\\My-skripts\\\\Plugin\\\\src\" -Recurse -Directory)",
+      "Bash(Select-Object FullName)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\leero\\\\Documents\\\\GitHub\\\\My-skripts\\\\Plugin\\\\src\\\\main\\\\java\" -Recurse -Filter \"*.java\")",
+      "Bash(Select-Object -ExpandProperty FullName)"
     ]
   }
 }

@@ -11,7 +11,7 @@ public class DatabaseManager {
     public DatabaseManager(JavaPlugin plugin) {
         plugin.getDataFolder().mkdirs();
         String path = plugin.getDataFolder().getAbsolutePath().replace("\\", "/");
-        this.url = "jdbc:h2:file:" + path + "/data;DB_CLOSE_DELAY=-1;AUTO_SERVER=FALSE";
+        this.url = "jdbc:h2:file:" + path + "/data;DB_CLOSE_DELAY=-1;AUTO_SERVER=FALSE;TRACE_LEVEL_FILE=0";
         try {
             Class.forName("org.h2.Driver");
         } catch (ClassNotFoundException e) {
@@ -96,6 +96,14 @@ public class DatabaseManager {
                     target_name VARCHAR(64),
                     unbanned_by VARCHAR(64),
                     timestamp   BIGINT
+                )""");
+            s.execute("""
+                CREATE TABLE IF NOT EXISTS reports (
+                    id       BIGINT AUTO_INCREMENT PRIMARY KEY,
+                    reporter VARCHAR(64) NOT NULL,
+                    target   VARCHAR(64) NOT NULL,
+                    reason   VARCHAR(512) NOT NULL,
+                    time     VARCHAR(32) NOT NULL
                 )""");
         } catch (SQLException e) {
             throw new RuntimeException("Failed to initialize H2 tables: " + e.getMessage(), e);
