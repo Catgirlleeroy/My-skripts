@@ -105,6 +105,12 @@ public class DatabaseManager {
                     reason   VARCHAR(512) NOT NULL,
                     time     VARCHAR(32) NOT NULL
                 )""");
+            s.execute("""
+                CREATE TABLE IF NOT EXISTS player_inventory (
+                    uuid           VARCHAR(36) PRIMARY KEY,
+                    inventory_data CLOB        NOT NULL,
+                    edited         BOOLEAN     NOT NULL DEFAULT FALSE
+                )""");
         } catch (SQLException e) {
             throw new RuntimeException("Failed to initialize H2 tables: " + e.getMessage(), e);
         }

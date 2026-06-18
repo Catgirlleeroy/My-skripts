@@ -42,6 +42,7 @@ public final class Plugin extends JavaPlugin {
     private dev.leeroy.plugin.Utils.punishment.PunishmentHistoryManager historyManager;
     private dev.leeroy.plugin.Utils.punishment.UnbanManager unbanManager;
     private dev.leeroy.plugin.Utils.misc.MessagesConfig messagesConfig;
+    private dev.leeroy.plugin.Utils.misc.InventoryDataManager inventoryDataManager;
 
     @Override
     public void onEnable() {
@@ -84,6 +85,7 @@ public final class Plugin extends JavaPlugin {
         discordBroadcaster  = new dev.leeroy.plugin.Utils.punishment.PunishmentDiscordBroadcaster(this, messagesConfig);
         historyManager      = new dev.leeroy.plugin.Utils.punishment.PunishmentHistoryManager(this, database);
         unbanManager        = new dev.leeroy.plugin.Utils.punishment.UnbanManager(this, database);
+        inventoryDataManager = new dev.leeroy.plugin.Utils.misc.InventoryDataManager(this, database);
 
         // Shared listener instances (needed by both commands and event handlers)
         MuteListener       muteListener       = new MuteListener(muteManager);
@@ -106,7 +108,7 @@ public final class Plugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BanListener(banManager, ipBanManager, playerCache), this);
         getServer().getPluginManager().registerEvents(new PlayerCacheListener(playerCache), this);
         getServer().getPluginManager().registerEvents(commandSpyListener, this);
-        getServer().getPluginManager().registerEvents(new OpenInvListener(this), this);
+        getServer().getPluginManager().registerEvents(new OpenInvListener(this, inventoryDataManager), this);
 
         // DiscordSRV mute suppression — only register if DiscordSRV is loaded
         if (BobHooks.hasDiscordSRV()) {
@@ -134,6 +136,7 @@ public final class Plugin extends JavaPlugin {
         final dev.leeroy.plugin.Utils.punishment.PunishmentHistoryManager     fHistory   = historyManager;
         final dev.leeroy.plugin.Utils.punishment.UnbanManager                 fUnban     = unbanManager;
         final dev.leeroy.plugin.Utils.misc.MessagesConfig                     fMessages  = messagesConfig;
+        final dev.leeroy.plugin.Utils.misc.InventoryDataManager               fInvData   = inventoryDataManager;
         final MuteListener       fMuteLsr   = muteListener;
         final CommandSpyListener fSpyLsr    = commandSpyListener;
         final TPACommand         fTpa       = tpaCommand;
@@ -217,7 +220,7 @@ public final class Plugin extends JavaPlugin {
             cmds.register("tpdeny",   perm(fTpa.tpdeny(),   "bob.tpa"));
 
             // OpenInv
-            cmds.register("openinv", new OpenInvCommand());
+            cmds.register("openinv", new OpenInvCommand(Plugin.this, fCache, fInvData));
 
             // CommandSpy
             cmds.register("commandspy", perm(new CommandSpyCommand(fSpyLsr), "bob.commandspy"));

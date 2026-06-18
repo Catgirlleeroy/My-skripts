@@ -3,6 +3,7 @@ package dev.leeroy.plugin.Utils.misc;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 
 public class ReportManager {
 
@@ -61,5 +62,4 @@ public class ReportManager {
         }
         return reports;
     }
-}
 }
